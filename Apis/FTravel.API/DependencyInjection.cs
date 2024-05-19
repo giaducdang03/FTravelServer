@@ -1,4 +1,5 @@
 ﻿using FTravel.API.Middlewares;
+using FTravel.Service.Mapper;
 using System.Diagnostics;
 
 namespace FTravel.API
@@ -14,6 +15,10 @@ namespace FTravel.API
             services.AddSingleton<GlobalExceptionMiddleware>();
             services.AddSingleton<PerformanceMiddleware>();
             services.AddSingleton<Stopwatch>();
+
+            // auto mapper
+            services.AddAutoMapper(typeof(MapperConfigProfile).Assembly);
+
             services.AddHttpContextAccessor();
 
             return services;
