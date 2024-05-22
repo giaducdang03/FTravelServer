@@ -1,5 +1,7 @@
 using FTravel.API;
 using FTravel.API.Middlewares;
+using FTravel.Repository.DBContext;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using System.Text.Json.Serialization;
 
@@ -33,6 +35,35 @@ builder.Services.AddSwaggerGen(c =>
 {
     c.SwaggerDoc("v1", new OpenApiInfo { Title = "FTravel Web API", Version = "v.1.0" });
 });
+
+// ===================== FOR LOCAL DB =======================
+
+builder.Services.AddDbContext<FtravelContext>(options =>
+{
+    options.UseSqlServer(builder.Configuration.GetConnectionString("FTravelLocal"));
+});
+
+// ==========================================================
+
+
+
+// ===================== FOR AZURE DB =======================
+
+//var connection = String.Empty;
+//if (builder.Environment.IsDevelopment())
+//{
+//    builder.Configuration.AddEnvironmentVariables().AddJsonFile("appsettings.Development.json");
+//    connection = builder.Configuration.GetConnectionString("AZURE_SQL_CONNECTIONSTRING");
+//}
+//else
+//{
+//    connection = Environment.GetEnvironmentVariable("AZURE_SQL_CONNECTIONSTRING");
+//}
+
+//builder.Services.AddDbContext<FtravelContext>(options =>
+//  options.UseSqlServer(connection));
+
+// ==================== NO EDIT OR REMOVE COMMENT =======================
 
 
 var app = builder.Build();
