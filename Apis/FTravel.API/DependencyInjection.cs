@@ -1,6 +1,9 @@
 ﻿using FTravel.API.Middlewares;
+using FTravel.Repository.Repositories.Interface;
+using FTravel.Repository.Repositories;
 using FTravel.Service.Mapper;
 using System.Diagnostics;
+using System.Security.Claims;
 
 namespace FTravel.API
 {
