@@ -70,6 +70,7 @@ public partial class FtravelContext : DbContext
                 .HasDefaultValueSql("(getdate())")
                 .HasColumnType("datetime");
             entity.Property(e => e.Name).HasMaxLength(100);
+            entity.Property(e => e.UnsignName).HasMaxLength(100);
             entity.Property(e => e.ShortDescription).HasMaxLength(200);
             entity.Property(e => e.UpdateDate).HasColumnType("datetime");
         });
@@ -84,6 +85,7 @@ public partial class FtravelContext : DbContext
                 .HasDefaultValueSql("(getdate())")
                 .HasColumnType("datetime");
             entity.Property(e => e.Name).HasMaxLength(100);
+            entity.Property(e => e.UnsignName).HasMaxLength(100);
             entity.Property(e => e.UpdateDate).HasColumnType("datetime");
         });
 
@@ -100,6 +102,7 @@ public partial class FtravelContext : DbContext
             entity.Property(e => e.Dob).HasColumnName("DOB");
             entity.Property(e => e.Email).HasMaxLength(255);
             entity.Property(e => e.FullName).HasMaxLength(100);
+            entity.Property(e => e.UnsignFullName).HasMaxLength(100);
             entity.Property(e => e.PhoneNumber)
                 .HasMaxLength(10)
                 .IsUnicode(false);
@@ -188,6 +191,7 @@ public partial class FtravelContext : DbContext
                 .HasDefaultValueSql("(getdate())")
                 .HasColumnType("datetime");
             entity.Property(e => e.Name).HasMaxLength(100);
+            entity.Property(e => e.UnsignName).HasMaxLength(100);
             entity.Property(e => e.Status).HasMaxLength(50);
             entity.Property(e => e.UpdateDate).HasColumnType("datetime");
 
@@ -234,6 +238,7 @@ public partial class FtravelContext : DbContext
                 .HasDefaultValueSql("(getdate())")
                 .HasColumnType("datetime");
             entity.Property(e => e.Name).HasMaxLength(100);
+            entity.Property(e => e.UnsignName).HasMaxLength(100);
             entity.Property(e => e.ShortDescription).HasMaxLength(200);
             entity.Property(e => e.UpdateDate).HasColumnType("datetime");
 
@@ -276,6 +281,7 @@ public partial class FtravelContext : DbContext
                 .HasDefaultValueSql("(getdate())")
                 .HasColumnType("datetime");
             entity.Property(e => e.Name).HasMaxLength(100);
+            entity.Property(e => e.UnsignName).HasMaxLength(100);
             entity.Property(e => e.Status).HasMaxLength(50);
             entity.Property(e => e.UpdateDate).HasColumnType("datetime");
 
@@ -356,6 +362,7 @@ public partial class FtravelContext : DbContext
             entity.Property(e => e.EstimatedEndDate).HasColumnType("datetime");
             entity.Property(e => e.EstimatedStartDate).HasColumnType("datetime");
             entity.Property(e => e.Name).HasMaxLength(100);
+            entity.Property(e => e.UnsignName).HasMaxLength(100);
             entity.Property(e => e.OpenTicketDate).HasColumnType("datetime");
             entity.Property(e => e.Status).HasMaxLength(50);
             entity.Property(e => e.UpdateDate).HasColumnType("datetime");
@@ -417,11 +424,10 @@ public partial class FtravelContext : DbContext
                 .HasMaxLength(255)
                 .HasColumnName("FCMToken");
             entity.Property(e => e.FullName).HasMaxLength(100);
+            entity.Property(e => e.UnsignFullName).HasMaxLength(100);
             entity.Property(e => e.GoogleId).HasMaxLength(64);
             entity.Property(e => e.PasswordHash)
-                .HasMaxLength(64)
-                .IsUnicode(false)
-                .IsFixedLength();
+                .HasMaxLength(500);
             entity.Property(e => e.PhoneNumber)
                 .HasMaxLength(10)
                 .IsUnicode(false);

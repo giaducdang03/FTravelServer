@@ -4,6 +4,8 @@ using FTravel.Repository.Repositories;
 using FTravel.Service.Mapper;
 using System.Diagnostics;
 using System.Security.Claims;
+using FTravel.Service.Services.Interface;
+using FTravel.Service.Services;
 
 namespace FTravel.API
 {
@@ -13,6 +15,11 @@ namespace FTravel.API
         {
             // use DI here
 
+            services.AddScoped<IUserRepository, UserRepository>();
+            services.AddScoped<IUserService, UserService>();
+
+            services.AddScoped<IRoleRepository, RoleRepository>();
+            services.AddScoped<ICustomerRepository, CustomerRepository>();
 
             services.AddHealthChecks();
             services.AddSingleton<GlobalExceptionMiddleware>();

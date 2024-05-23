@@ -5,11 +5,13 @@ namespace FTravel.Repository.EntityModels;
 
 public partial class Customer : BaseEntity
 {
+    public string? UnsignFullName { get; set; }
+
     public string FullName { get; set; } = null!;
 
     public string Email { get; set; } = null!;
 
-    public DateOnly? Dob { get; set; }
+    public DateTime? Dob { get; set; }
 
     public string? PhoneNumber { get; set; }
 

@@ -19,6 +19,7 @@ namespace FTravel.Repository.Repositories.Interface
         Task AddRangeAsync(List<TEntity> entities);
         Task<int> UpdateRangeAsync(List<TEntity> entities);
         Task<int> SoftDeleteRangeAsync(List<TEntity> entities);
+        Task<int> PermanentDeletedAsync(TEntity entity);
 
         Task<Pagination<TEntity>> ToPagination(PaginationParameter paginationParameter);
     }

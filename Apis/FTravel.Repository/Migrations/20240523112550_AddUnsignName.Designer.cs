@@ -4,6 +4,7 @@ using FTravel.Repository.DBContext;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FTravel.Repository.Migrations
 {
     [DbContext(typeof(FtravelContext))]
-    partial class FtravelContextModelSnapshot : ModelSnapshot
+    [Migration("20240523112550_AddUnsignName")]
+    partial class AddUnsignName
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -117,8 +120,8 @@ namespace FTravel.Repository.Migrations
                         .HasColumnType("datetime")
                         .HasDefaultValueSql("(getdate())");
 
-                    b.Property<DateTime?>("Dob")
-                        .HasColumnType("datetime2")
+                    b.Property<DateOnly?>("Dob")
+                        .HasColumnType("date")
                         .HasColumnName("DOB");
 
                     b.Property<string>("Email")
@@ -874,8 +877,10 @@ namespace FTravel.Repository.Migrations
                         .HasColumnType("bit");
 
                     b.Property<string>("PasswordHash")
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
+                        .HasMaxLength(64)
+                        .IsUnicode(false)
+                        .HasColumnType("char(64)")
+                        .IsFixedLength();
 
                     b.Property<string>("PhoneNumber")
                         .HasMaxLength(10)

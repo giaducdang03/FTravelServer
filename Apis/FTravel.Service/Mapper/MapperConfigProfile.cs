@@ -1,4 +1,6 @@
 ﻿using AutoMapper;
+using FTravel.Repository.EntityModels;
+using FTravel.Service.BusinessModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,7 +15,8 @@ namespace FTravel.Service.Mapper
         {
             // add mapper model
 
-
+            CreateMap<UserModel, User>().ReverseMap();
+            CreateMap<Customer, User>().ReverseMap();
 
 
         }
