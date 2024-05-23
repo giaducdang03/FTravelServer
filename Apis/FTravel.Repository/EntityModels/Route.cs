@@ -5,6 +5,8 @@ namespace FTravel.Repository.EntityModels;
 
 public partial class Route : BaseEntity
 {
+    public string? UnsignName { get; set; }
+
     public string Name { get; set; } = null!;
 
     public int? StartPoint { get; set; }

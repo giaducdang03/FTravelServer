@@ -9,6 +9,8 @@ public partial class Service : BaseEntity
 
     public int? StationId { get; set; }
 
+    public string? UnsignName { get; set; }
+
     public string Name { get; set; } = null!;
 
     public int? DefaultPrice { get; set; }

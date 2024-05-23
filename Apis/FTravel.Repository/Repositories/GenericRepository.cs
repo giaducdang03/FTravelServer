@@ -97,10 +97,16 @@ namespace FTravel.Repository.Repositories
 
             return result;
         }
+        public async Task<int> PermanentDeletedAsync(TEntity entity)
+        {
+            _dbSet.Remove(entity);
+            return await _dbContext.SaveChangesAsync();
+        }
 
         private DateTime GetCurrentTime() 
         { 
             return DateTime.UtcNow.AddHours(7); 
         }
+
     }
 }

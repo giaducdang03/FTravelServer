@@ -11,9 +11,11 @@ public partial class User : BaseEntity
 
     public string? PasswordHash { get; set; }
 
+    public string? UnsignFullName { get; set; }
+
     public string FullName { get; set; } = null!;
 
-    public DateOnly? Dob { get; set; }
+    public DateTime? Dob { get; set; }
 
     public string? PhoneNumber { get; set; }
 
