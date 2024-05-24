@@ -451,8 +451,8 @@ public partial class FtravelContext : DbContext
             entity.Property(e => e.Status).HasMaxLength(50);
             entity.Property(e => e.UpdateDate).HasColumnType("datetime");
 
-            entity.HasOne(d => d.Customer).WithMany(p => p.Wallets)
-                .HasForeignKey(d => d.CustomerId)
+            entity.HasOne(d => d.Customer).WithOne(p => p.Wallet)
+                .HasForeignKey<Wallet>(d => d.CustomerId)
                 .HasConstraintName("FK__Wallet__Customer__114A936A");
         });
 

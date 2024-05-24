@@ -124,60 +124,70 @@ namespace FTravel.Service.Services
 
         public async Task<bool> RegisterAsync(SignUpModel model)
         {
-            User newUser = new User()
+            using (var transaction = await _userRepository.BeginTransactionAsync())
             {
-                Email = model.Email,
-                FullName = model.FullName,
-                UnsignFullName = StringUtils.ConvertToUnSign(model.FullName)
-            };
-
-            var existUser = await _userRepository.GetUserByEmailAsync(model.Email);
-
-            if (existUser != null)
-            {
-                throw new Exception("Account is already exist.");
-            }
-
-            // hash password
-            newUser.PasswordHash = PasswordUtils.HashPassword(model.Password);
-
-            if (await _roleRepository.GetRoleByName(model.Role.ToString()) == null)
-            {
-                Role newRole = new Role
+                try
                 {
-                    Name = model.Role.ToString()
-                };
-                await _roleRepository.AddAsync(newRole);
-            }
-
-            var role = await _roleRepository.GetRoleByName(model.Role.ToString());
-
-            if (role != null && role.Name == RoleEnums.CUSTOMER.ToString())
-            {
-                newUser.RoleId = role.Id;
-                if (CheckExistCustomer(newUser.Email).Result == false)
-                {
-                    try
+                    User newUser = new User()
                     {
-                        await _userRepository.AddAsync(newUser);
-                        Customer newCustomer = _mapper.Map<Customer>(newUser);
-                        newCustomer.Id = 0;
-                        await _customerRepository.AddAsync(newCustomer);
-                    }
-                    catch
+                        Email = model.Email,
+                        FullName = model.FullName,
+                        UnsignFullName = StringUtils.ConvertToUnSign(model.FullName)
+                    };
+
+                    var existUser = await _userRepository.GetUserByEmailAsync(model.Email);
+
+                    if (existUser != null)
                     {
-                        await _userRepository.PermanentDeletedAsync(newUser);
+                        throw new Exception("Account already exists.");
                     }
+
+                    // hash password
+                    newUser.PasswordHash = PasswordUtils.HashPassword(model.Password);
+
+                    var role = await _roleRepository.GetRoleByName(model.Role.ToString());
+                    if (role == null)
+                    {
+                        Role newRole = new Role
+                        {
+                            Name = model.Role.ToString()
+                        };
+                        await _roleRepository.AddAsync(newRole);
+                        role = newRole;
+                    }
+
+                    newUser.RoleId = role.Id;
+
+                    await _userRepository.AddAsync(newUser);
+
+                    if (role.Name == RoleEnums.CUSTOMER.ToString())
+                    {
+                        if (await CheckExistCustomer(newUser.Email) == false)
+                        {
+                            Customer newCustomer = _mapper.Map<Customer>(newUser);
+                            newCustomer.Id = 0;
+
+                            // add wallet
+                            Wallet customerWallet = new Wallet { 
+                                AccountBalance = 0,
+                                Status = WalletStatus.ACTIVE.ToString(),
+                            };
+                            newCustomer.Wallet = customerWallet;
+
+                            await _customerRepository.AddAsync(newCustomer);
+                        }
+                    }
+
+                    await transaction.CommitAsync();
+                    return true;
                 }
-                return true;
+                catch
+                {
+                    await transaction.RollbackAsync();
+                    throw;
+                }
             }
-            else if (role != null)
-            {
-                newUser.RoleId = role.Id;
-                await _userRepository.AddAsync(newUser);
-                return true;
-            }
-            return false;
+
         }
 
         private async Task<bool> CheckExistCustomer(string email)
