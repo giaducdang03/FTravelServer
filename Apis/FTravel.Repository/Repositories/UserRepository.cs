@@ -2,6 +2,7 @@
 using FTravel.Repository.EntityModels;
 using FTravel.Repository.Repositories.Interface;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -22,6 +23,11 @@ namespace FTravel.Repository.Repositories
         {
             var user = await _context.Users.FirstOrDefaultAsync(x => x.Email == email);
             return user;
+        }
+
+        public async Task<IDbContextTransaction> BeginTransactionAsync()
+        {
+            return await _context.Database.BeginTransactionAsync();
         }
     }
 }
