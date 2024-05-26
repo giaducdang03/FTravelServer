@@ -10,5 +10,7 @@ namespace FTravel.Repository.Repositories.Interface
     public interface ICustomerRepository : IGenericRepository<Customer>
     {
         public Task<Customer?> GetCustomerByEmailAsync(string email);
+
+        public Task<List<Customer>> GetCustomersByIdsAsync(IEnumerable<int> customerIds);
     }
 }
