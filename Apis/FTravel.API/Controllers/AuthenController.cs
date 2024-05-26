@@ -29,7 +29,7 @@ namespace FTravel.API.Controllers
                 var result = await _userService.RegisterAsync(model);
                 var resp = new ResponseModel()
                 {
-                    HttpCode = 200,
+                    HttpCode = StatusCodes.Status200OK,
                     Message = "Create user succcess."
                 };
                 return Ok(resp);
@@ -38,7 +38,7 @@ namespace FTravel.API.Controllers
             {
                 var resp = new ResponseModel()
                 {
-                    HttpCode = 400,
+                    HttpCode = StatusCodes.Status400BadRequest,
                     Message = ex.Message.ToString()
                 };
                 return BadRequest(resp);
@@ -51,7 +51,7 @@ namespace FTravel.API.Controllers
             try
             {
                 var result = await _userService.LoginByEmailAndPassword(model.Email, model.Password);
-                if (result.HttpCode == 200)
+                if (result.HttpCode == StatusCodes.Status200OK)
                 {
                     return Ok(result);
                 }
@@ -61,7 +61,7 @@ namespace FTravel.API.Controllers
             {
                 var resp = new ResponseModel()
                 {
-                    HttpCode = 400,
+                    HttpCode = StatusCodes.Status400BadRequest,
                     Message = ex.Message.ToString()
                 };
                 return BadRequest(resp);
@@ -74,7 +74,7 @@ namespace FTravel.API.Controllers
             try
             {
                 var result = await _userService.RefreshToken(jwtToken);
-                if (result.HttpCode == 200)
+                if (result.HttpCode == StatusCodes.Status200OK)
                 {
                     return Ok(result);
                 }
@@ -84,7 +84,7 @@ namespace FTravel.API.Controllers
             {
                 var resp = new ResponseModel()
                 {
-                    HttpCode = 400,
+                    HttpCode = StatusCodes.Status400BadRequest,
                     Message = ex.Message.ToString()
                 };
                 return BadRequest(resp);
