@@ -19,8 +19,8 @@ namespace FTravel.API.Controllers
         private readonly ITransactionService _transactionService;
         private readonly IClaimsService _claimsService;
 
-        public WalletsController(IWalletService walletService, 
-            IClaimsService claimsService, 
+        public WalletsController(IWalletService walletService,
+            IClaimsService claimsService,
             ITransactionService transactionService)
         {
             _walletService = walletService;
@@ -40,7 +40,7 @@ namespace FTravel.API.Controllers
                 {
                     return NotFound(new ResponseModel
                     {
-                        HttpCode = 404,
+                        HttpCode = StatusCodes.Status404NotFound,
                         Message = "No wallets"
                     });
                 }
@@ -62,7 +62,7 @@ namespace FTravel.API.Controllers
             {
                 return BadRequest(new ResponseModel
                 {
-                    HttpCode = 400,
+                    HttpCode = StatusCodes.Status400BadRequest,
                     Message = ex.Message
                 });
             }
@@ -76,13 +76,21 @@ namespace FTravel.API.Controllers
             {
                 var email = _claimsService.GetCurrentUserEmail;
                 var result = await _walletService.GetWalletByEmailAsync(email);
-                return result != null ? Ok(result) : NotFound();
+                if (result == null)
+                {
+                    return NotFound(new ResponseModel
+                    {
+                        HttpCode = StatusCodes.Status404NotFound,
+                        Message = "Not found wallet"
+                    });
+                }
+                return Ok(result);
             }
             catch (Exception ex)
             {
                 return BadRequest(new ResponseModel
                 {
-                    HttpCode = 400,
+                    HttpCode = StatusCodes.Status400BadRequest,
                     Message = ex.Message
                 });
             }
@@ -99,7 +107,7 @@ namespace FTravel.API.Controllers
                 {
                     return NotFound(new ResponseModel
                     {
-                        HttpCode = 404,
+                        HttpCode = StatusCodes.Status404NotFound,
                         Message = "No transaction"
                     });
                 }
@@ -121,7 +129,7 @@ namespace FTravel.API.Controllers
             {
                 return BadRequest(new ResponseModel
                 {
-                    HttpCode = 400,
+                    HttpCode = StatusCodes.Status400BadRequest,
                     Message = ex.Message
                 });
             }
