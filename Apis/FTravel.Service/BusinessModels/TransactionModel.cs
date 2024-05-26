@@ -1,4 +1,5 @@
-﻿using System;
+﻿using FTravel.Repository.EntityModels;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -6,10 +7,8 @@ using System.Threading.Tasks;
 
 namespace FTravel.Service.BusinessModels
 {
-    public class TransactionModel
+    public class TransactionModel : BaseEntity
     {
-        public int Id { get; set; }
-
         public int? WalletId { get; set; }
 
         public string? TransactionType { get; set; }

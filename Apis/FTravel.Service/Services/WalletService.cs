@@ -1,4 +1,6 @@
 ﻿using AutoMapper;
+using FTravel.Repositories.Commons;
+using FTravel.Repository.Commons;
 using FTravel.Repository.EntityModels;
 using FTravel.Repository.Repositories;
 using FTravel.Repository.Repositories.Interface;
@@ -32,9 +34,9 @@ namespace FTravel.Service.Services
         //    return walletModels;
         //}
 
-        public async Task<List<WalletModel>> GetAllWalletsAsync()
+        public async Task<Pagination<WalletModel>> GetAllWalletsAsync(PaginationParameter paginationParameter)
         {
-            var wallets = await _walletRepository.GetAllAsync();
+            var wallets = await _walletRepository.ToPagination(paginationParameter);
             var customerIds = wallets.Select(w => w.CustomerId).Where(id => id.HasValue).Select(id => id.Value).ToList();
 
             var customers = await _customerRepository.GetCustomersByIdsAsync(customerIds);
@@ -50,18 +52,10 @@ namespace FTravel.Service.Services
                 return walletModel;
             }).ToList();
 
-            return walletModels;
-        }
-
-        public async Task<List<TransactionModel>> GetTransactionsByWalletIdAsync(int walletId)
-        {
-            var wallet = await _walletRepository.GetWalletByIdAsync(walletId);
-            if (wallet != null && wallet.Transactions.Any())
-            {
-                var transactions = _mapper.Map<List<TransactionModel>>(wallet.Transactions);
-                return transactions;
-            }
-            return null;
+            return new Pagination<WalletModel>(walletModels, 
+                wallets.TotalCount,
+                wallets.CurrentPage,
+                wallets.PageSize);
         }
 
         public async Task<WalletModel> GetWalletByEmailAsync(string email)
