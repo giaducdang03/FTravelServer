@@ -19,7 +19,7 @@ namespace FTravel.Service.Mapper
             CreateMap<Customer, User>().ReverseMap();
             CreateMap<Wallet, WalletModel>();
             CreateMap<Transaction, TransactionModel>();
-
+            CreateMap<Route, RouteModel>();
         }
     }
 }
