@@ -8,7 +8,7 @@ using Newtonsoft.Json;
 
 namespace FTravel.API.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/route")]
     [ApiController]
     public class RouteController : ControllerBase
     {
@@ -20,7 +20,7 @@ namespace FTravel.API.Controllers
         }
 
 
-        [HttpGet("routes")]
+        [HttpGet]
         [Authorize(Roles = "BUSCOMPANY")]
         public async Task<IActionResult> getListRoute([FromQuery] PaginationParameter paginationParameter)
         {
@@ -61,7 +61,7 @@ namespace FTravel.API.Controllers
             }
         }
 
-        [HttpGet("route-details/{id}")]
+        [HttpGet("{id}")]
         [Authorize(Roles = "BUSCOMPANY")]
         public async Task<IActionResult> getRouteDetails(int id)
         {
