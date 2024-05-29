@@ -32,5 +32,39 @@ namespace FTravel.Repository.Repositories
 
             return result;
         }
+
+        public async Task<bool> RemoveSoftCityAsync(int deleteCity)
+        {
+            var removeSoftCity = await _context.Cities.FirstOrDefaultAsync(x => x.Id == deleteCity);    
+            if(removeSoftCity != null)
+            {
+                removeSoftCity.IsDeleted = true;
+                _context.SaveChanges();
+                return true;
+            } else
+            {
+                return false;
+            }
+        }
+
+        public async Task<City> UpdateCityAsync(City city)
+        {
+            var cityUpdate =  await _context.Cities.FirstOrDefaultAsync(x => x.Id == city.Id); 
+            if (cityUpdate != null)
+            {
+                cityUpdate.Name = city.Name;
+                cityUpdate.UpdateDate = city.UpdateDate;
+                cityUpdate.IsDeleted = city.IsDeleted;
+                cityUpdate.UnsignName = city.UnsignName;
+               await _context.SaveChangesAsync();
+               return cityUpdate;
+
+            }
+            return null;
+        }
+
+
+
+
     }
 }
