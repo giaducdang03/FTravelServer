@@ -96,7 +96,7 @@ namespace FTravel.API.Controllers
             }
         }
 
-        [HttpGet("transaction/{walletId}")]
+        [HttpGet("{walletId}/transaction")]
         [Authorize(Roles = "CUSTOMER,ADMIN")]
         public async Task<IActionResult> GetTransactionsWallet(int walletId, [FromQuery] PaginationParameter paginationParameter)
         {
