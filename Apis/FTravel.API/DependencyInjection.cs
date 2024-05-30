@@ -19,9 +19,11 @@ namespace FTravel.API
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<IRouteService, RouteService>();
             services.AddScoped<ICityService, CityService>();
+
             services.AddScoped<IRoleRepository, RoleRepository>();
             services.AddScoped<ICustomerRepository, CustomerRepository>();
             services.AddScoped<ICityRepository, CityRepository>();
+            services.AddScoped<IRouteRepository, RouteRepository>();
 
             services.AddScoped<IWalletRepository, WalletRepository>();
             services.AddScoped<IWalletService, WalletService>();
