@@ -2,6 +2,7 @@
 using FTravel.Repository.EntityModels;
 using FTravel.Repository.Repositories.Interface;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -27,6 +28,11 @@ namespace FTravel.Repository.Repositories
         public async Task<Wallet> GetWalletByIdAsync(int walletId)
         {
             return await _context.Wallets.Include(x => x.Transactions).FirstOrDefaultAsync(x => x.Id == walletId);
+        }
+
+        public async Task<IDbContextTransaction> BeginTransactionAsync()
+        {
+            return await _context.Database.BeginTransactionAsync();
         }
     }
 }

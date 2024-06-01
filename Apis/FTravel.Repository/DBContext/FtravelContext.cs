@@ -56,6 +56,8 @@ public partial class FtravelContext : DbContext
 
     public virtual DbSet<Wallet> Wallets { get; set; }
 
+    public virtual DbSet<Setting> Settings { get; set; }
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
@@ -454,6 +456,19 @@ public partial class FtravelContext : DbContext
             entity.HasOne(d => d.Customer).WithOne(p => p.Wallet)
                 .HasForeignKey<Wallet>(d => d.CustomerId)
                 .HasConstraintName("FK__Wallet__Customer__114A936A");
+        });
+
+        modelBuilder.Entity<Setting>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("PK__Setting");
+
+            entity.ToTable("Setting");
+
+            entity.Property(e => e.Key).HasMaxLength(100);
+
+            entity.Property(e => e.Value).HasMaxLength(100);
+
+            entity.Property(e => e.Description).HasMaxLength(250);
         });
 
         //OnModelCreatingPartial(modelBuilder);
