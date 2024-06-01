@@ -31,6 +31,8 @@ namespace FTravel.API
             services.AddScoped<ITransactionRepository, TransactionRepository>();
             services.AddScoped<ITransactionService, TransactionService>();
 
+            services.AddScoped<IVnpayService, VnpayService>();
+
 
 
             services.AddScoped<IClaimsService, ClaimsService>();
