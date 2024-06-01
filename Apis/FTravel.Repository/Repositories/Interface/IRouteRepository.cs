@@ -9,12 +9,10 @@ using System.Threading.Tasks;
 
 namespace FTravel.Repository.Repositories.Interface
 {
-    public interface ICityRepository : IGenericRepository<City>
+    public interface IRouteRepository : IGenericRepository<Route>
     {
-        public Task<Pagination<City>> GetListCityAsync(PaginationParameter paginationParameter);
+        public Task<Pagination<Route>> GetListRoutesAsync(PaginationParameter paginationParameter);
 
-        public Task<City> UpdateCityAsync (City city);
-
-        public Task<bool> RemoveSoftCityAsync (int deleteCity);
+        public Task<Route?> GetRouteDetailByRouteIdAsync(int routeId);
     }
 }
