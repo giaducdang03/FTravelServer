@@ -38,6 +38,9 @@ namespace FTravel.API
             services.AddScoped<IServiceService, ServiceService>();
 
 
+            services.AddScoped<ISettingRepository, SettingRepository>();
+            services.AddScoped<ISettingService, SettingService>();
+
             services.AddScoped<IClaimsService, ClaimsService>();
             
             services.AddHealthChecks();
