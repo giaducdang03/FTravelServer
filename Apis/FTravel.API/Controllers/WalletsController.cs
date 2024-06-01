@@ -1,5 +1,7 @@
-﻿using FTravel.API.ViewModels.ResponseModels;
+﻿using FTravel.API.ViewModels.RequestModels;
+using FTravel.API.ViewModels.ResponseModels;
 using FTravel.Repository.Commons;
+using FTravel.Service.BusinessModels;
 using FTravel.Service.Services;
 using FTravel.Service.Services.Interface;
 using FTravel.Service.Utils;
@@ -124,6 +126,71 @@ namespace FTravel.API.Controllers
                 Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
 
                 return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new ResponseModel
+                {
+                    HttpCode = StatusCodes.Status400BadRequest,
+                    Message = ex.Message
+                });
+            }
+        }
+
+        [HttpPost("customer/recharge/create")]
+        [Authorize(Roles = "CUSTOMER")]
+        public async Task<IActionResult> CreateNewRecharge(RechargeModel rechargeModel)
+        {
+            try
+            {
+                var email = _claimsService.GetCurrentUserEmail;
+                var paymentUrl = await _walletService.RequestRechargeIntoWallet(email, rechargeModel.RechargeAmount, HttpContext);
+                if (paymentUrl != null)
+                {
+                    VnpayResponseModel responseModel = new VnpayResponseModel()
+                    {
+                        HttpCode = StatusCodes.Status200OK,
+                        Message = "Create payment success",
+                        ReturnUrl = paymentUrl
+                    };
+                    return Ok(responseModel);
+                }
+                return BadRequest(new VnpayResponseModel()
+                {
+                    HttpCode = StatusCodes.Status400BadRequest,
+                    Message = "Create payment failed",
+                    ReturnUrl = ""
+                });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new ResponseModel
+                {
+                    HttpCode = StatusCodes.Status400BadRequest,
+                    Message = ex.Message
+                });
+            }
+        }
+
+        [HttpGet("customer/recharge/confirm")]
+        public async Task<IActionResult> ConfirmRecharge([FromQuery] VnPayModel vnpayResponse)
+        {
+            try
+            {
+                var result = await _walletService.RechargeIntoWallet(vnpayResponse);
+                if (result)
+                {
+                    return Ok(new ResponseModel
+                    {
+                        HttpCode = StatusCodes.Status200OK,
+                        Message = "Payment success"
+                    });
+                }
+                return BadRequest(new ResponseModel
+                {
+                    HttpCode = StatusCodes.Status400BadRequest,
+                    Message = "Payment failed"
+                });
             }
             catch (Exception ex)
             {

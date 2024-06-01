@@ -1,4 +1,5 @@
 ﻿using FTravel.Repository.EntityModels;
+using Microsoft.EntityFrameworkCore.Storage;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,5 +13,7 @@ namespace FTravel.Repository.Repositories.Interface
         public Task<Wallet> GetWalletByCustomerId(int customerId);
 
         public Task<Wallet> GetWalletByIdAsync(int walletId);
+
+        Task<IDbContextTransaction> BeginTransactionAsync();
     }
 }
