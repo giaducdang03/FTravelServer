@@ -14,5 +14,7 @@ namespace FTravel.Service.Services.Interface
     {
         public Task<Pagination<TripModel>> GetAllAsync(PaginationParameter paginationParameter);
         public Task<TripModel> GetTripByIdAsync(int id);
+        public Task<bool> CreateTripAsync(CreateTripModel trip);
+        public Task<bool> UpdateTripAsync(UpdateTripModel tripModel);
     }
 }

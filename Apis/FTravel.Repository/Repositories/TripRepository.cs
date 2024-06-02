@@ -12,13 +12,14 @@ using System.Threading.Tasks;
 
 namespace FTravel.Repository.Repositories
 {
-    public class TripRepository : GenericRepository<Trip>,  ITripRepository
+    public class TripRepository : GenericRepository<Trip>, ITripRepository
     {
         private readonly FtravelContext _context;
         public TripRepository(FtravelContext context) : base(context)
         {
             _context = context;
         }
+
         public async Task<Pagination<Trip>> GetAll(PaginationParameter paginationParameter)
         {
             var itemCount = await _context.Trips.CountAsync();
@@ -37,6 +38,33 @@ namespace FTravel.Repository.Repositories
                 .Include(x => x.Tickets)
                 .Include(x => x.Route)
                 .FirstOrDefaultAsync(x => x.Id == id);
+        }
+        public async Task<bool> CreateTripAsync(Trip trip)
+        {
+            try
+            {
+                _context.Trips.Add(trip);
+                await _context.SaveChangesAsync();
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        public async Task<bool> UpdateTripAsync(Trip trip)
+        {
+            try
+            {
+                _context.Trips.Update(trip);
+                await _context.SaveChangesAsync();
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
         }
     }
 }

@@ -13,5 +13,7 @@ namespace FTravel.Repository.Repositories.Interface
     {
         public Task<Pagination<Trip>> GetAll(PaginationParameter paginationParameter);
         public Task<Trip> GetTripById(int id);
+        Task<bool> CreateTripAsync(Trip trip);
+        Task<bool> UpdateTripAsync(Trip trip);
     }
 }
