@@ -45,13 +45,6 @@ namespace FTravel.Service.Utils
             return ipAddress;
         }
 
-        public static int GenerateSixDigitNumber()
-        {
-            Random random = new Random();
-            int number = random.Next(100000, 1000000);
-            return number;
-        }
-
     }
     public class VnPayCompare : IComparer<string>
     {
