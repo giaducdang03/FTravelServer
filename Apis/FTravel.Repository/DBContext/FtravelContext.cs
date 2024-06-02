@@ -56,6 +56,10 @@ public partial class FtravelContext : DbContext
 
     public virtual DbSet<Wallet> Wallets { get; set; }
 
+    public virtual DbSet<Setting> Settings { get; set; }
+
+    public virtual DbSet<Otp> Otps { get; set; }
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
@@ -434,6 +438,8 @@ public partial class FtravelContext : DbContext
             entity.Property(e => e.Status).HasMaxLength(50);
             entity.Property(e => e.UpdateDate).HasColumnType("datetime");
 
+            entity.Property(e => e.PIN).HasMaxLength(6).IsUnicode(false);
+
             entity.HasOne(d => d.Role).WithMany(p => p.Users)
                 .HasForeignKey(d => d.RoleId)
                 .HasConstraintName("FK__User__RoleId__44FF419A");
@@ -454,6 +460,38 @@ public partial class FtravelContext : DbContext
             entity.HasOne(d => d.Customer).WithOne(p => p.Wallet)
                 .HasForeignKey<Wallet>(d => d.CustomerId)
                 .HasConstraintName("FK__Wallet__Customer__114A936A");
+        });
+
+        modelBuilder.Entity<Setting>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("PK__Setting");
+
+            entity.ToTable("Setting");
+
+            entity.Property(e => e.Key).HasMaxLength(100);
+
+            entity.Property(e => e.Value).HasMaxLength(100);
+
+            entity.Property(e => e.Description).HasMaxLength(250);
+        });
+
+        modelBuilder.Entity<Otp>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("PK__Otp");
+
+            entity.ToTable("Otp");
+
+            entity.Property(e => e.Email).HasMaxLength(250);
+
+            entity.Property(e => e.OtpCode).HasMaxLength(6);
+
+            entity.Property(e => e.ExpiryTime).HasColumnType("datetime");
+
+            entity.Property(e => e.CreateDate)
+               .HasDefaultValueSql("(getdate())")
+               .HasColumnType("datetime");
+
+            entity.Property(e => e.UpdateDate).HasColumnType("datetime");
         });
 
         //OnModelCreatingPartial(modelBuilder);

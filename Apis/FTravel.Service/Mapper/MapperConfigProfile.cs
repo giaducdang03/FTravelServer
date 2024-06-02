@@ -20,6 +20,9 @@ namespace FTravel.Service.Mapper
             CreateMap<Customer, User>().ReverseMap();
             CreateMap<Wallet, WalletModel>();
             CreateMap<Transaction, TransactionModel>();
+            CreateMap<Route, RouteModel>();
+            CreateMap<City, CityModel>().ReverseMap();
+
             CreateMap<Repository.EntityModels.Service, ServiceModel>()
             .ForMember(dest => dest.RouteName, opt => opt.MapFrom(src => src.Route != null ? src.Route.Name : string.Empty))
             .ForMember(dest => dest.StationName, opt => opt.MapFrom(src => src.Station != null ? src.Station.Name : string.Empty))
