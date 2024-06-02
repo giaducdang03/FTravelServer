@@ -331,7 +331,33 @@ namespace FTravel.Service.Services
                 await _userRepository.UpdateAsync(user);
                 return true;
             }
-            return false;
+            else
+            {
+                throw new Exception("User does not exist");
+            }
+        }
+
+        public async Task<bool> ChangePasswordAsync(string email, ChangePasswordModel changePasswordModel)
+        {
+            var user = await _userRepository.GetUserByEmailAsync(email);
+            if (user != null) 
+            { 
+                bool checkPassword = PasswordUtils.VerifyPassword(changePasswordModel.OldPassword, user.PasswordHash);
+                if (checkPassword) 
+                { 
+                    user.PasswordHash = PasswordUtils.HashPassword(changePasswordModel.NewPassword);
+                    await _userRepository.UpdateAsync(user);
+                    return true;
+                }
+                else 
+                {
+                    throw new Exception("Old password invalid");
+                }
+            }
+            else
+            {
+                throw new Exception("User does not exist");
+            }
         }
 
         private async Task<string> GenerateAccessToken(string email, User user)
@@ -360,6 +386,5 @@ namespace FTravel.Service.Services
             var refreshToken = GenerateJWTToken.CreateRefreshToken(claims, _configuration, DateTime.UtcNow);
             return new JwtSecurityTokenHandler().WriteToken(refreshToken).ToString();
         }
-
     }
 }
