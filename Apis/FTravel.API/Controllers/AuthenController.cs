@@ -2,6 +2,7 @@
 using FTravel.API.ViewModels.ResponseModels;
 using FTravel.Service.BusinessModels;
 using FTravel.Service.Enums;
+using FTravel.Service.Services;
 using FTravel.Service.Services.Interface;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -16,10 +17,12 @@ namespace FTravel.API.Controllers
     public class AuthenController : ControllerBase
     {
         private readonly IUserService _userService;
+        private readonly IClaimsService _claimsService;
 
-        public AuthenController(IUserService userService)
+        public AuthenController(IUserService userService, IClaimsService claimsService)
         {
             _userService = userService;
+            _claimsService = claimsService;
         }
 
         [HttpPost("register")]
@@ -116,6 +119,39 @@ namespace FTravel.API.Controllers
                     return Ok(result);
                 }
                 return Unauthorized(result);
+            }
+            catch (Exception ex)
+            {
+                var resp = new ResponseModel()
+                {
+                    HttpCode = StatusCodes.Status400BadRequest,
+                    Message = ex.Message.ToString()
+                };
+                return BadRequest(resp);
+            }
+        }
+
+        [HttpPost("changepassword")]
+        [Authorize]
+        public async Task<IActionResult> RequestResetPassword(ChangePasswordModel changePasswordModel)
+        {
+            try
+            {
+                var email = _claimsService.GetCurrentUserEmail;
+                var result = await _userService.ChangePasswordAsync(email, changePasswordModel);
+                if (result)
+                {
+                    return Ok(new ResponseModel
+                    {
+                        HttpCode = StatusCodes.Status200OK,
+                        Message = "Change password successfully"
+                    });
+                }
+                return BadRequest(new ResponseModel
+                {
+                    HttpCode = StatusCodes.Status400BadRequest,
+                    Message = "Change password error"
+                });
             }
             catch (Exception ex)
             {
