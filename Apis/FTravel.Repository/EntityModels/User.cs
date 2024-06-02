@@ -31,6 +31,8 @@ public partial class User : BaseEntity
 
     public string? Fcmtoken { get; set; }
 
+    public string? PIN { get; set; }
+
     public int? RoleId { get; set; }
 
     public virtual ICollection<Notification> Notifications { get; set; } = new List<Notification>();

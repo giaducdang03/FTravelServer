@@ -19,6 +19,7 @@ using System.Net.WebSockets;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace FTravel.Service.Services
 {
@@ -27,50 +28,92 @@ namespace FTravel.Service.Services
         private readonly IUserRepository _userRepository;
         private readonly IRoleRepository _roleRepository;
         private readonly ICustomerRepository _customerRepository;
+        private readonly IOtpService _otpService;
         private readonly IConfiguration _configuration;
         private readonly IMapper _mapper;
 
         public UserService(IUserRepository userRepository,
             IRoleRepository roleRepository,
             ICustomerRepository customerRepository,
+            IOtpService otpService,
             IConfiguration configuration,
             IMapper mapper)
         {
             _userRepository = userRepository;
             _roleRepository = roleRepository;
             _customerRepository = customerRepository;
+            _otpService = otpService;
             _configuration = configuration;
             _mapper = mapper;
         }
+
         public async Task<AuthenModel> LoginByEmailAndPassword(string email, string password)
         {
-            var existUser = await _userRepository.GetUserByEmailAsync(email);
-            if (existUser == null)
-            {
-                return new AuthenModel
+            using (var transaction = await _userRepository.BeginTransactionAsync())
+            { 
+                try
                 {
-                    HttpCode = 401,
-                    Message = "Account does not exist"
-                };
-            }
-            var verifyUser = PasswordUtils.VerifyPassword(password, existUser.PasswordHash);
-            if (verifyUser)
-            {
-                var accessToken = await GenerateAccessToken(email, existUser);
-                var refreshToken = GenerateRefreshToken(email);
+                    var existUser = await _userRepository.GetUserByEmailAsync(email);
+                    if (existUser == null)
+                    {
+                        return new AuthenModel
+                        {
+                            HttpCode = 401,
+                            Message = "Account does not exist"
+                        };
+                    }
+                    var verifyUser = PasswordUtils.VerifyPassword(password, existUser.PasswordHash);
+                    if (verifyUser)
+                    {
+                        // check status user
+                        if (existUser.IsDeleted)
+                        {
+                            return new AuthenModel
+                            {
+                                HttpCode = 401,
+                                Message = "Account was banned"
+                            };
+                        }
 
-                return new AuthenModel
+                        if (existUser.ConfirmEmail == false)
+                        {
+                            // send otp email
+                            await _otpService.CreateOtpAsync(existUser.Email, "confirm");
+
+                            await transaction.CommitAsync();
+
+                            return new AuthenModel
+                            {
+                                HttpCode = 401,
+                                Message = "You must confirm email before login to FTravel. Otp was sent via email"
+                            };
+                        }
+
+                        var accessToken = await GenerateAccessToken(email, existUser);
+                        var refreshToken = GenerateRefreshToken(email);
+
+                        await transaction.CommitAsync();
+
+                        return new AuthenModel
+                        {
+                            HttpCode = 200,
+                            AccessToken = accessToken,
+                            RefreshToken = refreshToken
+                        };
+                    }
+                    return new AuthenModel
+                    {
+                        HttpCode = 401,
+                        Message = "Wrong password"
+                    };
+                }
+                catch
                 {
-                    HttpCode = 200,
-                    AccessToken = accessToken,
-                    RefreshToken = refreshToken
-                };
+                    await transaction.RollbackAsync();
+                    throw;
+                }
             }
-            return new AuthenModel
-            {
-                HttpCode = 401,
-                Message = "Wrong password"
-            };
+                
         }
 
         public async Task<AuthenModel> RefreshToken(string jwtToken)
@@ -168,13 +211,18 @@ namespace FTravel.Service.Services
                             newCustomer.Id = 0;
 
                             // add wallet
-                            Wallet customerWallet = new Wallet { 
+                            Wallet customerWallet = new Wallet
+                            {
                                 AccountBalance = 0,
                                 Status = WalletStatus.ACTIVE.ToString(),
                             };
                             newCustomer.Wallet = customerWallet;
 
                             await _customerRepository.AddAsync(newCustomer);
+
+                            // send otp email
+                            await _otpService.CreateOtpAsync(newCustomer.Email, "confirm");
+
                         }
                     }
 
@@ -190,10 +238,100 @@ namespace FTravel.Service.Services
 
         }
 
+        public async Task<AuthenModel> ConfirmEmail(ConfirmOtpModel confirmOtpModel)
+        {
+            using (var transaction = await _userRepository.BeginTransactionAsync())
+            { 
+                try
+                {
+                    bool checkOtp = await _otpService.ValidateOtpAsync(confirmOtpModel.Email, confirmOtpModel.OtpCode);
+
+                    if (checkOtp)
+                    {
+                        // return accesstoken
+
+                        var existUser = await _userRepository.GetUserByEmailAsync(confirmOtpModel.Email);
+
+                        if (existUser == null)
+                        {
+                            return new AuthenModel
+                            {
+                                HttpCode = 401,
+                                Message = "Account does not exist"
+                            };
+                        }
+
+                        // update confirm email for user
+                        existUser.ConfirmEmail = true;
+                        await _userRepository.UpdateAsync(existUser);
+
+                        var accessToken = await GenerateAccessToken(confirmOtpModel.Email, existUser);
+                        var refreshToken = GenerateRefreshToken(confirmOtpModel.Email);
+
+                        await transaction.CommitAsync();
+
+                        return new AuthenModel
+                        {
+                            HttpCode = 200,
+                            AccessToken = accessToken,
+                            RefreshToken = refreshToken
+                        };
+                    }
+
+                    return new AuthenModel
+                    {
+                        HttpCode = 401,
+                        Message = "Otp is not valid."
+                    };
+                }
+                catch
+                {
+                    await transaction.RollbackAsync();
+                    throw;
+                }
+            }
+        }
+
+        public async Task<bool> RequestResetPassword(string email)
+        {
+            var existUser = await _userRepository.GetUserByEmailAsync(email);
+
+            if (existUser != null)
+            {
+                if (existUser.ConfirmEmail == true)
+                {
+                    await _otpService.CreateOtpAsync(email, "reset");
+                    return true;
+                }
+            }
+            else
+            {
+                throw new Exception("User does not exist");
+            }
+            return false;
+        }
+
+        public async Task<bool> ConfirmResetPassword(ConfirmOtpModel confirmOtpModel)
+        {
+            return await _otpService.ValidateOtpAsync(confirmOtpModel.Email, confirmOtpModel.OtpCode);
+        }
+
         private async Task<bool> CheckExistCustomer(string email)
         {
             var customer = await _customerRepository.GetCustomerByEmailAsync(email);
             return true ? customer != null : false;
+        }
+
+        public async Task<bool> ExecuteResetPassword(ResetPasswordModel resetPasswordModel)
+        {
+            var user = await _userRepository.GetUserByEmailAsync(resetPasswordModel.Email);
+            if (user != null) 
+            {
+                user.PasswordHash = PasswordUtils.HashPassword(resetPasswordModel.Password);
+                await _userRepository.UpdateAsync(user);
+                return true;
+            }
+            return false;
         }
 
         private async Task<string> GenerateAccessToken(string email, User user)
@@ -222,5 +360,6 @@ namespace FTravel.Service.Services
             var refreshToken = GenerateJWTToken.CreateRefreshToken(claims, _configuration, DateTime.UtcNow);
             return new JwtSecurityTokenHandler().WriteToken(refreshToken).ToString();
         }
+
     }
 }

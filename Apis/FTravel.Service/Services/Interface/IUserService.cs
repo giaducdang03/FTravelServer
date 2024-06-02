@@ -14,5 +14,13 @@ namespace FTravel.Service.Services.Interface
         public Task<bool> RegisterAsync(SignUpModel model);
 
         public Task<AuthenModel> RefreshToken(string jwtToken);
+
+        public Task<AuthenModel> ConfirmEmail(ConfirmOtpModel confirmOtpModel);
+
+        public Task<bool> RequestResetPassword(string email);
+
+        public Task<bool> ConfirmResetPassword(ConfirmOtpModel confirmOtpModel);
+
+        public Task<bool> ExecuteResetPassword(ResetPasswordModel resetPasswordModel);
     }
 }
