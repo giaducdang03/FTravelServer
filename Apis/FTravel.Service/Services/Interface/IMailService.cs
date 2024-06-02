@@ -1,6 +1,5 @@
-﻿using FTravel.Repository.EntityModels;
+﻿using AutoMapper.Internal;
 using FTravel.Service.BusinessModels;
-using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,8 +8,9 @@ using System.Threading.Tasks;
 
 namespace FTravel.Service.Services.Interface
 {
-    public interface IVnpayService
+    public interface IMailService
     {
-        string CreatePaymentUrl(OrderModel orderModel, HttpContext context, string vnp_OrderInfo);
+        public Task SendEmailAsync(MailRequest mailRequest);
+
     }
 }

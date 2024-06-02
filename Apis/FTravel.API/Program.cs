@@ -1,6 +1,7 @@
 using FTravel.API;
 using FTravel.API.Middlewares;
 using FTravel.Repository.DBContext;
+using FTravel.Service.Utils.Email;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -109,6 +110,9 @@ builder.Services.AddDbContext<FtravelContext>(options =>
 
 // ==================== NO EDIT OR REMOVE COMMENT =======================
 
+
+// add mail settings
+builder.Services.Configure<MailSettings>(builder.Configuration.GetSection("MailSettings"));
 
 var app = builder.Build();
 
