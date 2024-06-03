@@ -15,6 +15,9 @@ namespace FTravel.API
         {
             // use DI here
 
+            services.AddScoped<IStationRepository, StationRepository>();
+            services.AddScoped<IStationService, StationService>();
+
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<IRouteService, RouteService>();
