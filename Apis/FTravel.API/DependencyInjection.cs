@@ -44,6 +44,9 @@ namespace FTravel.API
             services.AddScoped<ISettingService, SettingService>();
 
             services.AddScoped<IClaimsService, ClaimsService>();
+
+            services.AddScoped<IBusCompanyRepository, BusCompanyRepository>();
+            services.AddScoped<IBusCompanyService, BusCompanyService>();
             
             services.AddHealthChecks();
             services.AddSingleton<GlobalExceptionMiddleware>();

@@ -29,6 +29,8 @@ namespace FTravel.Service.Mapper
             .ReverseMap();
             CreateMap<CreateServiceModel, Repository.EntityModels.Service>()
             .ForMember(dest => dest.UnsignName, opt => opt.MapFrom(src => StringUtils.ConvertToUnSign(src.Name)));
+            CreateMap<CreateBusCompanyModel, BusCompany>()
+            .ForMember(dest => dest.UnsignName, opt => opt.MapFrom(src => StringUtils.ConvertToUnSign(src.Name)));
         }
     }
 }
