@@ -21,11 +21,9 @@ namespace FTravel.Repository.Repositories
             _context = context;
         }
 
-        public async Task<Pagination<Trip>> GetAll(PaginationParameter paginationParameter)
         public async Task<Pagination<Trip>> GetAllTrips(PaginationParameter paginationParameter)
         {
             var itemCount = await _context.Trips.CountAsync();
-            var items = await _context.Trips.OrderBy(x => x.Name).Skip((paginationParameter.PageIndex - 1) * paginationParameter.PageSize)
             var items = await _context.Trips
                                     .Include(x=> x.Route)
                                     .Skip((paginationParameter.PageIndex - 1) * paginationParameter.PageSize)
@@ -36,7 +34,6 @@ namespace FTravel.Repository.Repositories
             return result;
         }
 
-        public async Task<Trip> GetTripDetailById(int id)
         public async Task<Trip> GetTripById(int id)
         {
             return await _context.Trips

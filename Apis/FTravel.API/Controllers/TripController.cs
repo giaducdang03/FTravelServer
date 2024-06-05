@@ -30,7 +30,7 @@ namespace FTravel.API.Controllers
         {
             try
             {
-                var result = await _tripService.GetAllTripsWithStatusOpening(paginationParameter);
+                var result = await _tripService.GetAllTripAsync(paginationParameter);
 
                 if (result == null)
                 {
@@ -44,17 +44,17 @@ namespace FTravel.API.Controllers
 
                 else
                 {
-                var metadata = new
-                {
-                    result.TotalCount,
-                    result.PageSize,
-                    result.CurrentPage,
-                    result.TotalPages,
-                    result.HasNext,
-                    result.HasPrevious
-                };
+                    var metadata = new
+                    {
+                        result.TotalCount,
+                        result.PageSize,
+                        result.CurrentPage,
+                        result.TotalPages,
+                        result.HasNext,
+                        result.HasPrevious
+                    };
 
-                Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
+                    Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
                 }
 
 
@@ -70,14 +70,13 @@ namespace FTravel.API.Controllers
             }
         }
 
-        [HttpGet]
-        [Route("get-by-id")]
+        [HttpGet("{tripId}")]
         [Authorize(Roles = "BUSCOMPANY")]
-        public async Task<IActionResult> GetTripDetailByIdStatusOpening([FromQuery] int id)
+        public async Task<IActionResult> GetTripDetailByIdStatusOpening([FromQuery] int tripId)
         {
             try
             {
-                var result = await _tripService.GetTripDetailByIdWithStatusOpening(id);
+                var result = await _tripService.GetTripByIdAsync(tripId);
 
                 if (result == null)
                 {
