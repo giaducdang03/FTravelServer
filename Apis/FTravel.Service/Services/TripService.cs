@@ -23,7 +23,7 @@ namespace FTravel.Service.Services
         }
 
 
-        public async Task<Pagination<Trip>> GetAllTrips(PaginationParameter paginationParameter)
+        public async Task<Pagination<Trip>> GetAllTripsWithStatusOpening(PaginationParameter paginationParameter)
         {
             var trips = await _tripRepository.ToPagination(paginationParameter);
 
@@ -50,7 +50,7 @@ namespace FTravel.Service.Services
             }
         }
 
-        public async Task<Trip> GetTripDetailById(int id)
+        public async Task<Trip> GetTripDetailByIdWithStatusOpening(int id)
         {
             var trip = await _tripRepository.GetTripDetailById(id);
             if (trip != null && trip.Status == "OPENING")

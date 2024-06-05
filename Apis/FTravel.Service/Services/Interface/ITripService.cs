@@ -11,8 +11,8 @@ namespace FTravel.Service.Services.Interface
 {
     public interface ITripService
     {
-        public Task<Pagination<Trip>> GetAllTrips(PaginationParameter paginationParameter);
+        public Task<Pagination<Trip>> GetAllTripsWithStatusOpening(PaginationParameter paginationParameter);
 
-        public Task<Trip> GetTripDetailById(int id);
+        public Task<Trip> GetTripDetailByIdWithStatusOpening(int id);
     }
 }

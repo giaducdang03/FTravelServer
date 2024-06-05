@@ -24,11 +24,11 @@ namespace FTravel.API.Controllers
 
         [HttpGet]
         [Authorize(Roles = "BUSCOMPANY")]
-        public async Task<IActionResult> GetAllTrips([FromQuery] PaginationParameter paginationParameter)
+        public async Task<IActionResult> GetAllTripStatusOpening([FromQuery] PaginationParameter paginationParameter)
         {
             try
             {
-                var result = await _tripService.GetAllTrips(paginationParameter);
+                var result = await _tripService.GetAllTripsWithStatusOpening(paginationParameter);
 
                 if (result == null)
                 {
@@ -71,11 +71,11 @@ namespace FTravel.API.Controllers
         [HttpGet]
         [Route("get-by-id")]
         [Authorize(Roles = "BUSCOMPANY")]
-        public async Task<IActionResult> GetTripDetailById([FromQuery] int id)
+        public async Task<IActionResult> GetTripDetailByIdStatusOpening([FromQuery] int id)
         {
             try
             {
-                var result = await _tripService.GetTripDetailById(id);
+                var result = await _tripService.GetTripDetailByIdWithStatusOpening(id);
 
                 if (result == null)
                 {

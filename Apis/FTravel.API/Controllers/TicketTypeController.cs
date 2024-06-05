@@ -48,9 +48,9 @@ namespace FTravel.API.Controllers
             }
         }
 
-        [HttpGet("get-ticket-by-id")]
+        [HttpGet("{ticket-id}")]
         //[Authorize(Roles = "BUSCOMPANY")]
-        public async Task<IActionResult> GetTicketTypeDetailById(int id)
+        public async Task<IActionResult> GetTicketTypeDetailById([FromRoute] int id)
         {
             try
             {

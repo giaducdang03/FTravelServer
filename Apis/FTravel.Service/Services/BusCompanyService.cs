@@ -2,15 +2,9 @@
 using FTravel.Repositories.Commons;
 using FTravel.Repository.Commons;
 using FTravel.Repository.EntityModels;
-using FTravel.Repository.Repositories;
 using FTravel.Repository.Repositories.Interface;
 using FTravel.Service.BusinessModels;
 using FTravel.Service.Services.Interface;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace FTravel.Service.Services
 {
@@ -18,12 +12,6 @@ namespace FTravel.Service.Services
     {
         private readonly IBusCompanyRepository _busRepository;
         private readonly IMapper _mapper;
-        
-
-        public BusCompanyService(IBusCompanyRepository busCompanyRepository)
-        {
-            _busRepository = busCompanyRepository;
-        }
 
         public BusCompanyService(IBusCompanyRepository repository, IMapper mapper)
         {
@@ -35,7 +23,7 @@ namespace FTravel.Service.Services
             try
             {
                 // Map the CreateBusCompanyModel to the appropriate entity model
-                var busCompany = _mapper.Map<Repository.EntityModels.BusCompany>(model);
+                var busCompany = _mapper.Map<BusCompany>(model);
 
                 // Call the repository method to add the bus company asynchronously
                 await _busRepository.AddAsync(busCompany);
