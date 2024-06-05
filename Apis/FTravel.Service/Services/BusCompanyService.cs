@@ -1,4 +1,7 @@
 ﻿using AutoMapper;
+using FTravel.Repositories.Commons;
+using FTravel.Repository.Commons;
+using FTravel.Repository.EntityModels;
 using FTravel.Repository.Repositories;
 using FTravel.Repository.Repositories.Interface;
 using FTravel.Service.BusinessModels;
@@ -15,6 +18,13 @@ namespace FTravel.Service.Services
     {
         private readonly IBusCompanyRepository _busRepository;
         private readonly IMapper _mapper;
+        
+
+        public BusCompanyService(IBusCompanyRepository busCompanyRepository)
+        {
+            _busRepository = busCompanyRepository;
+        }
+
         public BusCompanyService(IBusCompanyRepository repository, IMapper mapper)
         {
             _busRepository = repository;
@@ -41,6 +51,18 @@ namespace FTravel.Service.Services
                 // Return false indicating failure
                 return false;
             }
+        }
+
+
+        public async Task<Pagination<BusCompany>> GetAllBusCompanies(PaginationParameter paginationParameter)
+        {
+
+            return await _busRepository.GetAllBusCompanies(paginationParameter);
+        }
+
+        public async Task<BusCompany> GetBusCompanyById(int id)
+        {
+            return await _busRepository.GetBusCompanyDetailById(id);
         }
     }
 }
