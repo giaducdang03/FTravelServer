@@ -1,6 +1,8 @@
 ﻿using FTravel.API.ViewModels.ResponseModels;
 using FTravel.Repository.Commons;
-using FTravel.Service.Services;
+using FTravel.Repository.EntityModels;
+using FTravel.Service.BusinessModels;
+using FTravel.Service.Enums;
 using FTravel.Service.Services.Interface;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -9,7 +11,7 @@ using Newtonsoft.Json;
 
 namespace FTravel.API.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/trips")]
     [ApiController]
     public class TripController : ControllerBase
     {
@@ -42,17 +44,17 @@ namespace FTravel.API.Controllers
 
                 else
                 {
-                    var metadata = new
-                    {
-                        result.TotalCount,
-                        result.PageSize,
-                        result.CurrentPage,
-                        result.TotalPages,
-                        result.HasNext,
-                        result.HasPrevious
-                    };
+                var metadata = new
+                {
+                    result.TotalCount,
+                    result.PageSize,
+                    result.CurrentPage,
+                    result.TotalPages,
+                    result.HasNext,
+                    result.HasPrevious
+                };
 
-                    Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
+                Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
                 }
 
 
@@ -97,7 +99,90 @@ namespace FTravel.API.Controllers
                 });
             }
         }
+        [HttpPost()]
+        public async Task<IActionResult> AddTrip([FromBody] CreateTripModel tripModel)
+        {
+            try
+            {
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest(ModelState);
+                }
 
+                if (!Enum.TryParse(typeof(TripStatus), tripModel.Status, true, out _))
+                {
+                    return BadRequest(new ResponseModel
+                    {
+                        HttpCode = StatusCodes.Status400BadRequest,
+                        Message = $"Invalid status value. Allowed values are: {string.Join(", ", Enum.GetNames(typeof(TripStatus)))}."
+                    });
+                }
+
+                var result = await _tripService.CreateTripAsync(tripModel);
+                if (result)
+                {
+                    return Ok("Trip created successfully.");
+                }
+                else
+                {
+                    return StatusCode(StatusCodes.Status500InternalServerError, "Failed to create trip.");
+                }
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new ResponseModel
+                {
+                    HttpCode = StatusCodes.Status400BadRequest,
+                    Message = ex.Message
+                });
+            }
+        }
+        [HttpPut()]
+        public async Task<IActionResult> UpdateTrip([FromBody] UpdateTripModel tripModel)
+        {
+            try
+            {
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest(ModelState);
+                }
+
+                var result = await _tripService.UpdateTripAsync(tripModel);
+                if (result)
+                {
+                    return Ok("Trip updated successfully.");
+                }
+                else
+                {
+                    return StatusCode(StatusCodes.Status500InternalServerError, "Failed to update trip.");
+                }
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(new ResponseModel
+                {
+                    HttpCode = StatusCodes.Status404NotFound,
+                    Message = ex.Message
+                });
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(new ResponseModel
+                {
+                    HttpCode = StatusCodes.Status400BadRequest,
+                    Message = ex.Message
+                });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new ResponseModel
+                {
+                    HttpCode = StatusCodes.Status400BadRequest,
+                    Message = ex.Message
+                });
+            }
+        }
 
     }
 }
+

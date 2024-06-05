@@ -10,11 +10,11 @@ namespace FTravel.Service.BusinessModels
     {
         public int Id { get; set; }
 
-        public int? RouteId { get; set; }
+        //public int? RouteId { get; set; }
 
         public string RouteName { get; set; }
 
-        public int? StationId { get; set; }
+        //public int? StationId { get; set; }
 
         public string StationName { get; set; }
 

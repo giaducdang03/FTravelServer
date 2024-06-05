@@ -15,14 +15,13 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
 
-builder.Services.AddControllers()
-                .AddJsonOptions(options =>
-                options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles)
-                .AddJsonOptions(options =>
-                 {
-                     options.JsonSerializerOptions.PropertyNamingPolicy = System.Text.Json.JsonNamingPolicy.KebabCaseLower;
-                     options.JsonSerializerOptions.WriteIndented = true;
-                 });
+builder.Services.AddControllers().AddJsonOptions(x =>
+                x.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles)
+                .AddJsonOptions(option =>
+                {
+                    option.JsonSerializerOptions.PropertyNamingPolicy = System.Text.Json.JsonNamingPolicy.KebabCaseLower;
+                    option.JsonSerializerOptions.WriteIndented = true;
+                });
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();

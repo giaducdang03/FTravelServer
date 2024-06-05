@@ -29,6 +29,7 @@ namespace FTravel.Repository.Repositories
                                     .Skip((paginationParameter.PageIndex - 1) * paginationParameter.PageSize)
                                     .Take(paginationParameter.PageSize)
                                     .ToListAsync();
+
             var result = new Pagination<Service>(items, itemCount, paginationParameter.PageIndex, paginationParameter.PageSize);
             return result;
         }
