@@ -16,7 +16,12 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 
 builder.Services.AddControllers().AddJsonOptions(x =>
-                x.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles);
+                x.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles)
+                .AddJsonOptions(options =>
+                 {
+                     options.JsonSerializerOptions.PropertyNamingPolicy = System.Text.Json.JsonNamingPolicy.KebabCaseLower;
+                     options.JsonSerializerOptions.WriteIndented = true;
+                 });
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -84,10 +89,10 @@ builder.Services.AddSwaggerGen(c =>
 
 // ===================== FOR LOCAL DB =======================
 
-//builder.Services.AddDbContext<FtravelContext>(options =>
-//{
-//    options.UseSqlServer(builder.Configuration.GetConnectionString("FTravelLocal"));
-//});
+builder.Services.AddDbContext<FtravelContext>(options =>
+{
+    options.UseSqlServer(builder.Configuration.GetConnectionString("FTravelLocal"));
+});
 
 // ==========================================================
 
@@ -95,18 +100,18 @@ builder.Services.AddSwaggerGen(c =>
 
 // ===================== FOR AZURE DB =======================
 
-var connection = String.Empty;
-if (builder.Environment.IsDevelopment())
-{
-    connection = builder.Configuration.GetConnectionString("AZURE_SQL_CONNECTIONSTRING");
-}
-else
-{
-    connection = Environment.GetEnvironmentVariable("AZURE_SQL_CONNECTIONSTRING");
-}
+//var connection = String.Empty;
+//if (builder.Environment.IsDevelopment())
+//{
+//    connection = builder.Configuration.GetConnectionString("AZURE_SQL_CONNECTIONSTRING");
+//}
+//else
+//{
+//    connection = Environment.GetEnvironmentVariable("AZURE_SQL_CONNECTIONSTRING");
+//}
 
-builder.Services.AddDbContext<FtravelContext>(options =>
-  options.UseSqlServer(connection));
+//builder.Services.AddDbContext<FtravelContext>(options =>
+//  options.UseSqlServer(connection));
 
 // ==================== NO EDIT OR REMOVE COMMENT =======================
 
