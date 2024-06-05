@@ -22,6 +22,7 @@ namespace FTravel.Service.Mapper
             CreateMap<Transaction, TransactionModel>();
             CreateMap<Route, RouteModel>();
             CreateMap<City, CityModel>().ReverseMap();
+            CreateMap<TicketType, TicketTypeModel>();
 
             CreateMap<Repository.EntityModels.Service, ServiceModel>()
             .ForMember(dest => dest.RouteName, opt => opt.MapFrom(src => src.Route != null ? src.Route.Name : string.Empty))
@@ -47,6 +48,8 @@ namespace FTravel.Service.Mapper
             .ForMember(dest => dest.UnsignName, opt => opt.MapFrom(src => StringUtils.ConvertToUnSign(src.Name)))
             .ForMember(dest => dest.TripServices, opt => opt.Ignore())
             .ForMember(dest => dest.TripTicketTypes, opt => opt.Ignore());
+            CreateMap<CreateBusCompanyModel, BusCompany>()
+            .ForMember(dest => dest.UnsignName, opt => opt.MapFrom(src => StringUtils.ConvertToUnSign(src.Name)));
         }
     }
 }

@@ -16,37 +16,47 @@ namespace FTravel.API.Controllers
     public class TripController : ControllerBase
     {
         private readonly ITripService _tripService;
-        public TripController(ITripService service)
+
+
+        public TripController(ITripService tripService)
         {
-            _tripService = service;
+            _tripService = tripService;
+
         }
-        [HttpGet()]
+
+        [HttpGet]
         [Authorize(Roles = "BUSCOMPANY")]
-        public async Task<IActionResult> GetAllTrips([FromQuery] PaginationParameter paginationParameter)
+        public async Task<IActionResult> GetAllTripStatusOpening([FromQuery] PaginationParameter paginationParameter)
         {
             try
             {
-                var result = await _tripService.GetAllAsync(paginationParameter);
+                var result = await _tripService.GetAllTripAsync(paginationParameter);
+
                 if (result == null)
                 {
                     return NotFound(new ResponseModel
                     {
                         HttpCode = StatusCodes.Status404NotFound,
-                        Message = "No trips found"
+                        Message = "No trips was found"
                     });
                 }
 
-                var metadata = new
-                {
-                    result.TotalCount,
-                    result.PageSize,
-                    result.CurrentPage,
-                    result.TotalPages,
-                    result.HasNext,
-                    result.HasPrevious
-                };
 
-                Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
+                else
+                {
+                    var metadata = new
+                    {
+                        result.TotalCount,
+                        result.PageSize,
+                        result.CurrentPage,
+                        result.TotalPages,
+                        result.HasNext,
+                        result.HasPrevious
+                    };
+
+                    Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
+                }
+
 
                 return Ok(result);
             }
@@ -62,17 +72,18 @@ namespace FTravel.API.Controllers
 
         [HttpGet("{tripId}")]
         [Authorize(Roles = "BUSCOMPANY")]
-        public async Task<IActionResult> GetTripById(int tripId)
+        public async Task<IActionResult> GetTripDetailByIdStatusOpening([FromQuery] int tripId)
         {
             try
             {
                 var result = await _tripService.GetTripByIdAsync(tripId);
+
                 if (result == null)
                 {
                     return NotFound(new ResponseModel
                     {
                         HttpCode = StatusCodes.Status404NotFound,
-                        Message = "Trip not found"
+                        Message = "No trip was found"
                     });
                 }
 

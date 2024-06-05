@@ -14,5 +14,7 @@ namespace FTravel.Repository.Repositories.Interface
         public Task<Pagination<Route>> GetListRoutesAsync(PaginationParameter paginationParameter);
 
         public Task<Route?> GetRouteDetailByRouteIdAsync(int routeId);
+
+        public Task<List<Route>> GetRoutesByIdsAsync(IEnumerable<int> routeId);
     }
 }
