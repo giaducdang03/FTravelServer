@@ -52,7 +52,7 @@ namespace FTravel.API.Controllers
         }
 
         [HttpGet("get-all-bus-company")]
-        [Authorize(Roles = "ADMIN, BUSCOMPANY")]
+        [Authorize(Roles = "Admin, Buscompany")]
         public async Task<IActionResult> GetAllBusCompanies([FromQuery] PaginationParameter paginationParameter)
         {
             try
