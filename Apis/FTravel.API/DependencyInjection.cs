@@ -17,13 +17,15 @@ namespace FTravel.API
 
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IUserService, UserService>();
+
+            services.AddScoped<IRouteRepository, RouteRepository>();
             services.AddScoped<IRouteService, RouteService>();
-            services.AddScoped<ICityService, CityService>();
 
             services.AddScoped<IRoleRepository, RoleRepository>();
             services.AddScoped<ICustomerRepository, CustomerRepository>();
+
             services.AddScoped<ICityRepository, CityRepository>();
-            services.AddScoped<IRouteRepository, RouteRepository>();
+            services.AddScoped<ICityService, CityService>();
 
             services.AddScoped<IWalletRepository, WalletRepository>();
             services.AddScoped<IWalletService, WalletService>();
@@ -34,21 +36,24 @@ namespace FTravel.API
             services.AddScoped<IServiceRepository, ServiceRepository>();
             services.AddScoped<IServiceService, ServiceService>();
 
-            services.AddScoped<ITripRepository, TripRepository>();
-            services.AddScoped<ITripService, TripService>();
-
-            services.AddScoped<ITicketRepository, TicketRepository>();
-
-
-            services.AddScoped<IMailService, MailService>();
-
             services.AddScoped<IOtpRepository, OtpRepository>();
             services.AddScoped<IOtpService, OtpService>();
+
+            services.AddScoped<ITicketTypeRepository, TicketTypeRepository>();
+            services.AddScoped<ITicketTypeService, TicketTypeService>();
+
+            services.AddScoped<ITripRepository, TripRepository>();
+            services.AddScoped<ITripService, TripService>();
 
             services.AddScoped<ISettingRepository, SettingRepository>();
             services.AddScoped<ISettingService, SettingService>();
 
+            services.AddScoped<IBusCompanyRepository, BusCompanyRepository>();
+            services.AddScoped<IBusCompanyService, BusCompanyService>();
+
             services.AddScoped<IClaimsService, ClaimsService>();
+
+            services.AddScoped<IMailService, MailService>();
             
             services.AddHealthChecks();
             services.AddSingleton<GlobalExceptionMiddleware>();

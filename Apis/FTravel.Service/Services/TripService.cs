@@ -2,6 +2,7 @@
 using FTravel.Repositories.Commons;
 using FTravel.Repository.Commons;
 using FTravel.Repository.EntityModels;
+using FTravel.Repository.Repositories;
 using FTravel.Repository.Repositories.Interface;
 using FTravel.Service.BusinessModels;
 using FTravel.Service.Enums;
@@ -28,9 +29,9 @@ namespace FTravel.Service.Services
             _mapper = mapper;
         }
 
-        public async Task<Pagination<TripModel>> GetAllAsync(PaginationParameter paginationParameter)
+        public async Task<Pagination<TripModel>> GetAllTripAsync(PaginationParameter paginationParameter)
         {
-            var trips = await _tripRepository.GetAll(paginationParameter);
+            var trips = await _tripRepository.GetAllTrips(paginationParameter);
             if (!trips.Any())
             {
                 return null;
@@ -144,5 +145,6 @@ namespace FTravel.Service.Services
 
             return await _tripRepository.UpdateTripAsync(existingTrip);
         }
+
     }
 }

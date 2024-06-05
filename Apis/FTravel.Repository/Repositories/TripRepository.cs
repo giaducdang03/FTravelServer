@@ -15,18 +15,20 @@ namespace FTravel.Repository.Repositories
     public class TripRepository : GenericRepository<Trip>, ITripRepository
     {
         private readonly FtravelContext _context;
+
         public TripRepository(FtravelContext context) : base(context)
         {
             _context = context;
         }
 
-        public async Task<Pagination<Trip>> GetAll(PaginationParameter paginationParameter)
+        public async Task<Pagination<Trip>> GetAllTrips(PaginationParameter paginationParameter)
         {
             var itemCount = await _context.Trips.CountAsync();
             var items = await _context.Trips
                                     .Include(x=> x.Route)
                                     .Skip((paginationParameter.PageIndex - 1) * paginationParameter.PageSize)
                                     .Take(paginationParameter.PageSize)
+                                    .AsNoTracking()
                                     .ToListAsync();
             var result = new Pagination<Trip>(items, itemCount, paginationParameter.PageIndex, paginationParameter.PageSize);
             return result;

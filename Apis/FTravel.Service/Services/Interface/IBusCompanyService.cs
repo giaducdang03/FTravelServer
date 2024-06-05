@@ -10,11 +10,12 @@ using System.Threading.Tasks;
 
 namespace FTravel.Service.Services.Interface
 {
-    public interface ITripService
+    public interface IBusCompanyService
     {
-        public Task<Pagination<TripModel>> GetAllTripAsync(PaginationParameter paginationParameter);
-        public Task<TripModel> GetTripByIdAsync(int id);
-        public Task<bool> CreateTripAsync(CreateTripModel trip);
-        public Task<bool> UpdateTripAsync(UpdateTripModel tripModel);
+        public Task<bool> AddBusCompanyAsync(CreateBusCompanyModel model);
+
+        public Task<Pagination<BusCompany>> GetAllBusCompanies(PaginationParameter paginationParameter);
+
+        public Task<BusCompany> GetBusCompanyById(int id);
     }
 }

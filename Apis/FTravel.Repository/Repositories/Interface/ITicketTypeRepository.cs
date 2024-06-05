@@ -9,11 +9,10 @@ using System.Threading.Tasks;
 
 namespace FTravel.Repository.Repositories.Interface
 {
-    public interface ITripRepository : IGenericRepository<Trip>
+    public interface ITicketTypeRepository : IGenericRepository<TicketType>
     {
-        public Task<Trip> GetTripById(int id);
-        Task<bool> CreateTripAsync(Trip trip);
-        Task<bool> UpdateTripAsync(Trip trip);
-        public Task<Pagination<Trip>> GetAllTrips(PaginationParameter paginationParameter);
+        public Task<Pagination<TicketType>> GetAllTicketType(PaginationParameter paginationParameter);
+
+        public Task<TicketType> GetTicketTypeByIdAsync(int id);
     }
 }
