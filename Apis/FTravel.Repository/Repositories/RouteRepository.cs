@@ -43,5 +43,12 @@ namespace FTravel.Repository.Repositories
                 .Include(x => x.EndPointNavigation)
                 .FirstOrDefaultAsync(x => x.Id == routeId);
         }
+
+        public async Task<List<Route>> GetRoutesByIdsAsync(IEnumerable<int> routeId)
+        {
+            return await _context.Routes
+                                 .Where(c => routeId.Contains(c.Id))
+                                 .ToListAsync();
+        }
     }
 }

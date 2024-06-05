@@ -39,6 +39,15 @@ namespace FTravel.API
             services.AddScoped<IOtpRepository, OtpRepository>();
             services.AddScoped<IOtpService, OtpService>();
 
+            services.AddScoped<IBusCompanyRepository, BusCompanyRepository>();
+            services.AddScoped<IBusCompany, BusCompanyService>();
+
+            services.AddScoped<ITicketTypeRepository, TicketTypeRepository>();
+            services.AddScoped<ITicketTypeService, TicketTypeService>();
+
+            services.AddScoped<ITripRepository, TripRepository>();
+            services.AddScoped<ITripService, TripService>();
+
 
             services.AddScoped<ISettingRepository, SettingRepository>();
             services.AddScoped<ISettingService, SettingService>();
