@@ -22,5 +22,7 @@ namespace FTravel.Service.Services.Interface
         public Task<bool> ConfirmResetPassword(ConfirmOtpModel confirmOtpModel);
 
         public Task<bool> ExecuteResetPassword(ResetPasswordModel resetPasswordModel);
+
+        public Task<bool> ChangePasswordAsync(string email, ChangePasswordModel changePasswordModel);
     }
 }
