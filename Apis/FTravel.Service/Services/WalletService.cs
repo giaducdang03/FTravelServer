@@ -90,6 +90,11 @@ namespace FTravel.Service.Services
             {
                 try
                 {
+                    if (amountRecharge > 5000)
+                    {
+                        throw new Exception("You can only recharge a maximum of 5000 FTokens.");
+                    }
+
                     var customer = await _customerRepository.GetCustomerByEmailAsync(customerEmail);
                     if (customer == null)
                     {
