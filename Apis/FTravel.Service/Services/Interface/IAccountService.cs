@@ -13,6 +13,8 @@ namespace FTravel.Service.Services.Interface
         Task<List<AccountModel>> GetAllUserAscyn();
         Task<User> GetAccountInfoByEmail(string email);
 
-        Task<AccountModel> CreateAccount(AccountModel account);
+        //Task<AccountModel> CreateAccount(AccountModel account);
+
+        Task<bool> CreateAccountAsync(CreateAccountModel model);
     }
 }
