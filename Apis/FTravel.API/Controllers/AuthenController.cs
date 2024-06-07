@@ -1,5 +1,7 @@
 ﻿using FTravel.API.ViewModels.RequestModels;
 using FTravel.API.ViewModels.ResponseModels;
+using FTravel.Repository.Commons;
+using FTravel.Repository.Commons.Filter;
 using FTravel.Service.BusinessModels;
 using FTravel.Service.Enums;
 using FTravel.Service.Services;
@@ -131,7 +133,7 @@ namespace FTravel.API.Controllers
             }
         }
 
-        [HttpPost("changepassword")]
+        [HttpPost("change-password")]
         [Authorize]
         public async Task<IActionResult> RequestResetPassword(ChangePasswordModel changePasswordModel)
         {
@@ -164,7 +166,7 @@ namespace FTravel.API.Controllers
             }
         }
 
-        [HttpPost("resetpassword")]
+        [HttpPost("reset-password")]
         public async Task<IActionResult> RequestResetPassword([FromBody] string email)
         {
             try
@@ -195,7 +197,7 @@ namespace FTravel.API.Controllers
             }
         }
 
-        [HttpPost("resetpassword/confirm")]
+        [HttpPost("reset-password/confirm")]
         public async Task<IActionResult> RequestResetPassword(ConfirmOtpModel confirmOtpModel)
         {
             try
@@ -226,7 +228,7 @@ namespace FTravel.API.Controllers
             }
         }
 
-        [HttpPost("resetpassword/newpassword")]
+        [HttpPost("reset-password/new-password")]
         public async Task<IActionResult> RequestResetPassword(ResetPasswordModel resetPasswordModel)
         {
             try
