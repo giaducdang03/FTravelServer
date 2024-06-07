@@ -1,7 +1,9 @@
 ﻿using FTravel.API.ViewModels.ResponseModels;
 using FTravel.Repository.EntityModels;
 using FTravel.Service.BusinessModels;
+using FTravel.Service.Services;
 using FTravel.Service.Services.Interface;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
@@ -64,26 +66,33 @@ namespace FTravel.API.Controllers
 
         }
 
-        [HttpPost("createAccount")]
-        public async Task<IActionResult> CreateAccount(AccountModel account)
+        [HttpPost]
+        [Authorize(Roles = "ADMIN")]
+        public async Task<IActionResult> CreateAccountInternal(CreateAccountModel account)
         {
             try
             {
-                var data = await _accountService.CreateAccount(account);
-                if (account == null)
+                if (ModelState.IsValid)
                 {
-                    return BadRequest();
+                    var result = await _accountService.CreateAccountAsync(account);
+                    var resp = new ResponseModel()
+                    {
+                        HttpCode = StatusCodes.Status200OK,
+                        Message = "Create account successfully. Please check email to login to FTravel."
+                    };
+                    return Ok(resp);
                 }
-                return Ok(data);
+                return ValidationProblem(ModelState);
+
             }
             catch (Exception ex)
             {
-
-                return BadRequest(new ResponseModel
+                var resp = new ResponseModel()
                 {
-                    HttpCode = 400,
-                    Message = ex.Message
-                });
+                    HttpCode = StatusCodes.Status400BadRequest,
+                    Message = ex.Message.ToString()
+                };
+                return BadRequest(resp);
             }
 
         }

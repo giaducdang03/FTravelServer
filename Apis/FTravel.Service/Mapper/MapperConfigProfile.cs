@@ -52,6 +52,8 @@ namespace FTravel.Service.Mapper
             .ForMember(dest => dest.TripTicketTypes, opt => opt.Ignore());
             CreateMap<CreateBusCompanyModel, BusCompany>()
             .ForMember(dest => dest.UnsignName, opt => opt.MapFrom(src => StringUtils.ConvertToUnSign(src.Name)));
+
+            CreateMap<CreateAccountModel, User>().ForMember(dest => dest.Role, opt => opt.Ignore());
         }
     }
 }
