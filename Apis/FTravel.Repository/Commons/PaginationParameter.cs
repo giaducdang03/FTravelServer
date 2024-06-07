@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Mvc;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -10,10 +11,13 @@ namespace FTravel.Repository.Commons
     public class PaginationParameter
     {
         const int maxPageSize = 50;
+
+        [FromQuery(Name = "page-index")]
         public int PageIndex { get; set; } = 1;
         private int _pageSize = 10;
         [JsonIgnore]
 
+        [FromQuery(Name = "page-size")]
         public int PageSize
         {
             get
