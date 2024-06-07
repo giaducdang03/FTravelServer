@@ -70,13 +70,13 @@ namespace FTravel.API.Controllers
             }
         }
 
-        [HttpGet("by-trip-id")]
+        [HttpGet("{id}")]
         //[Authorize(Roles = "BUSCOMPANY")]
-        public async Task<IActionResult> GetTripDetailByIdStatusOpening([FromQuery] int tripId)
+        public async Task<IActionResult> GetTripDetailByIdStatusOpening(int id)
         {
             try
             {
-                var result = await _tripService.GetTripByIdAsync(tripId);
+                var result = await _tripService.GetTripByIdAsync(id);
 
                 if (result == null)
                 {
