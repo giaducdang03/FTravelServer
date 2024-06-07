@@ -50,8 +50,8 @@ namespace FTravel.API.Controllers
         }
 
 
-        [HttpGet("get-by-id")]
-        [Authorize(Roles = "ADMIN, BUSCOMPANY")]
+        [HttpGet("by-bus-id/{id}")]
+        //[Authorize(Roles = "ADMIN, BUSCOMPANY")]
         public async Task<IActionResult> GetBusCompanyDetailById(int id)
         {
             try
@@ -79,8 +79,8 @@ namespace FTravel.API.Controllers
             }
         }
 
-        [HttpGet("get-all-bus-company")]
-        [Authorize(Roles = "ADMIN, BUSCOMPANY")]
+        [HttpGet()]
+        //[Authorize(Roles = "ADMIN, BUSCOMPANY")]
         public async Task<IActionResult> GetAllBusCompanies([FromQuery] PaginationParameter paginationParameter)
         {
             try

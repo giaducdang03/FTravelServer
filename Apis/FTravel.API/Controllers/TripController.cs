@@ -25,7 +25,7 @@ namespace FTravel.API.Controllers
         }
 
         [HttpGet]
-        [Authorize(Roles = "BUSCOMPANY")]
+        //[Authorize(Roles = "BUSCOMPANY")]
         public async Task<IActionResult> GetAllTripStatusOpening([FromQuery] PaginationParameter paginationParameter)
         {
             try
@@ -70,8 +70,8 @@ namespace FTravel.API.Controllers
             }
         }
 
-        [HttpGet("{tripId}")]
-        [Authorize(Roles = "BUSCOMPANY")]
+        [HttpGet("by-trip-id")]
+        //[Authorize(Roles = "BUSCOMPANY")]
         public async Task<IActionResult> GetTripDetailByIdStatusOpening([FromQuery] int tripId)
         {
             try
