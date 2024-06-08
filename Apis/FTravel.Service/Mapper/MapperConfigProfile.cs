@@ -21,7 +21,13 @@ namespace FTravel.Service.Mapper
             CreateMap<Wallet, WalletModel>();
             CreateMap<Transaction, TransactionModel>();
             CreateMap<Route, RouteModel>();
+            CreateMap<StationModel, Station>().ReverseMap();
+
+
             CreateMap<City, CityModel>().ReverseMap();
+            CreateMap<TicketType, TicketTypeModel>();
+            CreateMap<AccountModel, User>().ReverseMap();
+
 
             CreateMap<Repository.EntityModels.Service, ServiceModel>()
             .ForMember(dest => dest.RouteName, opt => opt.MapFrom(src => src.Route != null ? src.Route.Name : string.Empty))
@@ -29,6 +35,28 @@ namespace FTravel.Service.Mapper
             .ReverseMap();
             CreateMap<CreateServiceModel, Repository.EntityModels.Service>()
             .ForMember(dest => dest.UnsignName, opt => opt.MapFrom(src => StringUtils.ConvertToUnSign(src.Name)));
+            CreateMap<Trip, TripModel>()
+            .ForMember(dest => dest.RouteName, opt => opt.MapFrom(src => src.Route != null ? src.Route.Name : string.Empty));
+            CreateMap<Trip, TripModel>()
+            .ForMember(dest => dest.RouteName, opt => opt.MapFrom(src => src.Route.Name))
+            .ForMember(dest => dest.Tickets, opt => opt.Ignore()); 
+
+            CreateMap<Ticket, TicketModel>()
+            .ForMember(dest => dest.TicketTypeName, opt => opt.MapFrom(src => src.TicketType.Name));
+
+            CreateMap<CreateTripModel, Trip>()
+            .ForMember(dest => dest.UnsignName, opt => opt.MapFrom(src => StringUtils.ConvertToUnSign(src.Name)))
+            .ForMember(dest => dest.TripServices, opt => opt.Ignore())
+            .ForMember(dest => dest.TripTicketTypes, opt => opt.Ignore());
+
+            CreateMap<UpdateTripModel, Trip>()
+            .ForMember(dest => dest.UnsignName, opt => opt.MapFrom(src => StringUtils.ConvertToUnSign(src.Name)))
+            .ForMember(dest => dest.TripServices, opt => opt.Ignore())
+            .ForMember(dest => dest.TripTicketTypes, opt => opt.Ignore());
+            CreateMap<CreateBusCompanyModel, BusCompany>()
+            .ForMember(dest => dest.UnsignName, opt => opt.MapFrom(src => StringUtils.ConvertToUnSign(src.Name)));
+
+            CreateMap<CreateAccountModel, User>().ForMember(dest => dest.Role, opt => opt.Ignore());
         }
     }
 }

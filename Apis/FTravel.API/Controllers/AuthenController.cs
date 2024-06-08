@@ -1,7 +1,10 @@
 ﻿using FTravel.API.ViewModels.RequestModels;
 using FTravel.API.ViewModels.ResponseModels;
+using FTravel.Repository.Commons;
+using FTravel.Repository.Commons.Filter;
 using FTravel.Service.BusinessModels;
 using FTravel.Service.Enums;
+using FTravel.Service.Services;
 using FTravel.Service.Services.Interface;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -16,10 +19,12 @@ namespace FTravel.API.Controllers
     public class AuthenController : ControllerBase
     {
         private readonly IUserService _userService;
+        private readonly IClaimsService _claimsService;
 
-        public AuthenController(IUserService userService)
+        public AuthenController(IUserService userService, IClaimsService claimsService)
         {
             _userService = userService;
+            _claimsService = claimsService;
         }
 
         [HttpPost("register")]
@@ -128,7 +133,40 @@ namespace FTravel.API.Controllers
             }
         }
 
-        [HttpPost("resetpassword")]
+        [HttpPost("change-password")]
+        [Authorize]
+        public async Task<IActionResult> RequestResetPassword(ChangePasswordModel changePasswordModel)
+        {
+            try
+            {
+                var email = _claimsService.GetCurrentUserEmail;
+                var result = await _userService.ChangePasswordAsync(email, changePasswordModel);
+                if (result)
+                {
+                    return Ok(new ResponseModel
+                    {
+                        HttpCode = StatusCodes.Status200OK,
+                        Message = "Change password successfully"
+                    });
+                }
+                return BadRequest(new ResponseModel
+                {
+                    HttpCode = StatusCodes.Status400BadRequest,
+                    Message = "Change password error"
+                });
+            }
+            catch (Exception ex)
+            {
+                var resp = new ResponseModel()
+                {
+                    HttpCode = StatusCodes.Status400BadRequest,
+                    Message = ex.Message.ToString()
+                };
+                return BadRequest(resp);
+            }
+        }
+
+        [HttpPost("reset-password")]
         public async Task<IActionResult> RequestResetPassword([FromBody] string email)
         {
             try
@@ -159,7 +197,7 @@ namespace FTravel.API.Controllers
             }
         }
 
-        [HttpPost("resetpassword/confirm")]
+        [HttpPost("reset-password/confirm")]
         public async Task<IActionResult> RequestResetPassword(ConfirmOtpModel confirmOtpModel)
         {
             try
@@ -190,7 +228,7 @@ namespace FTravel.API.Controllers
             }
         }
 
-        [HttpPost("resetpassword/newpassword")]
+        [HttpPost("reset-password/new-password")]
         public async Task<IActionResult> RequestResetPassword(ResetPasswordModel resetPasswordModel)
         {
             try
