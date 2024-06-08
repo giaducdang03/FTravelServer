@@ -7,6 +7,7 @@ using FTravel.Service.BusinessModels;
 using FTravel.Service.Enums;
 using FTravel.Service.Services.Interface;
 using FTravel.Service.Utils;
+using Google.Apis.Auth;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
@@ -66,7 +67,7 @@ namespace FTravel.Service.Services
                     if (verifyUser)
                     {
                         // check status user
-                        if (existUser.IsDeleted)
+                        if (existUser.Status == UserStatus.BANNED.ToString() || existUser.IsDeleted == true)
                         {
                             return new AuthenModel
                             {
@@ -357,6 +358,132 @@ namespace FTravel.Service.Services
             else
             {
                 throw new Exception("User does not exist");
+            }
+        }
+
+        public async Task<AuthenModel> LoginWithGoogle(string credental)
+        {
+            string cliendId = _configuration["GoogleCredential:ClientId"];
+
+            if (string.IsNullOrEmpty(cliendId))
+            {
+                throw new Exception("ClientId is null");
+            }
+
+            var settings = new GoogleJsonWebSignature.ValidationSettings()
+            {
+                Audience = new List<string> { cliendId }
+            };
+
+            var payload = await GoogleJsonWebSignature.ValidateAsync(credental, settings);
+            if (payload == null)
+            {
+                throw new Exception("Invalid credental");
+            }
+
+            var existUser = await _userRepository.GetUserByEmailAsync(payload.Email);
+
+            if (existUser != null)
+            {
+                var roleUser = await _roleRepository.GetByIdAsync(existUser.RoleId.Value);
+
+                if (roleUser.Name != RoleEnums.CUSTOMER.ToString())
+                {
+                    throw new Exception("Your account does not allowed login with Google account.");
+                }
+
+                if (existUser.Status == UserStatus.BANNED.ToString())
+                {
+                    throw new Exception("Your account was banned.");
+                }
+                else
+                {
+                    // create accesstoken
+                    var accessToken = await GenerateAccessToken(existUser.Email, existUser);
+                    var refreshToken = GenerateRefreshToken(existUser.Email);
+
+                    return new AuthenModel()
+                    {
+                        HttpCode = 200,
+                        Message = "Login with Google sucessfully",
+                        AccessToken = accessToken,
+                        RefreshToken = refreshToken
+                    };
+                }
+            }
+            else
+            {
+                // create new customer account
+
+                using (var transaction = await _userRepository.BeginTransactionAsync())
+                {
+                    try
+                    {
+                        User newUser = new User()
+                        {
+                            Email = payload.Email,
+                            FullName = payload.Name,
+                            ConfirmEmail = true,
+                            UnsignFullName = StringUtils.ConvertToUnSign(payload.Name),
+                            AvatarUrl = payload.Picture,
+                            Status = UserStatus.ACTIVE.ToString(),
+                            GoogleId = payload.JwtId
+                        };
+
+                        var role = await _roleRepository.GetRoleByName(RoleEnums.CUSTOMER.ToString());
+                        if (role == null)
+                        {
+                            Role newRole = new Role
+                            {
+                                Name = RoleEnums.CUSTOMER.ToString()
+                            };
+                            await _roleRepository.AddAsync(newRole);
+                            role = newRole;
+                        }
+
+                        newUser.RoleId = role.Id;
+
+                        await _userRepository.AddAsync(newUser);
+
+                        if (role.Name == RoleEnums.CUSTOMER.ToString())
+                        {
+                            if (await CheckExistCustomer(newUser.Email) == false)
+                            {
+                                Customer newCustomer = _mapper.Map<Customer>(newUser);
+                                newCustomer.Id = 0;
+
+                                // add wallet
+                                Wallet customerWallet = new Wallet
+                                {
+                                    AccountBalance = 0,
+                                    Status = WalletStatus.ACTIVE.ToString(),
+                                };
+                                newCustomer.Wallet = customerWallet;
+
+                                await _customerRepository.AddAsync(newCustomer);
+
+                            }
+                        }
+                        await transaction.CommitAsync();
+
+                        // create accesstoken
+                        var accessToken = await GenerateAccessToken(newUser.Email, newUser);
+                        var refreshToken = GenerateRefreshToken(newUser.Email);
+
+                        return new AuthenModel()
+                        {
+                            HttpCode = 200,
+                            Message = "Login with Google sucessfully",
+                            AccessToken = accessToken,
+                            RefreshToken = refreshToken
+                        };
+                    }
+                    catch
+                    {
+                        await transaction.RollbackAsync();
+                        throw;
+                    }
+                }
             }
         }
 
