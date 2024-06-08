@@ -62,6 +62,9 @@ namespace FTravel.API
             services.AddScoped<IClaimsService, ClaimsService>();
 
             services.AddScoped<IMailService, MailService>();
+
+            services.AddScoped<IOrderRepository, OrderRepository>();
+            services.AddScoped<IOrderService, OrderService>();
             
             services.AddHealthChecks();
             services.AddSingleton<GlobalExceptionMiddleware>();

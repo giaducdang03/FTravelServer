@@ -13,5 +13,7 @@ namespace FTravel.Service.Services.Interface
     public interface ITransactionService
     {
         public Task<Pagination<TransactionModel>> GetTransactionsByWalletIdAsync(int walletId, PaginationParameter paginationParameter);
+
+        public Task<Transaction> CreateTransactionAsync(Transaction transaction, int customerId);
     }
 }

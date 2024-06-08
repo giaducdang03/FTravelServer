@@ -22,5 +22,7 @@ namespace FTravel.Service.Services.Interface
         public Task<string> RequestRechargeIntoWallet(string customerEmail, int amountRecharge, HttpContext context);
 
         public Task<bool> RechargeIntoWallet(VnPayModel vnPayResponse);
+
+        public Task<Wallet> GetWalletByCustomerIdAsync(int customerId);
     }
 }
