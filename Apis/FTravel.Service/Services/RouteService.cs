@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using FTravel.Repositories.Commons;
 using FTravel.Repository.Commons;
+using FTravel.Repository.EntityModels;
 using FTravel.Repository.Repositories.Interface;
 using FTravel.Service.BusinessModels;
 using FTravel.Service.Services.Interface;
@@ -64,6 +65,33 @@ namespace FTravel.Service.Services
             routeModel.BusCompanyName = route.BusCompany.Name;
             return routeModel;
 
+        }
+
+        public async Task<int> RouteSoftDeleteAsync(int routeId)
+        {
+            var routeSoftDelete = await _routeRepository.SoftDeleteRoute(routeId);
+            return routeSoftDelete;
+            
+        }
+
+        public async Task<int> UpdateRouteAsync(Route routeUpdate)
+        {
+            var findRouteUpdate = await _routeRepository.GetRouteDetailByRouteIdAsync(routeUpdate.Id);
+            if(findRouteUpdate == null)
+            {
+                return -1;
+            } else
+            {
+                findRouteUpdate.UpdateDate = DateTime.Now;
+                findRouteUpdate.BusCompanyId = routeUpdate.BusCompanyId;
+                findRouteUpdate.StartPoint = routeUpdate.StartPoint;
+                findRouteUpdate.EndPoint = routeUpdate.EndPoint;
+                findRouteUpdate.Status = routeUpdate.Status;
+                findRouteUpdate.Name = routeUpdate.Name;
+            }
+
+            var result = await _routeRepository.UpdateRoutesAsync(findRouteUpdate);
+            return result;
         }
     }
 }
