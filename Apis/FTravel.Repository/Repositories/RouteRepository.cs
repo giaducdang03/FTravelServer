@@ -52,5 +52,40 @@ namespace FTravel.Repository.Repositories
                                  .Where(c => routeId.Contains(c.Id))
                                  .ToListAsync();
         }
+
+        public async Task<int> UpdateRoutesAsync(Route route)
+        {
+            try
+            {
+                _context.Routes.Update(route);
+                var result = await _context.SaveChangesAsync();
+                return result;
+            }
+            catch (Exception ex)
+            {
+                return -1;
+            }
+        }
+
+        public async Task<int> SoftDeleteRoute(int routeId)
+        {
+            try
+            {
+                var routeSoftDelete = await _context.Routes.FirstOrDefaultAsync(x => x.Id == routeId);
+                if (routeSoftDelete != null)
+                {
+                    routeSoftDelete.IsDeleted = true;
+                    var result = await  _context.SaveChangesAsync();
+                    return result;
+                }
+                return -1;
+            }
+            catch (Exception ex)
+            {
+
+                return -1;
+            }
+        }
+
     }
 }
