@@ -24,5 +24,7 @@ namespace FTravel.Service.Services.Interface
         public Task<bool> ExecuteResetPassword(ResetPasswordModel resetPasswordModel);
 
         public Task<bool> ChangePasswordAsync(string email, ChangePasswordModel changePasswordModel);
+
+        public Task<AuthenModel> LoginWithGoogle(string credental);
     }
 }

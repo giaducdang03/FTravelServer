@@ -8,5 +8,6 @@ namespace FTravel.Service.Enums
 {
     public enum UserStatus
     {
+        ACTIVE, BANNED
     }
 }
