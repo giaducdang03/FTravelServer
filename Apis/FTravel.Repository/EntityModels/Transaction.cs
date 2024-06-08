@@ -17,5 +17,10 @@ public partial class Transaction : BaseEntity
 
     public string? Status { get; set; }
 
+    public int? OrderId { get; set; }
+
     public virtual Wallet? Wallet { get; set; }
+
+    public virtual Order? Order { get; set; }
+
 }

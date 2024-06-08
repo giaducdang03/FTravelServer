@@ -266,5 +266,10 @@ namespace FTravel.Service.Services
             }
 
         }
+
+        public async Task<Wallet> GetWalletByCustomerIdAsync(int customerId)
+        {
+            return await _walletRepository.GetWalletByCustomerId(customerId);
+        }
     }
 }
