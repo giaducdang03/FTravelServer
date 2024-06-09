@@ -96,8 +96,8 @@ namespace FTravel.API.Controllers
         }
 
         [HttpPut]
-        //[Authorize(Roles = "BUSCOMPANY")]
-        public async Task<IActionResult> UpdateRoute(RouteRequestModel routeRequest)
+        [Authorize(Roles = "BUSCOMPANY")]
+        public async Task<IActionResult> UpdateRoute([FromBody] RouteRequestModel routeRequest)
         {
             try
             {
@@ -135,7 +135,7 @@ namespace FTravel.API.Controllers
         }
 
         [HttpDelete("{id}")]
-        //[Authorize(Roles = "BUSCOMPANY")]
+        [Authorize(Roles = "BUSCOMPANY")]
         public async Task<IActionResult> RouteSoftDelete(int id)
         {
             try
