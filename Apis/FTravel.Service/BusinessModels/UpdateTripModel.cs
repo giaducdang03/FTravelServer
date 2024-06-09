@@ -5,9 +5,6 @@ namespace FTravel.Service.BusinessModels
     public class UpdateTripModel
     {
         [Required]
-        public int TripId { get; set; }
-
-        [Required]
         public string Name { get; set; }
 
         public DateTime? ActualStartDate { get; set; }
