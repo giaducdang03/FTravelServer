@@ -113,5 +113,24 @@ namespace FTravel.Service.Services
                 return false;
             }
         }
+        public async Task<bool> DeleteServiceAsync(int id)
+        {
+            try
+            {
+                var existingService = await _serviceRepository.GetServiceById(id);
+                if (existingService == null)
+                {
+                    return false;
+                }
+                await _serviceRepository.SoftDeleteAsync(existingService);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                // Log the exception
+                Console.WriteLine($"Fail to delete service {ex.Message}");
+                return false;
+            }
+        }
     }
 }

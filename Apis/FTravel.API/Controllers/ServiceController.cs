@@ -249,5 +249,39 @@ namespace FTravel.API.Controllers
                 });
             }
         }
+        [HttpDelete("{id}")]
+        [Authorize(Roles = "ADMIN, BUSCOMPANY")]
+        public async Task<IActionResult> DeleteService(int id)
+        {
+            try
+            {
+                bool isDeleted = await _service.DeleteServiceAsync(id);
+
+                if (isDeleted)
+                {
+                    return Ok(new ResponseModel
+                    {
+                        HttpCode = StatusCodes.Status200OK,
+                        Message = "Service deleted successfully"
+                    });
+                }
+                else
+                {
+                    return NotFound(new ResponseModel
+                    {
+                        HttpCode = StatusCodes.Status404NotFound,
+                        Message = "Failed to delete the service"
+                    });
+                }
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new ResponseModel
+                {
+                    HttpCode = StatusCodes.Status400BadRequest,
+                    Message = ex.Message
+                });
+            }
+        }
     }
 }

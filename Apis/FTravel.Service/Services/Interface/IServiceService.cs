@@ -17,5 +17,6 @@ namespace FTravel.Service.Services.Interface
         public Task<Pagination<ServiceModel>> GetAllServiceByStationIdAsync(int stationId, PaginationParameter paginationParameter);
         public Task<bool> AddServiceAsync(CreateServiceModel serviceToCreate);
         public Task<bool> UpdateServiceAsync(int id, UpdateServiceModel serviceToUpdate);
+        public Task<bool> DeleteServiceAsync(int id);
     }
 }
