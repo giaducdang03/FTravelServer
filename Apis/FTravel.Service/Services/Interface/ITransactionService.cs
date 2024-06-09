@@ -15,5 +15,7 @@ namespace FTravel.Service.Services.Interface
         public Task<Pagination<TransactionModel>> GetTransactionsByWalletIdAsync(int walletId, PaginationParameter paginationParameter);
 
         public Task<Transaction> CreateTransactionAsync(Transaction transaction, int customerId);
+
+        public Task<Transaction> GetTransactionByIdAsync(int transactionId);
     }
 }

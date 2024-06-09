@@ -10,6 +10,7 @@ namespace FTravel.Repository.Repositories.Interface
 {
     public interface IOrderRepository : IGenericRepository<Order>
     {
+        public Task<Order> GetOrderByIdAsync(int id);
         public Task<IDbContextTransaction> BeginTransactionAsync();
     }
 }

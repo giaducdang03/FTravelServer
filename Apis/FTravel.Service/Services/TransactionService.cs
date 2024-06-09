@@ -45,6 +45,11 @@ namespace FTravel.Service.Services
             }
         }
 
+        public async Task<Transaction> GetTransactionByIdAsync(int transactionId)
+        {
+            return await _transactionRepository.GetByIdAsync(transactionId);
+        }
+
         public async Task<Pagination<TransactionModel>> GetTransactionsByWalletIdAsync(int walletId, PaginationParameter paginationParameter)
         {
             var transactions = await _transactionRepository.GetTransactionsByWalletId(walletId, paginationParameter);
