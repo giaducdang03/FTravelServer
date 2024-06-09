@@ -7,6 +7,7 @@ using FTravel.Repository.Repositories.Interface;
 using FTravel.Service.BusinessModels;
 using FTravel.Service.Enums;
 using FTravel.Service.Services.Interface;
+using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -61,7 +62,7 @@ namespace FTravel.Service.Services
             try
             {
                 var route = await _routeRepository.GetRouteDetailByRouteIdAsync(tripModel.RouteId);
-                if (route == null) 
+                if (route == null)
                 {
                     Console.WriteLine($"Route not found for ID: {tripModel.RouteId}");
                     return false;
@@ -75,7 +76,9 @@ namespace FTravel.Service.Services
                     var service = route.Services.FirstOrDefault(s => s.Id == tripService.ServiceId);
                     if (service != null)
                     {
-                        newTrip.TripServices.Add(new Repository.EntityModels.TripService { Service = service,
+                        newTrip.TripServices.Add(new Repository.EntityModels.TripService
+                        {
+                            Service = service,
                             ServicePrice = tripService.Price
                         });
                     }
@@ -93,14 +96,14 @@ namespace FTravel.Service.Services
                 // Add newTrip to the repository
                 return await _tripRepository.CreateTripAsync(newTrip);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 Console.WriteLine($"Error occurred while creating newTrip: {ex.Message}");
                 return false;
             }
         }
 
-        public async Task<bool> UpdateTripAsync(UpdateTripModel tripModel)
+        public async Task<bool> UpdateTripAsync(int id, UpdateTripModel tripModel)
         {
             // Validate status
             if (!Enum.TryParse(typeof(TripStatus), tripModel.Status, true, out _))
@@ -108,10 +111,10 @@ namespace FTravel.Service.Services
                 throw new ArgumentException($"Invalid status value. Allowed values are: {string.Join(", ", Enum.GetNames(typeof(TripStatus)))}.");
             }
 
-            var existingTrip = await _tripRepository.GetTripById(tripModel.TripId);
+            var existingTrip = await _tripRepository.GetTripById(id);
             if (existingTrip == null)
             {
-                throw new KeyNotFoundException($"Trip With id:{tripModel.TripId}  not found.");
+                throw new KeyNotFoundException($"Trip With id:{id}  not found.");
             }
             int routeId = existingTrip.RouteId == null ? default(int) : existingTrip.RouteId.Value;
 
@@ -145,6 +148,105 @@ namespace FTravel.Service.Services
 
             return await _tripRepository.UpdateTripAsync(existingTrip);
         }
+        public async Task<bool> UpdateTripStatusAsync(int id, string status)
+        {
+            try
+            {
+                if (string.IsNullOrEmpty(status))
+                {
+                    throw new ArgumentException("new status can not be empty");
+                }
+                // Validate status
+                if (!Enum.TryParse(typeof(TripStatus), status, true, out _))
+                {
+                    throw new ArgumentException($"Invalid status value. Allowed values are: {string.Join(", ", Enum.GetNames(typeof(TripStatus)))}.");
+                }
 
+                var trip = await _tripRepository.GetByIdAsync(id);
+
+                if (trip == null)
+                {
+                    throw new KeyNotFoundException("Trip not found.");
+                }
+                if (!IsValidStatusTransition(status, trip.Status))
+                {
+                    throw new ArgumentException($"Invalid status transition. The trip status cannot transition from {trip.Status} to {status}");
+                }
+
+                if (status == "DEPARTED")
+                {
+                    trip.ActualStartDate = DateTime.UtcNow;
+                }
+                // Update actual end date if the new status is "DONE"
+                else if (status == "COMPLETED")
+                {
+                    trip.ActualEndDate = DateTime.UtcNow;
+                }
+                trip.Status = status;
+
+                await _tripRepository.UpdateAsync(trip);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+        public async Task<bool> CancelTripAsync(int id, string status)
+        {
+            try
+            {
+                if (string.IsNullOrEmpty(status))
+                {
+                    throw new ArgumentException("new status can not be empty");
+                }
+                // Validate status
+                if (!Enum.TryParse(typeof(TripStatus), status, true, out _))
+                {
+                    throw new ArgumentException($"Invalid status value. Allowed values are: {string.Join(", ", Enum.GetNames(typeof(TripStatus)))}.");
+                }
+
+                var trip = await _tripRepository.GetByIdAsync(id);
+
+                if (trip == null)
+                {
+                    throw new KeyNotFoundException("Trip not found.");
+                }
+                if (!IsValidStatusTransition(status, trip.Status))
+                {
+                    throw new ArgumentException($"Invalid status transition. The trip status cannot transition from {trip.Status} to {status}");
+                }
+
+                trip.Status = status;
+
+                await _tripRepository.SoftDeleteAsync(trip);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+        private bool IsValidStatusTransition(string newStatus, string currentStatus)
+        {
+            currentStatus = currentStatus?.ToUpper();
+            newStatus = newStatus?.ToUpper();
+
+            switch (currentStatus)
+            {
+                case "PENDING":
+                    return newStatus == "OPENING" || newStatus == "CANCELED";
+                case "OPENING":
+                    return newStatus == "DEPARTED" || newStatus == "COMPLETED";
+                case "DEPARTED":
+                    return newStatus == "COMPLETED";
+                case "COMPLETED":
+                    // Once the trip is in "DONE" status, no further status changes are allowed
+                    return false;
+                default:
+                    // If the current status is not recognized, disallow any status change
+                    return false;
+            }
+        }
     }
 }
