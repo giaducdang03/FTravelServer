@@ -91,5 +91,46 @@ namespace FTravel.Service.Services
                 return false; // Return false indicating failure
             }
         }
+
+        public async Task<bool> UpdateServiceAsync(int id, UpdateServiceModel serviceToUpdate)
+        {
+            try
+            {
+                var existingService = await _serviceRepository.GetServiceById(id);
+                if (existingService == null)
+                {
+                    return false;
+                }
+
+                _mapper.Map(serviceToUpdate, existingService);
+                await _serviceRepository.UpdateAsync(existingService);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                // Log the exception
+                Console.WriteLine($"Fail to update service {ex.Message}");
+                return false;
+            }
+        }
+        public async Task<bool> DeleteServiceAsync(int id)
+        {
+            try
+            {
+                var existingService = await _serviceRepository.GetServiceById(id);
+                if (existingService == null)
+                {
+                    return false;
+                }
+                await _serviceRepository.SoftDeleteAsync(existingService);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                // Log the exception
+                Console.WriteLine($"Fail to delete service {ex.Message}");
+                return false;
+            }
+        }
     }
 }
