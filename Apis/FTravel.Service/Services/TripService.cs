@@ -64,7 +64,7 @@ namespace FTravel.Service.Services
                 var route = await _routeRepository.GetRouteDetailByRouteIdAsync(tripModel.RouteId);
                 if (route == null)
                 {
-                    Console.WriteLine($"Route not found for ID: {tripModel.RouteId}");
+                    throw new KeyNotFoundException($"Route not found for ID: {tripModel.RouteId}");
                     return false;
                 }
 
@@ -98,7 +98,7 @@ namespace FTravel.Service.Services
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error occurred while creating newTrip: {ex.Message}");
+                throw new Exception(ex.Message);
                 return false;
             }
         }
@@ -189,7 +189,7 @@ namespace FTravel.Service.Services
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw new Exception(ex.Message);
             }
         }
         public async Task<bool> CancelTripAsync(int id, string status)
@@ -224,7 +224,7 @@ namespace FTravel.Service.Services
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw new Exception(ex.Message);
             }
         }
         private bool IsValidStatusTransition(string newStatus, string currentStatus)
@@ -232,15 +232,24 @@ namespace FTravel.Service.Services
             currentStatus = currentStatus?.ToUpper();
             newStatus = newStatus?.ToUpper();
 
-            switch (currentStatus)
+            if (!Enum.TryParse<TripStatus>(currentStatus, true, out TripStatus current))
             {
-                case "PENDING":
-                    return newStatus == "OPENING" || newStatus == "CANCELED";
-                case "OPENING":
-                    return newStatus == "DEPARTED" || newStatus == "COMPLETED";
-                case "DEPARTED":
-                    return newStatus == "COMPLETED";
-                case "COMPLETED":
+                return false;
+            }
+
+            if (!Enum.TryParse<TripStatus>(newStatus, true, out TripStatus next))
+            {
+                return false;
+            }
+            switch (current)
+            {
+                case TripStatus.PENDING:
+                    return next == TripStatus.OPENING || next == TripStatus.CANCELED;
+                case TripStatus.OPENING:
+                    return next == TripStatus.DEPARTED || next == TripStatus.COMPLETED;
+                case TripStatus.DEPARTED:
+                    return next == TripStatus.COMPLETED;
+                case TripStatus.COMPLETED:
                     // Once the trip is in "DONE" status, no further status changes are allowed
                     return false;
                 default:

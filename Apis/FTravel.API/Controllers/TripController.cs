@@ -25,7 +25,7 @@ namespace FTravel.API.Controllers
         }
 
         [HttpGet]
-        //[Authorize(Roles = "BUSCOMPANY")]
+        [Authorize(Roles = "BUSCOMPANY")]
         public async Task<IActionResult> GetAllTripStatusOpening([FromQuery] PaginationParameter paginationParameter)
         {
             try
@@ -40,8 +40,6 @@ namespace FTravel.API.Controllers
                         Message = "No trips was found"
                     });
                 }
-
-
                 else
                 {
                     var metadata = new
@@ -56,8 +54,6 @@ namespace FTravel.API.Controllers
 
                     Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
                 }
-
-
                 return Ok(result);
             }
             catch (Exception ex)
@@ -71,7 +67,7 @@ namespace FTravel.API.Controllers
         }
 
         [HttpGet("{id}")]
-        //[Authorize(Roles = "BUSCOMPANY")]
+        [Authorize(Roles = "BUSCOMPANY")]
         public async Task<IActionResult> GetTripDetailByIdStatusOpening(int id)
         {
             try
@@ -125,7 +121,11 @@ namespace FTravel.API.Controllers
                 }
                 else
                 {
-                    return StatusCode(StatusCodes.Status500InternalServerError, "Failed to create trip.");
+                    return BadRequest(new ResponseModel
+                    {
+                        HttpCode = StatusCodes.Status400BadRequest,
+                        Message = "Failed to create trip."
+                    });
                 }
             }
             catch (Exception ex)
@@ -155,7 +155,11 @@ namespace FTravel.API.Controllers
                 }
                 else
                 {
-                    return StatusCode(StatusCodes.Status500InternalServerError, "Failed to update trip.");
+                    return BadRequest(new ResponseModel
+                    {
+                        HttpCode = StatusCodes.Status400BadRequest,
+                        Message = "Failed to update trip."
+                    });
                 }
             }
             catch (KeyNotFoundException ex)
@@ -184,7 +188,7 @@ namespace FTravel.API.Controllers
             }
         }
         [HttpPut("{id}/status")]
-        //[Authorize(Roles = "BUSCOMPANY")]
+        [Authorize(Roles = "BUSCOMPANY")]
         public async Task<IActionResult> UpdateTripStatus(int id, string status)
         {
             try
@@ -201,7 +205,11 @@ namespace FTravel.API.Controllers
                 }
                 else
                 {
-                    return StatusCode(StatusCodes.Status500InternalServerError, "Failed to update trip status.");
+                    return BadRequest(new ResponseModel
+                    {
+                        HttpCode = StatusCodes.Status400BadRequest,
+                        Message = "Failed to update trip status."
+                    });
                 }
             }
             catch (KeyNotFoundException ex)
@@ -230,7 +238,7 @@ namespace FTravel.API.Controllers
             }
         }
         [HttpPut("{id}/cancel")]
-        //[Authorize(Roles = "BUSCOMPANY")]
+        [Authorize(Roles = "BUSCOMPANY")]
         public async Task<IActionResult> Cancelrip(int id, string status)
         {
             try
@@ -247,7 +255,11 @@ namespace FTravel.API.Controllers
                 }
                 else
                 {
-                    return StatusCode(StatusCodes.Status500InternalServerError, "Failed to delete trip.");
+                    return BadRequest(new ResponseModel
+                    {
+                        HttpCode = StatusCodes.Status400BadRequest,
+                        Message = "Fail to delete trip."
+                    });
                 }
             }
             catch (KeyNotFoundException ex)
