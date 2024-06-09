@@ -282,6 +282,35 @@ namespace FTravel.API.Controllers
             }
         }
 
+        [HttpGet("current-user")]
+        [Authorize]
+        public async Task<IActionResult> GetLoginUserInfo()
+        {
+            try
+            {
+                var email = _claimsService.GetCurrentUserEmail;
+                var result = await _userService.GetLoginUserInformationAsync(email);
+                if (result != null)
+                {
+                    return Ok(result);
+                }
+                return BadRequest(new ResponseModel
+                {
+                    HttpCode = StatusCodes.Status400BadRequest,
+                    Message = "Get user error."
+                });
+            }
+            catch (Exception ex)
+            {
+                var resp = new ResponseModel()
+                {
+                    HttpCode = StatusCodes.Status400BadRequest,
+                    Message = ex.Message.ToString()
+                };
+                return BadRequest(resp);
+            }
+        }
+
         [HttpGet("test-admin")]
         [Authorize(Roles = "ADMIN")]
         public async Task<IActionResult> TestAdmin()
