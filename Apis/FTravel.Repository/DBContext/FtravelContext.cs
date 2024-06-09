@@ -350,6 +350,10 @@ public partial class FtravelContext : DbContext
             entity.HasOne(d => d.Wallet).WithMany(p => p.Transactions)
                 .HasForeignKey(d => d.WalletId)
                 .HasConstraintName("FK__Transacti__Walle__160F4887");
+
+            entity.HasOne(d => d.Order).WithMany(p => p.Transactions)
+                .HasForeignKey(d => d.OrderId)
+                .HasConstraintName("FK__Transaction__Order");
         });
 
         modelBuilder.Entity<Trip>(entity =>

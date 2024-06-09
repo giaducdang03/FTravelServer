@@ -16,5 +16,8 @@ namespace FTravel.Repository.Repositories.Interface
         public Task<Route?> GetRouteDetailByRouteIdAsync(int routeId);
 
         public Task<List<Route>> GetRoutesByIdsAsync(IEnumerable<int> routeId);
+        public Task<int> UpdateRoutesAsync(Route route);
+
+        public Task<int> SoftDeleteRoute(int routeId);  
     }
 }

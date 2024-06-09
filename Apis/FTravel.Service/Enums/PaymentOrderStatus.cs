@@ -6,8 +6,10 @@ using System.Threading.Tasks;
 
 namespace FTravel.Service.Enums
 {
-    public enum UserStatus
+    public enum PaymentOrderStatus
     {
-        ACTIVE, BANNED
+        SUCCESS,
+        NOTPAYMENT,
+        FAILED
     }
 }

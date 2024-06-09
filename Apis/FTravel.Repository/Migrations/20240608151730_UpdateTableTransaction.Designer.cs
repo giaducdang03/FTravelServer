@@ -4,6 +4,7 @@ using FTravel.Repository.DBContext;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FTravel.Repository.Migrations
 {
     [DbContext(typeof(FtravelContext))]
-    partial class FtravelContextModelSnapshot : ModelSnapshot
+    [Migration("20240608151730_UpdateTableTransaction")]
+    partial class UpdateTableTransaction
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -723,7 +726,7 @@ namespace FTravel.Repository.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("Amount")
+                    b.Property<int?>("Amount")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("CreateDate")
@@ -741,7 +744,6 @@ namespace FTravel.Repository.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("Status")
-                        .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
@@ -749,14 +751,13 @@ namespace FTravel.Repository.Migrations
                         .HasColumnType("datetime");
 
                     b.Property<string>("TransactionType")
-                        .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
                     b.Property<DateTime?>("UpdateDate")
                         .HasColumnType("datetime");
 
-                    b.Property<int>("WalletId")
+                    b.Property<int?>("WalletId")
                         .HasColumnType("int");
 
                     b.HasKey("Id")
@@ -1192,8 +1193,6 @@ namespace FTravel.Repository.Migrations
                     b.HasOne("FTravel.Repository.EntityModels.Wallet", "Wallet")
                         .WithMany("Transactions")
                         .HasForeignKey("WalletId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
                         .HasConstraintName("FK__Transacti__Walle__160F4887");
 
                     b.Navigation("Order");

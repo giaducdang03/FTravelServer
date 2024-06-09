@@ -48,6 +48,7 @@ namespace FTravel.Service.Services
                 {
                     
                     User newUser = _mapper.Map<User>(model);
+                    newUser.Status = UserStatus.ACTIVE.ToString();
 
                     var existUser = await _userRepository.GetUserByEmailAsync(model.Email);
 
