@@ -49,6 +49,7 @@ namespace FTravel.Service.Services
                     
                     User newUser = _mapper.Map<User>(model);
                     newUser.Status = UserStatus.ACTIVE.ToString();
+                    newUser.UnsignFullName = StringUtils.ConvertToUnSign(model.FullName);
 
                     var existUser = await _userRepository.GetUserByEmailAsync(model.Email);
 
