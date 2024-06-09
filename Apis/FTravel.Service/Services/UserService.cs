@@ -1,7 +1,6 @@
 ﻿using AutoMapper;
 using Azure.Core;
 using FTravel.Repository.EntityModels;
-using FTravel.Repository.Repositories;
 using FTravel.Repository.Repositories.Interface;
 using FTravel.Service.BusinessModels;
 using FTravel.Service.Enums;
@@ -20,7 +19,6 @@ using System.Net.WebSockets;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace FTravel.Service.Services
 {
@@ -512,6 +510,24 @@ namespace FTravel.Service.Services
             };
             var refreshToken = GenerateJWTToken.CreateRefreshToken(claims, _configuration, DateTime.UtcNow);
             return new JwtSecurityTokenHandler().WriteToken(refreshToken).ToString();
+        }
+
+        public async Task<UserModel> GetLoginUserInformationAsync(string email)
+        {
+            var user = await _userRepository.GetUserByEmailAsync(email);
+            if (user != null)
+            {
+                UserModel userModel = _mapper.Map<UserModel>(user);
+
+                // get role
+                var userRole = await _roleRepository.GetByIdAsync(user.RoleId.Value);
+                if (userRole != null)
+                {
+                    userModel.Role = userRole.Name;
+                    return userModel;
+                }
+            }
+            return null;
         }
     }
 }
