@@ -99,6 +99,7 @@ namespace FTravel.API.Controllers
             }
         }
         [HttpPost()]
+        [Authorize(Roles = "BUSCOMPANY")]
         public async Task<IActionResult> AddTrip([FromBody] CreateTripModel tripModel)
         {
             try
@@ -136,8 +137,9 @@ namespace FTravel.API.Controllers
                 });
             }
         }
-        [HttpPut()]
-        public async Task<IActionResult> UpdateTrip([FromBody] UpdateTripModel tripModel)
+        [HttpPut("{id}")]
+        [Authorize(Roles = "BUSCOMPANY")]
+        public async Task<IActionResult> UpdateTrip(int id, UpdateTripModel tripModel)
         {
             try
             {
@@ -146,7 +148,7 @@ namespace FTravel.API.Controllers
                     return BadRequest(ModelState);
                 }
 
-                var result = await _tripService.UpdateTripAsync(tripModel);
+                var result = await _tripService.UpdateTripAsync(id, tripModel);
                 if (result)
                 {
                     return Ok("Trip updated successfully.");
@@ -181,7 +183,98 @@ namespace FTravel.API.Controllers
                 });
             }
         }
+        [HttpPut("{id}/status")]
+        //[Authorize(Roles = "BUSCOMPANY")]
+        public async Task<IActionResult> UpdateTripStatus(int id, string status)
+        {
+            try
+            {
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest(ModelState);
+                }
 
+                var result = await _tripService.UpdateTripStatusAsync(id, status);
+                if (result)
+                {
+                    return Ok("Trip status updated successfully.");
+                }
+                else
+                {
+                    return StatusCode(StatusCodes.Status500InternalServerError, "Failed to update trip status.");
+                }
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(new ResponseModel
+                {
+                    HttpCode = StatusCodes.Status404NotFound,
+                    Message = ex.Message
+                });
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(new ResponseModel
+                {
+                    HttpCode = StatusCodes.Status400BadRequest,
+                    Message = ex.Message
+                });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new ResponseModel
+                {
+                    HttpCode = StatusCodes.Status400BadRequest,
+                    Message = ex.Message
+                });
+            }
+        }
+        [HttpPut("{id}/cancel")]
+        //[Authorize(Roles = "BUSCOMPANY")]
+        public async Task<IActionResult> Cancelrip(int id, string status)
+        {
+            try
+            {
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest(ModelState);
+                }
+
+                var result = await _tripService.CancelTripAsync(id, status);
+                if (result)
+                {
+                    return Ok("Trip delete successfully.");
+                }
+                else
+                {
+                    return StatusCode(StatusCodes.Status500InternalServerError, "Failed to delete trip.");
+                }
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(new ResponseModel
+                {
+                    HttpCode = StatusCodes.Status404NotFound,
+                    Message = ex.Message
+                });
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(new ResponseModel
+                {
+                    HttpCode = StatusCodes.Status400BadRequest,
+                    Message = ex.Message
+                });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new ResponseModel
+                {
+                    HttpCode = StatusCodes.Status400BadRequest,
+                    Message = ex.Message
+                });
+            }
+        }
     }
 }
 

@@ -15,6 +15,8 @@ namespace FTravel.Service.Services.Interface
         public Task<Pagination<TripModel>> GetAllTripAsync(PaginationParameter paginationParameter);
         public Task<TripModel> GetTripByIdAsync(int id);
         public Task<bool> CreateTripAsync(CreateTripModel trip);
-        public Task<bool> UpdateTripAsync(UpdateTripModel tripModel);
+        public Task<bool> UpdateTripAsync(int id, UpdateTripModel tripModel);
+        public Task<bool> UpdateTripStatusAsync(int id, string status);
+        public Task<bool> CancelTripAsync(int id, string status);
     }
 }
