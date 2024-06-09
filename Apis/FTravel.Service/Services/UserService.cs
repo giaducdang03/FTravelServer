@@ -174,7 +174,8 @@ namespace FTravel.Service.Services
                     {
                         Email = model.Email,
                         FullName = model.FullName,
-                        UnsignFullName = StringUtils.ConvertToUnSign(model.FullName)
+                        UnsignFullName = StringUtils.ConvertToUnSign(model.FullName),
+                        Status = UserStatus.ACTIVE.ToString()
                     };
 
                     var existUser = await _userRepository.GetUserByEmailAsync(model.Email);
