@@ -17,23 +17,27 @@ namespace FTravel.Service.Services
     {
         private readonly IOrderRepository _orderRepository;
         private readonly ITransactionService _transactionService;
+        private readonly IWalletService _walletService;
         private readonly IMapper _mapper;
 
         public OrderService(IOrderRepository orderRepository,
             ITransactionService transactionService,
+            IWalletService walletService,
             IMapper mapper)
         {
             _orderRepository = orderRepository;
             _transactionService = transactionService;
+            _walletService = walletService;
             _mapper = mapper;
         }
 
         public async Task<Order> CreateOrderAsync(OrderModel orderModel)
         {
-            using (var orderTransaction = await _orderRepository.BeginTransactionAsync()) 
-            { 
+            using (var orderTransaction = await _orderRepository.BeginTransactionAsync())
+            {
                 try
                 {
+                    // create new order
                     var orderCode = GenerateOrderCode();
                     var newOrder = new Order()
                     {
@@ -48,8 +52,11 @@ namespace FTravel.Service.Services
 
                     if (addedOrder != null)
                     {
+                        // create new transaction
+
                         Transaction newTransaction = new Transaction()
                         {
+                            OrderId = addedOrder.Id,
                             Description = $"Thanh toan cho don hang {orderCode}",
                             TransactionType = TransactionType.OUT.ToString(),
                             Amount = orderModel.TotalPrice,
@@ -73,6 +80,51 @@ namespace FTravel.Service.Services
                     throw;
                 }
             }
+        }
+
+        public async Task<PaymentOrderStatus> PaymentOrderAsync(int orderId)
+        {
+            var order = await _orderRepository.GetOrderByIdAsync(orderId);
+            if (order != null)
+            {
+                // check payment order
+                if (order.PaymentDate != null)
+                {
+                    return PaymentOrderStatus.FAILED;
+                }
+
+                // get transaction
+                var transactions = order.Transactions.FirstOrDefault(x => x.TransactionType == TransactionType.OUT.ToString());
+                if (transactions != null)
+                {
+                    // check payment
+                    int walletId = transactions.WalletId;
+                    int transactionAmount = transactions.Amount;
+
+                    int result = await _walletService.ExecutePaymentAsync(walletId, TransactionType.OUT, transactionAmount, transactions.Id);
+                    if (result > 0)
+                    {
+                        var currentTransaction = await _transactionService.GetTransactionByIdAsync(transactions.Id);
+                        if (currentTransaction != null)
+                        {
+                            // update order
+                            order.PaymentDate = currentTransaction.TransactionDate;
+                            order.PaymentStatus = currentTransaction.Status;
+
+                            await _orderRepository.UpdateAsync(order);
+                            
+                            if (currentTransaction.Status == TransactionStatus.SUCCESS.ToString())
+                            {
+                                return PaymentOrderStatus.SUCCESS;
+                            }
+                            
+                            // wallet not enough account balance
+                            return PaymentOrderStatus.NOTPAYMENT;
+                        }
+                    }
+                }
+            }
+            return PaymentOrderStatus.FAILED;
         }
 
         private string GenerateOrderCode()
