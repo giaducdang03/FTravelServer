@@ -25,5 +25,11 @@ namespace FTravel.Repository.Repositories
             return await _context.Database.BeginTransactionAsync();
         }
 
+        public async Task<Order> GetOrderByIdAsync(int id)
+        {
+            return await _context.Orders
+                .Include(o => o.Transactions)
+                .Include(o => o.OrderDetails).FirstOrDefaultAsync(o => o.Id == id);
+        }
     }
 }
