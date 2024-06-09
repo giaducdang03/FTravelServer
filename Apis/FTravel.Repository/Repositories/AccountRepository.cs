@@ -1,4 +1,6 @@
-﻿using FTravel.Repository.DBContext;
+﻿using FTravel.Repositories.Commons;
+using FTravel.Repository.Commons;
+using FTravel.Repository.DBContext;
 using FTravel.Repository.EntityModels;
 using FTravel.Repository.Repositories.Interface;
 using Microsoft.EntityFrameworkCore;
@@ -30,6 +32,19 @@ namespace FTravel.Repository.Repositories
         {
             var db = await _context.Users.ToListAsync();
             return db;
+        }
+
+        public async Task<Pagination<User>> GetAllUserAccount(PaginationParameter paginationParameter)
+        {
+            var query = _context.Users.AsQueryable();
+
+            var totalCount = await query.CountAsync();
+            var paginatedQuery = query.Skip((paginationParameter.PageIndex - 1) * paginationParameter.PageSize)
+                                      .Take(paginationParameter.PageSize);
+
+            var account = await paginatedQuery.ToListAsync();
+
+            return new Pagination<User>(account, totalCount, paginationParameter.PageIndex, paginationParameter.PageSize);
         }
 
         public async Task<List<string>> GetListOfUser()

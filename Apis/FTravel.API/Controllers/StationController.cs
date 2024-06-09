@@ -42,7 +42,7 @@ namespace FTravel.API.Controllers
         //}
 
 
-        [HttpGet("stationList")]
+        [HttpGet("station-list")]
         public async Task<IActionResult> GetAllStation([FromQuery] PaginationParameter paginationParameter)
         {
             try
@@ -82,7 +82,7 @@ namespace FTravel.API.Controllers
             }
         }
 
-        [HttpGet("getStationDetailById")]
+        [HttpGet("get-station-detail-by-id")]
         public async Task<IActionResult> getStationDetailById(int id)
         {
             try
@@ -104,7 +104,7 @@ namespace FTravel.API.Controllers
                 });
             }
         }
-        [HttpPost("createRoute")]
+        [HttpPost("create-route")]
         public async Task<IActionResult> CreateRoute(RouteModel route)
         {
             try
@@ -128,7 +128,7 @@ namespace FTravel.API.Controllers
 
         }
 
-        [HttpPost("createStation")]
+        [HttpPost("create-station")]
         public async Task<IActionResult> CreateStationController(StationModel station)
         {
             try

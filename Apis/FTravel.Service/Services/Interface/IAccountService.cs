@@ -1,4 +1,6 @@
-﻿using FTravel.Repository.EntityModels;
+﻿using FTravel.Repositories.Commons;
+using FTravel.Repository.Commons;
+using FTravel.Repository.EntityModels;
 using FTravel.Service.BusinessModels;
 using System;
 using System.Collections.Generic;
@@ -14,7 +16,7 @@ namespace FTravel.Service.Services.Interface
         Task<User> GetAccountInfoByEmail(string email);
 
         //Task<AccountModel> CreateAccount(AccountModel account);
-
+        public Task<Pagination<AccountModel>> GetAllUserAccountService(PaginationParameter paginationParameter);
         Task<bool> CreateAccountAsync(CreateAccountModel model);
     }
 }
