@@ -10,7 +10,7 @@ using Newtonsoft.Json;
 
 namespace FTravel.API.Controllers
 {
-    [Route("api/station")]
+    [Route("api/stations")]
     [ApiController]
     public class StationController : ControllerBase
     {
@@ -42,7 +42,7 @@ namespace FTravel.API.Controllers
         //}
 
 
-        [HttpGet("station-list")]
+        [HttpGet]
         public async Task<IActionResult> GetAllStation([FromQuery] PaginationParameter paginationParameter)
         {
             try
@@ -82,7 +82,7 @@ namespace FTravel.API.Controllers
             }
         }
 
-        [HttpGet("get-station-detail-by-id")]
+        [HttpGet("{id}")]
         public async Task<IActionResult> getStationDetailById(int id)
         {
             try
