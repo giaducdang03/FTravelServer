@@ -4,6 +4,7 @@ using FTravel.Repository.DBContext;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FTravel.Repository.Migrations
 {
     [DbContext(typeof(FtravelContext))]
-    partial class FtravelContextModelSnapshot : ModelSnapshot
+    [Migration("20240610162847_UpdateTableBuscompany")]
+    partial class UpdateTableBuscompany
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

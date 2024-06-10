@@ -75,8 +75,13 @@ namespace FTravel.Service.Services
                 return null;
             }
 
-            var map = _mapper.Map<List<StationModel>>(routes);
-            return new Pagination<StationModel>(map,
+            var stationModels = _mapper.Map<List<StationModel>>(routes);
+            foreach (var stationModel in stationModels)
+            {
+                stationModel.Id = stationModel.Id; 
+            }
+
+            return new Pagination<StationModel>(stationModels,
                 routes.TotalCount,
                 routes.CurrentPage,
                 routes.PageSize);
