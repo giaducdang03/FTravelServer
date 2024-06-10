@@ -27,8 +27,8 @@ namespace FTravel.API.Controllers
 
 
         [HttpGet]
-        [Authorize(Roles = "BUSCOMPANY")]
-        public async Task<IActionResult> getListRoute([FromQuery] PaginationParameter paginationParameter)
+        [Authorize(Roles = "ADMIN, BUSCOMPANY")]
+        public async Task<IActionResult> GetListRoute([FromQuery] PaginationParameter paginationParameter)
         {
             try
             {
@@ -68,8 +68,8 @@ namespace FTravel.API.Controllers
         }
 
         [HttpGet("{id}")]
-        [Authorize(Roles = "BUSCOMPANY")]
-        public async Task<IActionResult> getRouteDetails(int id)
+        [Authorize(Roles = "ADMIN, BUSCOMPANY")]
+        public async Task<IActionResult> GetRouteDetails(int id)
         {
             try
             {
@@ -96,7 +96,7 @@ namespace FTravel.API.Controllers
         }
 
         [HttpPut]
-        [Authorize(Roles = "BUSCOMPANY")]
+        [Authorize(Roles = "ADMIN, BUSCOMPANY")]
         public async Task<IActionResult> UpdateRoute([FromBody] RouteRequestModel routeRequest)
         {
             try
@@ -135,7 +135,7 @@ namespace FTravel.API.Controllers
         }
 
         [HttpDelete("{id}")]
-        [Authorize(Roles = "BUSCOMPANY")]
+        [Authorize(Roles = "ADMIN, BUSCOMPANY")]
         public async Task<IActionResult> RouteSoftDelete(int id)
         {
             try

@@ -25,6 +25,7 @@ namespace FTravel.API.Controllers
         }
 
         [HttpGet]
+        [Authorize]
         //[Authorize(Roles = "BUSCOMPANY")]
         public async Task<IActionResult> GetAllTripStatusOpening([FromQuery] PaginationParameter paginationParameter)
         {
@@ -71,6 +72,7 @@ namespace FTravel.API.Controllers
         }
 
         [HttpGet("{id}")]
+        [Authorize]
         //[Authorize(Roles = "BUSCOMPANY")]
         public async Task<IActionResult> GetTripDetailByIdStatusOpening(int id)
         {
@@ -99,7 +101,7 @@ namespace FTravel.API.Controllers
             }
         }
         [HttpPost()]
-        [Authorize(Roles = "BUSCOMPANY")]
+        [Authorize(Roles = "ADMIN, BUSCOMPANY")]
         public async Task<IActionResult> AddTrip([FromBody] CreateTripModel tripModel)
         {
             try
@@ -138,7 +140,7 @@ namespace FTravel.API.Controllers
             }
         }
         [HttpPut("{id}")]
-        [Authorize(Roles = "BUSCOMPANY")]
+        [Authorize(Roles = "ADMIN, BUSCOMPANY")]
         public async Task<IActionResult> UpdateTrip(int id, UpdateTripModel tripModel)
         {
             try
@@ -184,7 +186,7 @@ namespace FTravel.API.Controllers
             }
         }
         [HttpPut("{id}/status")]
-        //[Authorize(Roles = "BUSCOMPANY")]
+        [Authorize(Roles = "ADMIN, BUSCOMPANY")]
         public async Task<IActionResult> UpdateTripStatus(int id, string status)
         {
             try
@@ -230,7 +232,7 @@ namespace FTravel.API.Controllers
             }
         }
         [HttpPut("{id}/cancel")]
-        //[Authorize(Roles = "BUSCOMPANY")]
+        [Authorize(Roles = "ADMIN, BUSCOMPANY")]
         public async Task<IActionResult> Cancelrip(int id, string status)
         {
             try
