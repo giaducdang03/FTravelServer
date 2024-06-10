@@ -77,6 +77,7 @@ public partial class FtravelContext : DbContext
             entity.Property(e => e.UnsignName).HasMaxLength(100);
             entity.Property(e => e.ShortDescription).HasMaxLength(200);
             entity.Property(e => e.UpdateDate).HasColumnType("datetime");
+            entity.Property(e => e.ManagerEmail).HasMaxLength(255);
         });
 
         modelBuilder.Entity<City>(entity =>
@@ -350,6 +351,10 @@ public partial class FtravelContext : DbContext
             entity.HasOne(d => d.Wallet).WithMany(p => p.Transactions)
                 .HasForeignKey(d => d.WalletId)
                 .HasConstraintName("FK__Transacti__Walle__160F4887");
+
+            entity.HasOne(d => d.Order).WithMany(p => p.Transactions)
+                .HasForeignKey(d => d.OrderId)
+                .HasConstraintName("FK__Transaction__Order");
         });
 
         modelBuilder.Entity<Trip>(entity =>

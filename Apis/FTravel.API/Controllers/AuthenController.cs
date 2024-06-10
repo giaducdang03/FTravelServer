@@ -83,6 +83,29 @@ namespace FTravel.API.Controllers
             }
         }
 
+        [HttpPost("login-with-google")]
+        public async Task<IActionResult> LoginWithGoogle([FromBody] string credential)
+        {
+            try
+            {
+                var result = await _userService.LoginWithGoogle(credential);
+                if (result.HttpCode == StatusCodes.Status200OK)
+                {
+                    return Ok(result);
+                }
+                return Unauthorized(result);
+            }
+            catch (Exception ex)
+            {
+                var resp = new ResponseModel()
+                {
+                    HttpCode = StatusCodes.Status400BadRequest,
+                    Message = ex.Message.ToString()
+                };
+                return BadRequest(resp);
+            }
+        }
+
         [HttpPost("confirmation")]
         public async Task<IActionResult> ConfirmEmail(ConfirmOtpModel confirmOtpModel)
         {
@@ -246,6 +269,35 @@ namespace FTravel.API.Controllers
                 {
                     HttpCode = StatusCodes.Status400BadRequest,
                     Message = "Reset password error"
+                });
+            }
+            catch (Exception ex)
+            {
+                var resp = new ResponseModel()
+                {
+                    HttpCode = StatusCodes.Status400BadRequest,
+                    Message = ex.Message.ToString()
+                };
+                return BadRequest(resp);
+            }
+        }
+
+        [HttpGet("current-user")]
+        [Authorize]
+        public async Task<IActionResult> GetLoginUserInfo()
+        {
+            try
+            {
+                var email = _claimsService.GetCurrentUserEmail;
+                var result = await _userService.GetLoginUserInformationAsync(email);
+                if (result != null)
+                {
+                    return Ok(result);
+                }
+                return BadRequest(new ResponseModel
+                {
+                    HttpCode = StatusCodes.Status400BadRequest,
+                    Message = "Get user error."
                 });
             }
             catch (Exception ex)

@@ -4,6 +4,7 @@ using FTravel.Repository.DBContext;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FTravel.Repository.Migrations
 {
     [DbContext(typeof(FtravelContext))]
-    partial class FtravelContextModelSnapshot : ModelSnapshot
+    [Migration("20240609080850_UpdateFieldTransaction")]
+    partial class UpdateFieldTransaction
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -44,11 +47,6 @@ namespace FTravel.Repository.Migrations
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
-                    b.Property<string>("ManagerEmail")
-                        .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
-
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(100)
@@ -78,9 +76,6 @@ namespace FTravel.Repository.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("Code")
-                        .HasColumnType("int");
 
                     b.Property<DateTime>("CreateDate")
                         .ValueGeneratedOnAdd()
