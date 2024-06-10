@@ -142,7 +142,7 @@ namespace FTravel.API.Controllers
                     return NotFound(new ResponseModel()
                     {
                         HttpCode = StatusCodes.Status404NotFound,
-                        Message = "The city does not exist"
+                        Message = "The city does not exist or has been soft deleted"
                     });
                 }
             }

@@ -38,9 +38,16 @@ namespace FTravel.Repository.Repositories
             var removeSoftCity = await _context.Cities.FirstOrDefaultAsync(x => x.Id == deleteCity);    
             if(removeSoftCity != null)
             {
-                removeSoftCity.IsDeleted = true;
-                _context.SaveChanges();
-                return true;
+                if(removeSoftCity.IsDeleted == false)
+                {
+                    removeSoftCity.IsDeleted = true;
+                    _context.SaveChanges();
+					return true;
+				}
+				else
+                {
+                    return false;
+                }
             } else
             {
                 return false;
