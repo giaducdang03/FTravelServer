@@ -57,6 +57,24 @@ namespace FTravel.Repository.Repositories
         public async Task<User> GetUserInfoByEmail(string email)
         {
             var data = await _context.Users.FirstOrDefaultAsync(x => x.Email.Equals(email));
+            var userWithId = await _context.Users.FirstOrDefaultAsync(x => x.Email.Equals(email));
+
+            if (userWithId != null)
+            {
+                data.Id = userWithId.Id;
+            }
+            return data;
+        }
+
+        public async Task<User> GetUserInfoById(int id)
+        {
+            var data = await _context.Users.FirstOrDefaultAsync(x => x.Id.Equals(id));
+            var userWithId = await _context.Users.FirstOrDefaultAsync(x => x.Id.Equals(id));
+
+            if (userWithId != null)
+            {
+                data.Id = userWithId.Id;
+            }
             return data;
         }
     }

@@ -149,6 +149,12 @@ namespace FTravel.Service.Services
             return data;
         }
 
+        public async Task<User> GetAccountInfoById(int id)
+        {
+            var data = await _accountRepo.GetUserInfoById(id);
+            return data;
+        }
+
         public async Task<Pagination<AccountModel>> GetAllUserAccountService(PaginationParameter paginationParameter)
         {
             var users = await _accountRepo.GetAllUserAccount(paginationParameter);

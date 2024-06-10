@@ -17,5 +17,7 @@ namespace FTravel.Repository.Repositories.Interface
         public Task<List<string>> GetListOfUser();
         public Task<User> CreateAccount(User user); 
         public Task<User> GetUserInfoByEmail(string email);
+
+        public Task<User> GetUserInfoById(int id);
     }
 }

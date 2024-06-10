@@ -14,6 +14,8 @@ namespace FTravel.Service.Services.Interface
     {
         Task<List<AccountModel>> GetAllUserAscyn();
         Task<User> GetAccountInfoByEmail(string email);
+        Task<User> GetAccountInfoById(int id);
+
 
         //Task<AccountModel> CreateAccount(AccountModel account);
         public Task<Pagination<AccountModel>> GetAllUserAccountService(PaginationParameter paginationParameter);

@@ -13,7 +13,7 @@ using Newtonsoft.Json;
 
 namespace FTravel.API.Controllers
 {
-    [Route("api/account")]
+    [Route("api/accounts")]
     [ApiController]
     public class AccountController : ControllerBase
     {
@@ -24,7 +24,7 @@ namespace FTravel.API.Controllers
             _accountService = accountService;
         }
 
-        [HttpGet("account-list")]
+        [HttpGet]
         public async Task<IActionResult> GetAllUserAccount([FromQuery] PaginationParameter paginationParameter)
         {
             try
@@ -84,7 +84,31 @@ namespace FTravel.API.Controllers
 
         //}
 
-        [HttpGet("account-detail-by-gmail")]
+        [HttpGet("by-id/{id}")]
+        public async Task<IActionResult> GetAccountInfoById(int id)
+        {
+            try
+            {
+                var data = await _accountService.GetAccountInfoById(id);
+                if (id == null)
+                {
+                    return BadRequest();
+                }
+                return Ok(data);
+            }
+            catch (Exception ex)
+            {
+
+                return BadRequest(new ResponseModel
+                {
+                    HttpCode = 400,
+                    Message = ex.Message
+                });
+            }
+
+        }
+
+        [HttpGet("by-email{email}")]
         public async Task<IActionResult> GetAccountInfoByEmail(string email)
         {
             try
