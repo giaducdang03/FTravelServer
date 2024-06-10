@@ -189,7 +189,6 @@ namespace FTravel.API.Controllers
                 }
                 else
                 {
-                    // Return a not found response if the service was not added successfully
                     return NotFound(new ResponseModel
                     {
                         HttpCode = StatusCodes.Status404NotFound,
@@ -199,7 +198,6 @@ namespace FTravel.API.Controllers
             }
             catch (Exception ex)
             {
-                // Return a bad request response for any other exceptions
                 return BadRequest(new ResponseModel
                 {
                     HttpCode = StatusCodes.Status400BadRequest,
@@ -222,7 +220,6 @@ namespace FTravel.API.Controllers
 
                 if (isUpdated)
                 {
-                    // Return a success response
                     return Ok(new ResponseModel
                     {
                         HttpCode = StatusCodes.Status200OK,
@@ -231,7 +228,6 @@ namespace FTravel.API.Controllers
                 }
                 else
                 {
-                    // Return a not found response if the service was not updated successfully
                     return NotFound(new ResponseModel
                     {
                         HttpCode = StatusCodes.Status404NotFound,
@@ -241,7 +237,6 @@ namespace FTravel.API.Controllers
             }
             catch (Exception ex)
             {
-                // Return a bad request response for any other exceptions
                 return BadRequest(new ResponseModel
                 {
                     HttpCode = StatusCodes.Status400BadRequest,

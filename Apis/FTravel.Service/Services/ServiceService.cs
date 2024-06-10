@@ -18,7 +18,7 @@ namespace FTravel.Service.Services
     {
         private readonly IServiceRepository _serviceRepository;
         private readonly IMapper _mapper;
-        public ServiceService(IServiceRepository repository, IMapper mapper )
+        public ServiceService(IServiceRepository repository, IMapper mapper)
         {
             _serviceRepository = repository;
             _mapper = mapper;
@@ -26,7 +26,7 @@ namespace FTravel.Service.Services
         public async Task<ServiceModel> GetServiceByIdAsync(int id)
         {
             var service = await _serviceRepository.GetServiceById(id);
-            if (service == null) 
+            if (service == null)
             {
                 return null;
             }
@@ -36,7 +36,7 @@ namespace FTravel.Service.Services
 
         public async Task<Pagination<ServiceModel>> GetAllAsync(PaginationParameter paginationParameter)
         {
-            var services = await _serviceRepository.GetAll( paginationParameter);
+            var services = await _serviceRepository.GetAll(paginationParameter);
             if (!services.Any())
             {
                 return null;
@@ -62,7 +62,7 @@ namespace FTravel.Service.Services
                 services.PageSize);
 
         }
-         public async Task<Pagination<ServiceModel>> GetAllServiceByStationIdAsync(int stationId, PaginationParameter paginationParameter)
+        public async Task<Pagination<ServiceModel>> GetAllServiceByStationIdAsync(int stationId, PaginationParameter paginationParameter)
         {
             var services = await _serviceRepository.GetAllServiceByStationId(stationId, paginationParameter);
             if (!services.Any())
@@ -86,9 +86,8 @@ namespace FTravel.Service.Services
             }
             catch (Exception ex)
             {
-                // Log the exception
-                Console.WriteLine($"Fail to add service {ex.Message}");
-                return false; // Return false indicating failure
+                throw ex;
+                return false;
             }
         }
 
@@ -108,8 +107,7 @@ namespace FTravel.Service.Services
             }
             catch (Exception ex)
             {
-                // Log the exception
-                Console.WriteLine($"Fail to update service {ex.Message}");
+                throw ex;
                 return false;
             }
         }
@@ -127,8 +125,7 @@ namespace FTravel.Service.Services
             }
             catch (Exception ex)
             {
-                // Log the exception
-                Console.WriteLine($"Fail to delete service {ex.Message}");
+                throw ex;
                 return false;
             }
         }
