@@ -11,6 +11,7 @@ namespace FTravel.Service.BusinessModels
 {
     public class CityModel
     {
+        public int Id { get; set; }
         [MaxLength(100)]
         [FromQuery(Name = "name")]
         public string Name { get; set; } = null!;
