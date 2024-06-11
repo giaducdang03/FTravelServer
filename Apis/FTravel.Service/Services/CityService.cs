@@ -9,6 +9,7 @@ using FTravel.Service.Services.Interface;
 using Microsoft.AspNetCore.Components.Server.Circuits;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -26,22 +27,42 @@ namespace FTravel.Service.Services
             _mapper = mapper;
         }
 
-        public async Task<CityModel> CreateCityAsync(CityModel cityModel)
+        public async Task<int> CreateCityAsync(CityModel cityModel)
         {
            if(cityModel == null)
             {
-                return null;
+                return -1;
 
             }
+            string normalized = cityModel.Name.Normalize(NormalizationForm.FormD);
+            StringBuilder sb = new StringBuilder();
+
+            foreach (char c in normalized)
+            {
+                if (CharUnicodeInfo.GetUnicodeCategory(c) != UnicodeCategory.NonSpacingMark)
+                {
+                    if (c == 'Đ')
+                    {
+                        sb.Append('D');
+                    }
+                    else if (c == 'đ')
+                    {
+                        sb.Append('d');
+                    } else
+                    {
+                    sb.Append(c);
+                    }
+                }
+            }
+            cityModel.UnsignName = sb.ToString().Normalize(NormalizationForm.FormC);
             var city = _mapper.Map<City>(cityModel);
             var result = await _cityRepository.CreateCityAsync(city);
-            if (result != null)
+            if (result > 0)
             {
-                var resultModel = _mapper.Map<CityModel>(result);
-                return resultModel;
+                return result;
             } else
             {
-                return null;
+                return -1;
             }
         }
 
@@ -61,6 +82,28 @@ namespace FTravel.Service.Services
 
         public async Task<CityModel> UpdateCityAsync(CityModel updateCityModel)
         {
+            string normalized = updateCityModel.Name.Normalize(NormalizationForm.FormD);
+            StringBuilder sb = new StringBuilder();
+
+            foreach (char c in normalized)
+            {
+                if (CharUnicodeInfo.GetUnicodeCategory(c) != UnicodeCategory.NonSpacingMark)
+                {
+                    if (c == 'Đ')
+                    {
+                        sb.Append('D');
+                    }
+                    else if (c == 'đ')
+                    {
+                        sb.Append('d');
+                    }
+                    else
+                    {
+                        sb.Append(c);
+                    }
+                }
+            }
+            updateCityModel.UnsignName = sb.ToString().Normalize(NormalizationForm.FormC);
             var updateCity = _mapper.Map<City>(updateCityModel);
             var result = await _cityRepository.UpdateCityAsync(updateCity);
             if(result != null)

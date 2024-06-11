@@ -21,15 +21,16 @@ namespace FTravel.Repository.Repositories
             _context = context;
         }
 
-		public async Task<City> CreateCityAsync(City createCity)
+		public async Task<int> CreateCityAsync(City createCity)
 		{
 			var cityCheck = await _context.Cities.FirstOrDefaultAsync(x => x.Code == createCity.Code || x.Name.Equals(createCity.Name));
             if (cityCheck != null)
             {
-                return null;
+                return -1;
             }
             await _context.Cities.AddAsync(createCity);
-            return createCity;
+            var result = await _context.SaveChangesAsync();
+            return result;
 
 		}
 

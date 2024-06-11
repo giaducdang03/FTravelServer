@@ -60,17 +60,16 @@ namespace FTravel.API.Controllers
             }
         }
 
-        [HttpPut]
-        [Authorize(Roles ="ADMIN")]
-        public async Task<IActionResult> UpdateCity([FromBody] CityRequestModel cityRequestModel)
+        [HttpPut("{id}")]
+        //[Authorize(Roles ="ADMIN")]
+        public async Task<IActionResult> UpdateCity([FromBody] CityRequestModel cityRequestModel, [FromRoute] int id)
         {
             try
             {
                 var updateCityModel = new CityModel()
                 {
-                    Id = cityRequestModel.CityId,
+                    Id = id,
                     Name = cityRequestModel.Name,
-                    UnsignName = cityRequestModel.UnsignName,
                     Code = cityRequestModel.Code
                 };
                 var result = await _cityService.UpdateCityAsync(updateCityModel);
@@ -100,8 +99,8 @@ namespace FTravel.API.Controllers
         }
 
         [HttpPost]
-        [Authorize(Roles = "ADMIN")]
-        public async Task<IActionResult> CreateCity([FromQuery(Name = "city-name")] string cityName, [FromQuery(Name = "code")] string CodeOfCity)
+        //[Authorize(Roles = "ADMIN")]
+        public async Task<IActionResult> CreateCity([FromBody] CityRequestModel cityRequestModel)
 		{
             try
             {
@@ -110,11 +109,11 @@ namespace FTravel.API.Controllers
                     CreateDate = DateTime.Now,
                     UpdateDate = null,
                     IsDeleted = false,
-                    Name = cityName,
-                    Code = CodeOfCity
+                    Name = cityRequestModel.Name,
+                    Code = cityRequestModel.Code
 				};
                 var result = await _cityService.CreateCityAsync(cityModel);
-                if (result == null)
+                if (result <= 0)
                 {
                     return NotFound(new ResponseModel()
                     {
@@ -122,7 +121,8 @@ namespace FTravel.API.Controllers
                         Message = "Can not add this city"
                     });
                 }
-                return Ok(result);
+                return Ok(new ResponseModel() { HttpCode = StatusCodes.Status200OK, Message = "Add Cities Success" });
+
             }
             catch (Exception ex)
             {
