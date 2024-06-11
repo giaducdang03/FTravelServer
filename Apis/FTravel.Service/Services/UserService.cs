@@ -58,7 +58,7 @@ namespace FTravel.Service.Services
                         return new AuthenModel
                         {
                             HttpCode = 401,
-                            Message = "Account does not exist"
+                            Message = "Tài khoản không tồn tại."
                         };
                     }
                     var verifyUser = PasswordUtils.VerifyPassword(password, existUser.PasswordHash);
@@ -70,7 +70,7 @@ namespace FTravel.Service.Services
                             return new AuthenModel
                             {
                                 HttpCode = 401,
-                                Message = "Account was banned"
+                                Message = "Tài khoản đã bị cấm."
                             };
                         }
 
@@ -84,7 +84,7 @@ namespace FTravel.Service.Services
                             return new AuthenModel
                             {
                                 HttpCode = 401,
-                                Message = "You must confirm email before login to FTravel. Otp was sent via email"
+                                Message = "Bạn phải xác nhận email trước khi đăng nhập vào hệ thống. OTP đã gửi qua email."
                             };
                         }
 
@@ -103,7 +103,7 @@ namespace FTravel.Service.Services
                     return new AuthenModel
                     {
                         HttpCode = 401,
-                        Message = "Wrong password"
+                        Message = "Sai mật khẩu."
                     };
                 }
                 catch
@@ -154,12 +154,12 @@ namespace FTravel.Service.Services
                 return new AuthenModel
                 {
                     HttpCode = 401,
-                    Message = "User does not exist."
+                    Message = "Tài khoản không tồn tại."
                 };
             }
             catch
             {
-                throw new Exception("Token is not valid.");
+                throw new Exception("Token không hợp lệ");
             }
 
         }
@@ -182,7 +182,7 @@ namespace FTravel.Service.Services
 
                     if (existUser != null)
                     {
-                        throw new Exception("Account already exists.");
+                        throw new Exception("Tài khoản đã tồn tại.");
                     }
 
                     // hash password
@@ -257,7 +257,7 @@ namespace FTravel.Service.Services
                             return new AuthenModel
                             {
                                 HttpCode = 401,
-                                Message = "Account does not exist"
+                                Message = "Tài khoản không tồn tại."
                             };
                         }
 
@@ -281,7 +281,7 @@ namespace FTravel.Service.Services
                     return new AuthenModel
                     {
                         HttpCode = 401,
-                        Message = "Otp is not valid."
+                        Message = "OTP không hợp lệ."
                     };
                 }
                 catch
@@ -306,7 +306,7 @@ namespace FTravel.Service.Services
             }
             else
             {
-                throw new Exception("User does not exist");
+                throw new Exception("Tài khoản không tồn tại.");
             }
             return false;
         }
@@ -333,7 +333,7 @@ namespace FTravel.Service.Services
             }
             else
             {
-                throw new Exception("User does not exist");
+                throw new Exception("Tài khoản không tồn tại.");
             }
         }
 
@@ -351,12 +351,12 @@ namespace FTravel.Service.Services
                 }
                 else 
                 {
-                    throw new Exception("Old password invalid");
+                    throw new Exception("Mật khẩu cũ không đúng.");
                 }
             }
             else
             {
-                throw new Exception("User does not exist");
+                throw new Exception("Tài khoản không tồn tại.");
             }
         }
 
@@ -377,7 +377,7 @@ namespace FTravel.Service.Services
             var payload = await GoogleJsonWebSignature.ValidateAsync(credental, settings);
             if (payload == null)
             {
-                throw new Exception("Invalid credental");
+                throw new Exception("Credental không hợp lệ.");
             }
 
             var existUser = await _userRepository.GetUserByEmailAsync(payload.Email);
@@ -388,12 +388,12 @@ namespace FTravel.Service.Services
 
                 if (roleUser.Name != RoleEnums.CUSTOMER.ToString())
                 {
-                    throw new Exception("Your account does not allowed login with Google account.");
+                    throw new Exception("Tài khoản của bạn không được phép đăng nhập với Google.");
                 }
 
                 if (existUser.Status == UserStatus.BANNED.ToString())
                 {
-                    throw new Exception("Your account was banned.");
+                    throw new Exception("Tài khoản đã bị cấm.");
                 }
                 else
                 {
