@@ -61,10 +61,14 @@ namespace FTravel.Service.Services
         {
             try
             {
+                if (!Enum.TryParse(typeof(TripStatus), tripModel.Status, true, out _))
+                {
+                    throw new ArgumentException($"Trạng thái không hợp lệ. Trạng thái có thể là: {string.Join(", ", Enum.GetNames(typeof(TripStatus)))}.");
+                }
                 var route = await _routeRepository.GetRouteDetailByRouteIdAsync(tripModel.RouteId);
                 if (route == null)
                 {
-                    Console.WriteLine($"Route not found for ID: {tripModel.RouteId}");
+                    Console.WriteLine($"Không tìm thấy tuyến xe có id: {tripModel.RouteId}");
                     return false;
                 }
 
@@ -98,7 +102,7 @@ namespace FTravel.Service.Services
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error occurred while creating newTrip: {ex.Message}");
+                throw new Exception("Xảy ra lỗi khi tạo chuyến xe mới!");
                 return false;
             }
         }
@@ -108,20 +112,20 @@ namespace FTravel.Service.Services
             // Validate status
             if (!Enum.TryParse(typeof(TripStatus), tripModel.Status, true, out _))
             {
-                throw new ArgumentException($"Invalid status value. Allowed values are: {string.Join(", ", Enum.GetNames(typeof(TripStatus)))}.");
+                throw new ArgumentException($"Trạng thái không hợp lệ. Trạng thái có thể là: {string.Join(", ", Enum.GetNames(typeof(TripStatus)))}.");
             }
 
             var existingTrip = await _tripRepository.GetTripById(id);
             if (existingTrip == null)
             {
-                throw new KeyNotFoundException($"Trip With id:{id}  not found.");
+                throw new KeyNotFoundException($"Không tìm thấy chuyến xe có id: {id}.");
             }
             int routeId = existingTrip.RouteId == null ? default(int) : existingTrip.RouteId.Value;
 
             var route = await _routeRepository.GetRouteDetailByRouteIdAsync(routeId);
             if (route == null)
             {
-                throw new KeyNotFoundException("Route not found.");
+                throw new KeyNotFoundException("Không tìm thấy tuyến xe.");
             }
 
             _mapper.Map(tripModel, existingTrip);
@@ -154,30 +158,30 @@ namespace FTravel.Service.Services
             {
                 if (string.IsNullOrEmpty(status))
                 {
-                    throw new ArgumentException("new status can not be empty");
+                    throw new ArgumentException("Trạng thái mới không thể rỗng!");
                 }
                 // Validate status
                 if (!Enum.TryParse(typeof(TripStatus), status, true, out _))
                 {
-                    throw new ArgumentException($"Invalid status value. Allowed values are: {string.Join(", ", Enum.GetNames(typeof(TripStatus)))}.");
+                    throw new ArgumentException($"Trạng thái không hợp lệ. Trạng thái có thể là: {string.Join(", ", Enum.GetNames(typeof(TripStatus)))}.");
                 }
 
                 var trip = await _tripRepository.GetByIdAsync(id);
 
                 if (trip == null)
                 {
-                    throw new KeyNotFoundException("Trip not found.");
+                    throw new KeyNotFoundException("Không tìm thấy chuyến xe.");
                 }
                 if (!IsValidStatusTransition(status, trip.Status))
                 {
-                    throw new ArgumentException($"Invalid status transition. The trip status cannot transition from {trip.Status} to {status}");
+                    throw new ArgumentException($"Chuyển trạng thái không hợp lệ. Trạng thái của chuyến đi không thể chuyển từ {trip.Status} sang {status}");
                 }
 
                 if (status == "DEPARTED")
                 {
                     trip.ActualStartDate = DateTime.UtcNow;
                 }
-                // Update actual end date if the new status is "DONE"
+                // Update actual end date if the new status is "COMPLETED"
                 else if (status == "COMPLETED")
                 {
                     trip.ActualEndDate = DateTime.UtcNow;
@@ -198,23 +202,23 @@ namespace FTravel.Service.Services
             {
                 if (string.IsNullOrEmpty(status))
                 {
-                    throw new ArgumentException("new status can not be empty");
+                    throw new ArgumentException("Trạng thái mới không thể rỗng!");
                 }
                 // Validate status
                 if (!Enum.TryParse(typeof(TripStatus), status, true, out _))
                 {
-                    throw new ArgumentException($"Invalid status value. Allowed values are: {string.Join(", ", Enum.GetNames(typeof(TripStatus)))}.");
+                    throw new ArgumentException($"Trạng thái không hợp lệ. Trạng thái có thể là: {string.Join(", ", Enum.GetNames(typeof(TripStatus)))}.");
                 }
 
                 var trip = await _tripRepository.GetByIdAsync(id);
 
                 if (trip == null)
                 {
-                    throw new KeyNotFoundException("Trip not found.");
+                    throw new KeyNotFoundException("Không tìm thấy chuyến xe.");
                 }
                 if (!IsValidStatusTransition(status, trip.Status))
                 {
-                    throw new ArgumentException($"Invalid status transition. The trip status cannot transition from {trip.Status} to {status}");
+                    throw new ArgumentException($"Chuyển trạng thái không hợp lệ. Trạng thái của chuyến đi không thể chuyển từ {trip.Status} sang {status}");
                 }
 
                 trip.Status = status;
