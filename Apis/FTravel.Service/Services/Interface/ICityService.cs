@@ -14,7 +14,7 @@ namespace FTravel.Service.Services.Interface
     {
         public Task<Pagination<CityModel>> GetListCityAsync(PaginationParameter paginationParameter);
 
-        public Task<CityModel> UpdateCityAsync(CityModel updateCityModel);
+        public Task<CityModel> UpdateCityAsync(CityModel updateCityModel, int id);
         public Task<int> CreateCityAsync(CityModel cityModel);
         public Task<bool> RemoveSoftCityAsync(int deleteCity);
     }

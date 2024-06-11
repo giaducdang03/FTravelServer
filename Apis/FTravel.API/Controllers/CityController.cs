@@ -45,7 +45,7 @@ namespace FTravel.API.Controllers
                    return NotFound(new ResponseModel
                     {
                         HttpCode = StatusCodes.Status404NotFound,
-                        Message = "City is empty"
+                        Message = "Không tìm thấy thành phố"
                     });
                 }
             }
@@ -54,74 +54,60 @@ namespace FTravel.API.Controllers
                 var responseModel = new ResponseModel()
                 {
                     HttpCode = StatusCodes.Status400BadRequest,
-                    Message = ex.Message.ToString()
+                    Message = "Có lỗi xảy ra"
                 };
                 return BadRequest(responseModel);
             }
         }
 
         [HttpPut("{id}")]
-        //[Authorize(Roles ="ADMIN")]
-        public async Task<IActionResult> UpdateCity([FromBody] CityRequestModel cityRequestModel, [FromRoute] int id)
+        [Authorize(Roles = "ADMIN")]
+        public async Task<IActionResult> UpdateCity([FromBody] CityModel cityModel, [FromRoute] int id)
         {
             try
             {
-                var updateCityModel = new CityModel()
-                {
-                    Id = id,
-                    Name = cityRequestModel.Name,
-                    Code = cityRequestModel.Code
-                };
-                var result = await _cityService.UpdateCityAsync(updateCityModel);
+                var result = await _cityService.UpdateCityAsync(cityModel, id);
                 if(result == null)
                 {
                     return NotFound(new ResponseModel()
                     {
                         HttpCode = StatusCodes.Status404NotFound,
-                        Message = "Can not find this City to Update"
+                        Message = "Không thể thay đổi thông tin thành phố"
                     });
                 }
                 return Ok(new ResponseModel()
                 {
                     HttpCode = StatusCodes.Status200OK,
-                    Message = "Update City success"
+
+                    Message = "Thay đổi thành công"
                 });
             }
             catch (Exception ex)
             {
-
                 return BadRequest(new ResponseModel()
                 {
                     HttpCode = StatusCodes.Status400BadRequest,
-                    Message = ex.Message.ToString()
+                    Message = ex.Message
                 });
             }
         }
 
         [HttpPost]
-        //[Authorize(Roles = "ADMIN")]
-        public async Task<IActionResult> CreateCity([FromBody] CityRequestModel cityRequestModel)
+        [Authorize(Roles = "ADMIN")]
+        public async Task<IActionResult> CreateCity([FromBody] CityModel cityCreateModel)
 		{
             try
             {
-                CityModel cityModel = new CityModel()
-                {
-                    CreateDate = DateTime.Now,
-                    UpdateDate = null,
-                    IsDeleted = false,
-                    Name = cityRequestModel.Name,
-                    Code = cityRequestModel.Code
-				};
-                var result = await _cityService.CreateCityAsync(cityModel);
+                var result = await _cityService.CreateCityAsync(cityCreateModel);
                 if (result <= 0)
                 {
                     return NotFound(new ResponseModel()
                     {
                         HttpCode = StatusCodes.Status404NotFound,
-                        Message = "Can not add this city"
+                        Message = "Không thể thêm thành phố này"
                     });
                 }
-                return Ok(new ResponseModel() { HttpCode = StatusCodes.Status200OK, Message = "Add Cities Success" });
+                return Ok(new ResponseModel() { HttpCode = StatusCodes.Status200OK, Message = "Thêm thành phố thành công" });
 
             }
             catch (Exception ex)
@@ -146,14 +132,14 @@ namespace FTravel.API.Controllers
                     return Ok(new ResponseModel()
                     {
                         HttpCode = StatusCodes.Status200OK,
-                        Message = "Remove soft city success"
+                        Message = "Xóa thành phố thành công"
                     });
                 } else
                 {
                     return NotFound(new ResponseModel()
                     {
                         HttpCode = StatusCodes.Status404NotFound,
-                        Message = "The city does not exist or has been soft deleted"
+                        Message = "Không có thành phố hợp lệ để xóa"
                     });
                 }
             }
@@ -163,7 +149,7 @@ namespace FTravel.API.Controllers
                 return BadRequest(new ResponseModel()
                 {
                     HttpCode = StatusCodes.Status400BadRequest,
-                    Message = ex.Message.ToString()
+                    Message = "Có lỗi xảy ra"
                 });
             }
         }

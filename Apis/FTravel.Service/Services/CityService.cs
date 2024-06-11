@@ -6,6 +6,7 @@ using FTravel.Repository.Repositories;
 using FTravel.Repository.Repositories.Interface;
 using FTravel.Service.BusinessModels;
 using FTravel.Service.Services.Interface;
+using FTravel.Service.Utils;
 using Microsoft.AspNetCore.Components.Server.Circuits;
 using System;
 using System.Collections.Generic;
@@ -34,28 +35,8 @@ namespace FTravel.Service.Services
                 return -1;
 
             }
-            string normalized = cityModel.Name.Normalize(NormalizationForm.FormD);
-            StringBuilder sb = new StringBuilder();
-
-            foreach (char c in normalized)
-            {
-                if (CharUnicodeInfo.GetUnicodeCategory(c) != UnicodeCategory.NonSpacingMark)
-                {
-                    if (c == 'Đ')
-                    {
-                        sb.Append('D');
-                    }
-                    else if (c == 'đ')
-                    {
-                        sb.Append('d');
-                    } else
-                    {
-                    sb.Append(c);
-                    }
-                }
-            }
-            cityModel.UnsignName = sb.ToString().Normalize(NormalizationForm.FormC);
             var city = _mapper.Map<City>(cityModel);
+            city.UnsignName = StringUtils.ConvertToUnSign(cityModel.Name);
             var result = await _cityRepository.CreateCityAsync(city);
             if (result > 0)
             {
@@ -80,31 +61,11 @@ namespace FTravel.Service.Services
                 listCity.PageSize);
         }
 
-        public async Task<CityModel> UpdateCityAsync(CityModel updateCityModel)
+        public async Task<CityModel> UpdateCityAsync(CityModel updateCityModel, int id)
         {
-            string normalized = updateCityModel.Name.Normalize(NormalizationForm.FormD);
-            StringBuilder sb = new StringBuilder();
-
-            foreach (char c in normalized)
-            {
-                if (CharUnicodeInfo.GetUnicodeCategory(c) != UnicodeCategory.NonSpacingMark)
-                {
-                    if (c == 'Đ')
-                    {
-                        sb.Append('D');
-                    }
-                    else if (c == 'đ')
-                    {
-                        sb.Append('d');
-                    }
-                    else
-                    {
-                        sb.Append(c);
-                    }
-                }
-            }
-            updateCityModel.UnsignName = sb.ToString().Normalize(NormalizationForm.FormC);
             var updateCity = _mapper.Map<City>(updateCityModel);
+            updateCity.Id = id;
+            updateCity.UnsignName = StringUtils.ConvertToUnSign(updateCityModel.Name);
             var result = await _cityRepository.UpdateCityAsync(updateCity);
             if(result != null)
             {
