@@ -147,7 +147,7 @@ namespace FTravel.API.Controllers
                     var resp = new ResponseModel()
                     {
                         HttpCode = StatusCodes.Status200OK,
-                        Message = "Create account successfully. Please check email to login to FTravel."
+                        Message = "Tạo tài khoản thành công. Vui lòng kiểm tra email để đăng nhập vào FTravel."
                     };
                     return Ok(resp);
                 }
