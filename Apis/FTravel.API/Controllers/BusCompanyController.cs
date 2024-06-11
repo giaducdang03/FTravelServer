@@ -20,33 +20,44 @@ namespace FTravel.API.Controllers
             _busCompanyService = busCompanyService;
         }
         [HttpPost]
-        [Authorize(Roles = "ADMIN")]
+        //[Authorize(Roles = "ADMIN")]
         public async Task<IActionResult> CreateBusCompany(CreateBusCompanyModel model)
         {
-            if (!ModelState.IsValid)
+            try
             {
-                return BadRequest(ModelState);
-            }
-
-            var isAdded = await _busCompanyService.AddBusCompanyAsync(model);
-
-            if (isAdded)
-            {
-                return Ok(new ResponseModel
+                if (!ModelState.IsValid)
                 {
-                    HttpCode = StatusCodes.Status201Created,
-                    Message = "Bus company created successfully"
+                    return BadRequest(ModelState);
+                }
+
+                var isAdded = await _busCompanyService.AddBusCompanyAsync(model);
+
+                if (isAdded)
+                {
+                    return Ok(new ResponseModel
+                    {
+                        HttpCode = StatusCodes.Status201Created,
+                        Message = "Bus company created successfully"
+                    });
+                }
+                else
+                {
+                    return BadRequest(new ResponseModel
+                    {
+                        HttpCode = StatusCodes.Status400BadRequest,
+                        Message = "Failed to create bus company"
+                    });
+                }
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new ResponseModel
+                {
+                    HttpCode = StatusCodes.Status400BadRequest,
+                    Message = ex.Message
                 });
             }
-            else
-            {
-                return BadRequest(
-                                   new ResponseModel
-                                   {
-                                       HttpCode = StatusCodes.Status500InternalServerError,
-                                       Message = "Failed to create bus company"
-                                   });
-            }
+
         }
 
 
