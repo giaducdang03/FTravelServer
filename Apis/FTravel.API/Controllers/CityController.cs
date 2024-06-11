@@ -62,11 +62,18 @@ namespace FTravel.API.Controllers
 
         [HttpPut]
         [Authorize(Roles ="ADMIN")]
-        public async Task<IActionResult> UpdateCity([FromBody] CityModel city)
+        public async Task<IActionResult> UpdateCity([FromBody] CityRequestModel cityRequestModel)
         {
             try
             {
-                var result = await _cityService.UpdateCityAsync(city);
+                var updateCityModel = new CityModel()
+                {
+                    Id = cityRequestModel.CityId,
+                    Name = cityRequestModel.Name,
+                    UnsignName = cityRequestModel.UnsignName,
+                    Code = cityRequestModel.Code
+                };
+                var result = await _cityService.UpdateCityAsync(updateCityModel);
                 if(result == null)
                 {
                     return NotFound(new ResponseModel()
@@ -75,7 +82,11 @@ namespace FTravel.API.Controllers
                         Message = "Can not find this City to Update"
                     });
                 }
-                return Ok(result);
+                return Ok(new ResponseModel()
+                {
+                    HttpCode = StatusCodes.Status200OK,
+                    Message = "Update City success"
+                });
             }
             catch (Exception ex)
             {
@@ -90,8 +101,8 @@ namespace FTravel.API.Controllers
 
         [HttpPost]
         [Authorize(Roles = "ADMIN")]
-        public async Task<IActionResult> CreateCity([FromBody] CityRequestModel city)
-        {
+        public async Task<IActionResult> CreateCity([FromQuery(Name = "city-name")] string cityName, [FromQuery(Name = "code")] string CodeOfCity)
+		{
             try
             {
                 CityModel cityModel = new CityModel()
@@ -99,9 +110,9 @@ namespace FTravel.API.Controllers
                     CreateDate = DateTime.Now,
                     UpdateDate = null,
                     IsDeleted = false,
-                    Name = city.Name,
-                    UnsignName = city.UnsignName,
-                };
+                    Name = cityName,
+                    Code = CodeOfCity
+				};
                 var result = await _cityService.CreateCityAsync(cityModel);
                 if (result == null)
                 {

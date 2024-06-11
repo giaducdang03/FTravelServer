@@ -1,17 +1,23 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.AspNetCore.Mvc;
+using System.ComponentModel.DataAnnotations;
 
 namespace FTravel.API.ViewModels.RequestModels
 {
     public class CityRequestModel
     {
+        [Required]
+        [FromQuery(Name = "id")]
+        public int CityId { get; set; }
+       
         [MaxLength(100)]
-        public string? UnsignName { get; set; }
-        [MaxLength(100)]
-        public string Name { get; set; } = null!;
-        public DateTime CreateDate { get; set; }
+		[FromQuery(Name = "name")]
+		public string Name { get; set; } = null!;
 
-        public DateTime? UpdateDate { get; set; }
-
-        public bool IsDeleted { get; set; } = false;
-    }
+		[MaxLength(100)]
+		[FromQuery(Name = "unsign-name")]
+		public string UnsignName { get; set; } = null!;
+		[MaxLength(100)]
+		[FromQuery(Name = "code")]
+		public string Code { get; set; } = null!;
+	}
 }

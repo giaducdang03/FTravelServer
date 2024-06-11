@@ -26,7 +26,7 @@ namespace FTravel.Service.Services
             _mapper = mapper;
         }
 
-        public async Task<City> CreateCityAsync(CityModel cityModel)
+        public async Task<CityModel> CreateCityAsync(CityModel cityModel)
         {
            if(cityModel == null)
             {
@@ -34,10 +34,11 @@ namespace FTravel.Service.Services
 
             }
             var city = _mapper.Map<City>(cityModel);
-            var result = await _cityRepository.AddAsync(city);
+            var result = await _cityRepository.CreateCityAsync(city);
             if (result != null)
             {
-                return city;
+                var resultModel = _mapper.Map<CityModel>(result);
+                return resultModel;
             } else
             {
                 return null;
@@ -58,13 +59,13 @@ namespace FTravel.Service.Services
                 listCity.PageSize);
         }
 
-        public async Task<CityModel> UpdateCityAsync(CityModel cityModel)
+        public async Task<CityModel> UpdateCityAsync(CityModel updateCityModel)
         {
-            var city = _mapper.Map<City>(cityModel);
-            var updateCity = await _cityRepository.UpdateCityAsync(city);
-            if(updateCity != null)
+            var updateCity = _mapper.Map<City>(updateCityModel);
+            var result = await _cityRepository.UpdateCityAsync(updateCity);
+            if(result != null)
             {
-                return cityModel;
+                return updateCityModel;
             }
             return null;
         }

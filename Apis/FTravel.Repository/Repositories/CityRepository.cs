@@ -21,7 +21,19 @@ namespace FTravel.Repository.Repositories
             _context = context;
         }
 
-        public async Task<Pagination<City>> GetListCityAsync(PaginationParameter paginationParameter)
+		public async Task<City> CreateCityAsync(City createCity)
+		{
+			var cityCheck = await _context.Cities.FirstOrDefaultAsync(x => x.Code == createCity.Code || x.Name.Equals(createCity.Name));
+            if (cityCheck != null)
+            {
+                return null;
+            }
+            await _context.Cities.AddAsync(createCity);
+            return createCity;
+
+		}
+
+		public async Task<Pagination<City>> GetListCityAsync(PaginationParameter paginationParameter)
         {
             var itemCount = await _context.Cities.CountAsync();
             var items = await _context.Cities.Skip((paginationParameter.PageIndex - 1) * paginationParameter.PageSize)
@@ -54,18 +66,17 @@ namespace FTravel.Repository.Repositories
             }
         }
 
-        public async Task<City> UpdateCityAsync(City city)
+        public async Task<City> UpdateCityAsync(City updateCity)
         {
-            var cityUpdate =  await _context.Cities.FirstOrDefaultAsync(x => x.Id == city.Id); 
+            var cityUpdate =  await _context.Cities.FirstOrDefaultAsync(x => x.Id == updateCity.Id); 
             if (cityUpdate != null)
             {
-                cityUpdate.Name = city.Name;
-                cityUpdate.UpdateDate = city.UpdateDate;
-                cityUpdate.IsDeleted = city.IsDeleted;
-                cityUpdate.UnsignName = city.UnsignName;
+                cityUpdate.Name = updateCity.Name;
+                cityUpdate.UnsignName = updateCity.UnsignName;
+                cityUpdate.Code = updateCity.Code;
+                cityUpdate.UpdateDate = DateTime.Now;
                await _context.SaveChangesAsync();
                return cityUpdate;
-
             }
             return null;
         }
