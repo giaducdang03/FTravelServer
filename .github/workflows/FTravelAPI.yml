@@ -35,7 +35,11 @@ jobs:
     - name: Load Google Service file
       env:
         DATA: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
-      run: echo $DATA | base64 -di > swd392-d2c4e-firebase-adminsdk-t5zts-828fe1145e.json
+      run: |
+        $Data = "${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}"
+        $Bytes = [System.Convert]::FromBase64String($Data)
+        [System.IO.File]::WriteAllBytes("swd392-d2c4e-firebase-adminsdk-t5zts-828fe1145e.json", $Bytes)
+      shell: pwsh
     - name: Restore
       run: dotnet restore ${{ env.WORKING_DIRECTORY }}
     - name: Build
