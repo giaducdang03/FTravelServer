@@ -104,29 +104,7 @@ namespace FTravel.API.Controllers
                 });
             }
         }
-        [HttpPost("create-route")]
-        public async Task<IActionResult> CreateRoute(RouteModel route)
-        {
-            try
-            {
-                var data = await _stationService.CreateRoute(route);
-                if (route == null)
-                {
-                    return BadRequest();
-                }
-                return Ok(data);
-            }
-            catch (Exception ex)
-            {
-
-                return BadRequest(new ResponseModel
-                {
-                    HttpCode = 400,
-                    Message = ex.Message
-                });
-            }
-
-        }
+        
 
         [HttpPost("create-station")]
         public async Task<IActionResult> CreateStationController(StationModel station)

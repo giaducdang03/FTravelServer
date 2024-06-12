@@ -21,6 +21,13 @@ namespace FTravel.Repository.Repositories
             _context = context;
         }
 
+        public async Task<Route> CreateRoute(Route route)
+        {
+            _context.Add(route);
+            await _context.SaveChangesAsync();
+            return route;
+        }
+
         public async Task<Pagination<Route>> GetListRoutesAsync(PaginationParameter paginationParameter)
         {
             var itemCount = await _context.Routes.CountAsync();
