@@ -43,6 +43,7 @@ namespace FTravel.API.Controllers
 
 
         [HttpGet]
+        [Authorize(Roles = "ADMIN, BUSCOMPANY")]
         public async Task<IActionResult> GetAllStation([FromQuery] PaginationParameter paginationParameter)
         {
             try
@@ -83,7 +84,8 @@ namespace FTravel.API.Controllers
         }
 
         [HttpGet("{id}")]
-        public async Task<IActionResult> getStationDetailById(int id)
+        [Authorize(Roles = "ADMIN, BUSCOMPANY")]
+        public async Task<IActionResult> GetStationDetailById(int id)
         {
             try
             {
@@ -107,6 +109,7 @@ namespace FTravel.API.Controllers
         
 
         [HttpPost("create-station")]
+        [Authorize(Roles = "ADMIN, BUSCOMPANY")]
         public async Task<IActionResult> CreateStationController(StationModel station)
         {
             try

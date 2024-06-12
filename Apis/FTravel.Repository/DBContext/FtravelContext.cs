@@ -77,6 +77,7 @@ public partial class FtravelContext : DbContext
             entity.Property(e => e.UnsignName).HasMaxLength(100);
             entity.Property(e => e.ShortDescription).HasMaxLength(200);
             entity.Property(e => e.UpdateDate).HasColumnType("datetime");
+            entity.Property(e => e.ManagerEmail).HasMaxLength(255);
         });
 
         modelBuilder.Entity<City>(entity =>

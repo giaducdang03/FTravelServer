@@ -25,6 +25,7 @@ namespace FTravel.API.Controllers
         }
 
         [HttpGet]
+        [Authorize(Roles = "ADMIN")]
         public async Task<IActionResult> GetAllUserAccount([FromQuery] PaginationParameter paginationParameter)
         {
             try
@@ -84,7 +85,8 @@ namespace FTravel.API.Controllers
 
         //}
 
-        [HttpGet("by-id/{id}")]
+        [HttpGet("{id}")]
+        [Authorize]
         public async Task<IActionResult> GetAccountInfoById(int id)
         {
             try
@@ -108,7 +110,8 @@ namespace FTravel.API.Controllers
 
         }
 
-        [HttpGet("by-email{email}")]
+        [HttpGet("by-email/{email}")]
+        [Authorize]
         public async Task<IActionResult> GetAccountInfoByEmail(string email)
         {
             try
