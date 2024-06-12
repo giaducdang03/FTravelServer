@@ -36,6 +36,8 @@ jobs:
       env:
         DATA: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
       run: echo $DATA | base64 -di > swd392-d2c4e-firebase-adminsdk-t5zts-828fe1145e.json
+    - name: Move Google Service file to build project directory
+      run: mv swd392-d2c4e-firebase-adminsdk-t5zts-828fe1145e.json ${{ env.WORKING_DIRECTORY }}
     - name: Restore
       run: dotnet restore ${{ env.WORKING_DIRECTORY }}
     - name: Build
