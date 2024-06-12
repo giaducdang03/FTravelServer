@@ -124,21 +124,12 @@ builder.Services.Configure<MailSettings>(builder.Configuration.GetSection("MailS
 
 
 // setup firebase
-//FirebaseApp.Create(new AppOptions()
-//{
-//    Credential = GoogleCredential.FromFile("swd392-d2c4e-firebase-adminsdk-t5zts-828fe1145e.json")
-//});
+FirebaseApp.Create(new AppOptions()
+{
+    Credential = GoogleCredential.FromFile("swd392-d2c4e-firebase-adminsdk-t5zts-828fe1145e.json")
+});
 
 var app = builder.Build();
-
-
-if (app.Environment.IsProduction())
-{
-    FirebaseApp.Create(new AppOptions()
-    {
-        Credential = GoogleCredential.FromFile("swd392-d2c4e-firebase-adminsdk-t5zts-828fe1145e.json")
-    });
-}
 
 // Configure the HTTP request pipeline.
 //if (app.Environment.IsDevelopment())
