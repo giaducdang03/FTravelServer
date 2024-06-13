@@ -2,6 +2,7 @@
 using FTravel.Repositories.Commons;
 using FTravel.Repository.Commons;
 using FTravel.Repository.EntityModels;
+using FTravel.Repository.Repositories;
 using FTravel.Repository.Repositories.Interface;
 using FTravel.Service.BusinessModels;
 using FTravel.Service.Services.Interface;
@@ -51,6 +52,21 @@ namespace FTravel.Service.Services
                 routes.PageSize);
         }
 
+        public async Task<CreateRouteModel> CreateRoute(CreateRouteModel route)
+        {
+            try
+            {
+                var map = _mapper.Map<Route>(route);
+                var createRoute = await _routeRepository.CreateRoute(map);
+                var resutl = _mapper.Map<CreateRouteModel>(createRoute);
+                return resutl;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+
+        }
         public async Task<RouteModel?> GetRouteDetailByRouteIdAsync(int routeId)
         {
             var route = await _routeRepository.GetRouteDetailByRouteIdAsync(routeId);

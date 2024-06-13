@@ -106,30 +106,7 @@ namespace FTravel.API.Controllers
                 });
             }
         }
-        [HttpPost("create-route")]
-        [Authorize(Roles = "ADMIN, BUSCOMPANY")]
-        public async Task<IActionResult> CreateRoute(RouteModel route)
-        {
-            try
-            {
-                var data = await _stationService.CreateRoute(route);
-                if (route == null)
-                {
-                    return BadRequest();
-                }
-                return Ok(data);
-            }
-            catch (Exception ex)
-            {
-
-                return BadRequest(new ResponseModel
-                {
-                    HttpCode = 400,
-                    Message = ex.Message
-                });
-            }
-
-        }
+        
 
         [HttpPost("create-station")]
         [Authorize(Roles = "ADMIN, BUSCOMPANY")]

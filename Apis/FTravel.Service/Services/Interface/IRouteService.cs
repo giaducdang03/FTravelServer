@@ -17,5 +17,8 @@ namespace FTravel.Service.Services.Interface
 
         public Task<int> UpdateRouteAsync(Route routeUpdate);
         public Task<int> RouteSoftDeleteAsync(int routeId);
+
+        public Task<CreateRouteModel> CreateRoute(CreateRouteModel route);
+
     }
 }
