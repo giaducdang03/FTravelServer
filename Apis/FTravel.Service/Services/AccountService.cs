@@ -9,6 +9,7 @@ using FTravel.Service.Enums;
 using FTravel.Service.Services.Interface;
 using FTravel.Service.Utils;
 using FTravel.Service.Utils.Email;
+using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -176,9 +177,22 @@ namespace FTravel.Service.Services
                 users.PageSize);
         }
 
-        public Task<List<AccountModel>> GetAllUserAscyn()
+        public Task<List<AccountModel>> GetAllUserAsync()
         {
             throw new NotImplementedException();
+        }
+
+
+        public async Task<bool> UpdateFcmTokenAsync(string email, string fcmToken)
+        {
+            var user = await _userRepository.GetUserByEmailAsync(email);
+            if (user != null && !fcmToken.IsNullOrEmpty())
+            {
+                user.Fcmtoken = fcmToken;
+                var result = await _userRepository.UpdateAsync(user);
+                return true ? result > 0 : false;
+            }
+            return false;
         }
 
         //public async Task<List<AccountModel>> GetAllUserAscyn()
