@@ -15,6 +15,7 @@ namespace FTravel.Service.Mapper
         public MapperConfigProfile()
         {
             // add mapper model
+            CreateMap<CreateRouteModel, Route>().ReverseMap();
 
             CreateMap<UserModel, User>().ReverseMap().ForMember(dest => dest.Role, opt => opt.Ignore());
             CreateMap<Customer, User>().ReverseMap();
