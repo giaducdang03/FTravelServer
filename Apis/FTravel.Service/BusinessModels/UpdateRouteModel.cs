@@ -1,22 +1,23 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Text.Json.Serialization;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
-namespace FTravel.API.ViewModels.RequestModels
+namespace FTravel.Service.BusinessModels
 {
-    public class RouteRequestModel
+    public class UpdateRouteModel
     {
-        [Required]
-        [FromQuery(Name = "id")]
-        public int Id { get; set; }
         [FromQuery(Name = "name")]
         public string Name { get; set; }
         [FromQuery(Name = "start-point-id")]
-        public int StartPoint {  get; set; }
+        public int StartPoint { get; set; }
         [FromQuery(Name = "end-point-id")]
         public int EndPoint { get; set; }
         [FromQuery(Name = "status")]
-        public string Status {  get; set; }
+        public string Status { get; set; }
         [FromQuery(Name = "bus-company-id")]
         public int BusCompanyId { get; set; }
     }

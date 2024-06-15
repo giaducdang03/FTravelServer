@@ -6,6 +6,7 @@ using FTravel.Repository.Repositories;
 using FTravel.Repository.Repositories.Interface;
 using FTravel.Service.BusinessModels;
 using FTravel.Service.Services.Interface;
+using FTravel.Service.Utils;
 using Microsoft.AspNetCore.Mvc.Abstractions;
 using System;
 using System.Collections.Generic;
@@ -90,20 +91,17 @@ namespace FTravel.Service.Services
             
         }
 
-        public async Task<int> UpdateRouteAsync(Route routeUpdate)
+        public async Task<int> UpdateRouteAsync(UpdateRouteModel routeUpdate, int id)
         {
-            var findRouteUpdate = await _routeRepository.GetRouteDetailByRouteIdAsync(routeUpdate.Id);
+            var findRouteUpdate = await _routeRepository.GetRouteDetailByRouteIdAsync(id);
             if(findRouteUpdate == null)
             {
                 return -1;
             } else
             {
-                findRouteUpdate.UpdateDate = DateTime.Now;
-                findRouteUpdate.BusCompanyId = routeUpdate.BusCompanyId;
-                findRouteUpdate.StartPoint = routeUpdate.StartPoint;
-                findRouteUpdate.EndPoint = routeUpdate.EndPoint;
-                findRouteUpdate.Status = routeUpdate.Status;
-                findRouteUpdate.Name = routeUpdate.Name;
+                findRouteUpdate = _mapper.Map<Route>(routeUpdate);
+                findRouteUpdate.Id = id;
+                findRouteUpdate.UnsignName = StringUtils.ConvertToUnSign(routeUpdate.Name);
             }
 
             var result = await _routeRepository.UpdateRoutesAsync(findRouteUpdate);

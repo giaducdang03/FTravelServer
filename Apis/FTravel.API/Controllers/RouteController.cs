@@ -96,23 +96,13 @@ namespace FTravel.API.Controllers
             }
         }
 
-        [HttpPut]
+        [HttpPut("{id}")]
         [Authorize(Roles = "ADMIN, BUSCOMPANY")]
-        public async Task<IActionResult> UpdateRoute([FromBody] RouteRequestModel routeRequest)
+        public async Task<IActionResult> UpdateRoute([FromBody] UpdateRouteModel routeUpdate, [FromRoute] int id)
         {
             try
             {
-                var routeUpdate = new Route()
-                {
-                    Id = routeRequest.Id,
-                    BusCompanyId = routeRequest.BusCompanyId,
-                    StartPoint = routeRequest.StartPoint,
-                    EndPoint = routeRequest.EndPoint,
-                    Name = routeRequest.Name,
-                    Status = routeRequest.Status,
-                    UpdateDate = DateTime.Now,
-                };
-                var updateResult = await _routeService.UpdateRouteAsync(routeUpdate);
+                var updateResult = await _routeService.UpdateRouteAsync(routeUpdate, id);
                 if(updateResult > 0)
                 {
                     return Ok(new ResponseModel() { HttpCode = StatusCodes.Status200OK, Message = "Update Success" });
@@ -168,7 +158,8 @@ namespace FTravel.API.Controllers
                 });
             }
         }
-        [HttpPost("create-route")]
+        [HttpPost]
+        [Authorize(Roles = "ADMIN, BUSCOMPANY")]
         public async Task<IActionResult> CreateRoute(CreateRouteModel route)
         {
             try
