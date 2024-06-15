@@ -1,4 +1,6 @@
-﻿using FTravel.Service.BusinessModels;
+﻿using FTravel.Repository.EntityModels;
+using FTravel.Service.BusinessModels;
+using FTravel.Service.Enums;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -28,5 +30,13 @@ namespace FTravel.Service.Services.Interface
         public Task<AuthenModel> LoginWithGoogle(string credental);
 
         public Task<UserModel> GetLoginUserInformationAsync(string email);
+
+        public Task<List<User>> GetUsersByRoleAsync(RoleEnums roleEnums);
+
+        public Task<User> GetUserByEmailAsync(string email);
+
+        public Task<User> GetUserByIdAsync(int userId);
+
+        public Task<List<User>> GetUsersByUserIdsAsync(List<int> userIds);
     }
 }
