@@ -68,5 +68,16 @@ namespace FTravel.Repository.Repositories
                 return false;
             }
         }
+
+        public async Task<Trip> GetTemplateTrip()
+        {
+            return await _context.Trips
+                 .Include(x => x.Tickets)
+                 .ThenInclude(x => x.TicketType)
+                 .Include(x => x.Route)
+                 .Where(x => x.IsTemplate == true)
+                 .FirstAsync();
+
+        }
     }
 }

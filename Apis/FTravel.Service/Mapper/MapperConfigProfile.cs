@@ -52,7 +52,8 @@ namespace FTravel.Service.Mapper
             .ForMember(dest => dest.Tickets, opt => opt.Ignore()); 
 
             CreateMap<Ticket, TicketModel>()
-            .ForMember(dest => dest.TicketTypeName, opt => opt.MapFrom(src => src.TicketType.Name));
+            .ForMember(dest => dest.TicketTypeName, opt => opt.MapFrom(src => src.TicketType.Name))
+            .ReverseMap();
 
             CreateMap<CreateTripModel, Trip>()
             .ForMember(dest => dest.UnsignName, opt => opt.MapFrom(src => StringUtils.ConvertToUnSign(src.Name)))
