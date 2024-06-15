@@ -64,7 +64,19 @@ namespace FTravel.Repository.Repositories
         {
             try
             {
-                _context.Routes.Update(route);
+                var updateRoute = await _context.Routes.FirstOrDefaultAsync(x => x.Id == route.Id);
+                if(updateRoute == null)
+                {
+                    return -1;
+                }
+                updateRoute.Name = route.Name;
+                updateRoute.StartPoint = route.StartPoint;
+                updateRoute.EndPoint = route.EndPoint;
+                updateRoute.Status = route.Status;
+                updateRoute.BusCompanyId = route.BusCompanyId;
+                updateRoute.UpdateDate = DateTime.UtcNow.AddHours(7);
+                updateRoute.UnsignName = route.UnsignName;
+                _context.Routes.Update(updateRoute);
                 var result = await _context.SaveChangesAsync();
                 return result;
             }

@@ -8,16 +8,13 @@ namespace FTravel.Service.BusinessModels
 {
     public class CreateRouteModel
     {
-        public string? UnsignName { get; set; }
 
-        public string Name { get; set; } = null!;
+        public string Name { get; set; } = "";
 
-        public string? StartPoint { get; set; }
+        public int StartPoint { get; set; }
 
-        public string? EndPoint { get; set; }
+        public int EndPoint { get; set; }
 
-        public string? Status { get; set; }
-
-        public string? BusCompanyName { get; set; }
+        public int? BusCompanyId { get; set; }
     }
 }
