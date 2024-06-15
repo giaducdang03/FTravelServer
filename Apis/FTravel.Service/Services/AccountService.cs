@@ -58,7 +58,7 @@ namespace FTravel.Service.Services
 
                     if (existUser != null)
                     {
-                        throw new Exception("Account already exists.");
+                        throw new Exception("Tài khoản đã tồn tại.");
                     }
 
                     // generate password
@@ -157,29 +157,14 @@ namespace FTravel.Service.Services
             return data;
         }
 
-        public async Task<Pagination<AccountModel>> GetAllUserAccountService(PaginationParameter paginationParameter)
+        public async Task<Pagination<AccountModel>> GetAllUsersAsync(PaginationParameter paginationParameter)
         {
             var users = await _accountRepo.GetAllUserAccount(paginationParameter);
-            if (!users.Any())
-            {
-                return null;
-            }
-
             var accountModels = _mapper.Map<List<AccountModel>>(users);
-            foreach (var accountModel in accountModels)
-            {
-                accountModel.Id = accountModel.Id; // Ánh xạ giá trị Id từ UserId
-            }
-
             return new Pagination<AccountModel>(accountModels,
                 users.TotalCount,
                 users.CurrentPage,
                 users.PageSize);
-        }
-
-        public Task<List<AccountModel>> GetAllUserAsync()
-        {
-            throw new NotImplementedException();
         }
 
 
@@ -188,9 +173,12 @@ namespace FTravel.Service.Services
             var user = await _userRepository.GetUserByEmailAsync(email);
             if (user != null && !fcmToken.IsNullOrEmpty())
             {
-                user.Fcmtoken = fcmToken;
-                var result = await _userRepository.UpdateAsync(user);
-                return true ? result > 0 : false;
+                if (user.Fcmtoken != fcmToken) 
+                {
+                    user.Fcmtoken = fcmToken;
+                    var result = await _userRepository.UpdateAsync(user);
+                    return true ? result > 0 : false;
+                }
             }
             return false;
         }

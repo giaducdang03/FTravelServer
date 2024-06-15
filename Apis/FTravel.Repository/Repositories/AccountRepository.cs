@@ -36,7 +36,7 @@ namespace FTravel.Repository.Repositories
 
         public async Task<Pagination<User>> GetAllUserAccount(PaginationParameter paginationParameter)
         {
-            var query = _context.Users.AsQueryable();
+            var query = _context.Users.Include(a => a.Role).AsQueryable();
 
             var totalCount = await query.CountAsync();
             var paginatedQuery = query.Skip((paginationParameter.PageIndex - 1) * paginationParameter.PageSize)
