@@ -167,7 +167,6 @@ namespace FTravel.Service.Services
                     await FirebaseLibrary.SendMessageFireBase(title, body, fcmToken);
                     return true;
                 }
-                throw new Exception("Not found FCM token.");
             }
             throw new Exception("Account does not exist.");
         }
@@ -179,7 +178,7 @@ namespace FTravel.Service.Services
                 await FirebaseLibrary.SendRangeMessageFireBase(title, body, fcmTokens);
                 return true;
             }
-            throw new Exception("Not found fcm token.");
+            return false;
         }
     }
 }
