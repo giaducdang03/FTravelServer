@@ -19,5 +19,7 @@ namespace FTravel.Service.BusinessModels
         public string? ShortDescription { get; set; }
 
         public string? FullDescription { get; set; }
+        [Required(ErrorMessage = "The company manager email is required.")]
+        public string ManagerEmail {  get; set; } = null!;
     }
 }

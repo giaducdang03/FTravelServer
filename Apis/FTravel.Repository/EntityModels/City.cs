@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text.Json.Serialization;
 
 namespace FTravel.Repository.EntityModels;
 
 public partial class City : BaseEntity
 {
+    public int Code { get; set; }
     public string? UnsignName { get; set; }
     public string Name { get; set; } = null!;
 

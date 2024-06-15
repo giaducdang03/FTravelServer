@@ -20,37 +20,49 @@ namespace FTravel.API.Controllers
             _busCompanyService = busCompanyService;
         }
         [HttpPost]
-        [Authorize(Roles = "ADMIN")]
+        //[Authorize(Roles = "ADMIN")]
         public async Task<IActionResult> CreateBusCompany(CreateBusCompanyModel model)
         {
-            if (!ModelState.IsValid)
+            try
             {
-                return BadRequest(ModelState);
-            }
-
-            var isAdded = await _busCompanyService.AddBusCompanyAsync(model);
-
-            if (isAdded)
-            {
-                return Ok(new ResponseModel
+                if (!ModelState.IsValid)
                 {
-                    HttpCode = StatusCodes.Status201Created,
-                    Message = "Bus company created successfully"
+                    return BadRequest(ModelState);
+                }
+
+                var isAdded = await _busCompanyService.AddBusCompanyAsync(model);
+
+                if (isAdded)
+                {
+                    return Ok(new ResponseModel
+                    {
+                        HttpCode = StatusCodes.Status201Created,
+                        Message = "Tạo nhà xe mới thành công!"
+                    });
+                }
+                else
+                {
+                    return BadRequest(new ResponseModel
+                    {
+                        HttpCode = StatusCodes.Status400BadRequest,
+                        Message = "Lỗi xảy ra khi tạo nhà xe!"
+                    });
+                }
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new ResponseModel
+                {
+                    HttpCode = StatusCodes.Status400BadRequest,
+                    Message = ex.Message
                 });
             }
-            else
-            {
-                return BadRequest(
-                                   new ResponseModel
-                                   {
-                                       HttpCode = StatusCodes.Status500InternalServerError,
-                                       Message = "Failed to create bus company"
-                                   });
-            }
+
         }
 
 
         [HttpGet("by-bus-id/{id}")]
+        [Authorize]
         //[Authorize(Roles = "ADMIN, BUSCOMPANY")]
         public async Task<IActionResult> GetBusCompanyDetailById(int id)
         {
@@ -79,7 +91,8 @@ namespace FTravel.API.Controllers
             }
         }
 
-        [HttpGet()]
+        [HttpGet]
+        [Authorize]
         //[Authorize(Roles = "ADMIN, BUSCOMPANY")]
         public async Task<IActionResult> GetAllBusCompanies([FromQuery] PaginationParameter paginationParameter)
         {

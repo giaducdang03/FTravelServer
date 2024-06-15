@@ -21,7 +21,7 @@ namespace FTravel.API.Controllers
             _service = service;
         }
         [HttpGet("by-route-id/{routeId}")]
-        //[Authorize(Roles = "ADMIN, BUSCOMPANY")]
+        [Authorize(Roles = "ADMIN, BUSCOMPANY")]
         public async Task<IActionResult> GetServicesByRouteId(int routeId, [FromQuery] PaginationParameter paginationParameter)
         {
             try
@@ -60,7 +60,7 @@ namespace FTravel.API.Controllers
         }
 
         [HttpGet("by-station-id{stationId}")]
-        //[Authorize(Roles = "ADMIN, BUSCOMPANY")]
+        [Authorize(Roles = "ADMIN, BUSCOMPANY")]
         public async Task<IActionResult> GetServicesByStationId(int stationId, [FromQuery] PaginationParameter paginationParameter)
         {
             try
@@ -98,7 +98,7 @@ namespace FTravel.API.Controllers
             }
         }
         [HttpGet()]
-        //[Authorize(Roles = "ADMIN, BUSCOMPANY")]
+        [Authorize(Roles = "ADMIN, BUSCOMPANY")]
         public async Task<IActionResult> GetAllServices([FromQuery] PaginationParameter paginationParameter)
         {
             try
@@ -138,7 +138,7 @@ namespace FTravel.API.Controllers
         }
 
         [HttpGet("{serviceId}")]
-        //[Authorize(Roles = "ADMIN, BUSCOMPANY")]
+        [Authorize(Roles = "ADMIN, BUSCOMPANY")]
         public async Task<IActionResult> GetServiceById(int serviceId)
         {
             try
@@ -165,7 +165,7 @@ namespace FTravel.API.Controllers
             }
         }
         [HttpPost]
-        //[Authorize(Roles = "ADMIN, BUSCOMPANY")]
+        [Authorize(Roles = "ADMIN, BUSCOMPANY")]
         public async Task<IActionResult> AddService(CreateServiceModel serviceModel)
         {
             try
@@ -200,6 +200,90 @@ namespace FTravel.API.Controllers
             catch (Exception ex)
             {
                 // Return a bad request response for any other exceptions
+                return BadRequest(new ResponseModel
+                {
+                    HttpCode = StatusCodes.Status400BadRequest,
+                    Message = ex.Message
+                });
+            }
+        }
+        [HttpPut("{id}")]
+        [Authorize(Roles = "ADMIN, BUSCOMPANY")]
+        public async Task<IActionResult> UpdateService(int id, UpdateServiceModel serviceModel)
+        {
+            try
+            {
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest(ModelState);
+                }
+
+                bool isUpdated = await _service.UpdateServiceAsync(id, serviceModel);
+
+                if (isUpdated)
+                {
+                    // Return a success response
+                    return Ok(new ResponseModel
+                    {
+                        HttpCode = StatusCodes.Status200OK,
+                        Message = "Service updated successfully"
+                    });
+                }
+                else
+                {
+                    // Return a not found response if the service was not updated successfully
+                    return NotFound(new ResponseModel
+                    {
+                        HttpCode = StatusCodes.Status404NotFound,
+                        Message = "Failed to update the service"
+                    });
+                }
+            }
+            catch (Exception ex)
+            {
+                // Return a bad request response for any other exceptions
+                return BadRequest(new ResponseModel
+                {
+                    HttpCode = StatusCodes.Status400BadRequest,
+                    Message = ex.Message
+                });
+            }
+        }
+        [HttpDelete("{id}")]
+        [Authorize(Roles = "ADMIN, BUSCOMPANY")]
+        public async Task<IActionResult> DeleteService(int id)
+        {
+            try
+            {
+                bool isDeleted = await _service.DeleteServiceAsync(id);
+
+                if (isDeleted)
+                {
+                    return Ok(new ResponseModel
+                    {
+                        HttpCode = StatusCodes.Status200OK,
+                        Message = "Xóa dịch vụ thành công!"
+                    });
+                }
+                else
+                {
+                    return BadRequest(new ResponseModel
+                    {
+                        HttpCode = StatusCodes.Status400BadRequest,
+                        Message = "Xảy ra lỗi khi xóa dịch vụ!"
+                    });
+                }
+            }
+            catch (KeyNotFoundException)
+            {
+                return NotFound(new ResponseModel
+                {
+                    HttpCode = StatusCodes.Status404NotFound,
+                    Message = $"Không tìm thấy dịch vụ với id: {id}"
+                });
+            }
+            catch (Exception ex)
+            {
                 return BadRequest(new ResponseModel
                 {
                     HttpCode = StatusCodes.Status400BadRequest,

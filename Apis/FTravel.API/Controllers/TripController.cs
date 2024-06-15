@@ -25,6 +25,8 @@ namespace FTravel.API.Controllers
         }
 
         [HttpGet]
+        [Authorize]
+        //[Authorize(Roles = "BUSCOMPANY")]
         [Authorize(Roles = "BUSCOMPANY")]
         public async Task<IActionResult> GetAllTripStatusOpening([FromQuery] PaginationParameter paginationParameter)
         {
@@ -37,7 +39,7 @@ namespace FTravel.API.Controllers
                     return NotFound(new ResponseModel
                     {
                         HttpCode = StatusCodes.Status404NotFound,
-                        Message = "No trips was found"
+                        Message = "Không tìm thấy chuyến xe!"
                     });
                 }
                 else
@@ -79,7 +81,7 @@ namespace FTravel.API.Controllers
                     return NotFound(new ResponseModel
                     {
                         HttpCode = StatusCodes.Status404NotFound,
-                        Message = "No trip was found"
+                        Message = "Không tìm tháy chuyến xe!"
                     });
                 }
 
@@ -95,7 +97,7 @@ namespace FTravel.API.Controllers
             }
         }
         [HttpPost()]
-        [Authorize(Roles = "BUSCOMPANY")]
+        [Authorize(Roles = "ADMIN, BUSCOMPANY")]
         public async Task<IActionResult> AddTrip([FromBody] CreateTripModel tripModel)
         {
             try
@@ -104,27 +106,17 @@ namespace FTravel.API.Controllers
                 {
                     return BadRequest(ModelState);
                 }
-
-                if (!Enum.TryParse(typeof(TripStatus), tripModel.Status, true, out _))
-                {
-                    return BadRequest(new ResponseModel
-                    {
-                        HttpCode = StatusCodes.Status400BadRequest,
-                        Message = $"Invalid status value. Allowed values are: {string.Join(", ", Enum.GetNames(typeof(TripStatus)))}."
-                    });
-                }
-
                 var result = await _tripService.CreateTripAsync(tripModel);
                 if (result)
                 {
-                    return Ok("Trip created successfully.");
+                    return Ok("Tạo chuyến xe mới thành công!");
                 }
                 else
                 {
                     return BadRequest(new ResponseModel
                     {
                         HttpCode = StatusCodes.Status400BadRequest,
-                        Message = "Failed to create trip."
+                        Message = "Xảy ra lỗi khi tạo chuyến xe mới!"
                     });
                 }
             }
@@ -138,7 +130,7 @@ namespace FTravel.API.Controllers
             }
         }
         [HttpPut("{id}")]
-        [Authorize(Roles = "BUSCOMPANY")]
+        [Authorize(Roles = "ADMIN, BUSCOMPANY")]
         public async Task<IActionResult> UpdateTrip(int id, UpdateTripModel tripModel)
         {
             try
@@ -151,14 +143,14 @@ namespace FTravel.API.Controllers
                 var result = await _tripService.UpdateTripAsync(id, tripModel);
                 if (result)
                 {
-                    return Ok("Trip updated successfully.");
+                    return Ok("Cập nhật chuyến xe thành công!");
                 }
                 else
                 {
                     return BadRequest(new ResponseModel
                     {
                         HttpCode = StatusCodes.Status400BadRequest,
-                        Message = "Failed to update trip."
+                        Message = "Xảy ra lỗi khi cập nhật chuyến xe!"
                     });
                 }
             }
@@ -188,7 +180,7 @@ namespace FTravel.API.Controllers
             }
         }
         [HttpPut("{id}/status")]
-        [Authorize(Roles = "BUSCOMPANY")]
+        [Authorize(Roles = "ADMIN, BUSCOMPANY")]
         public async Task<IActionResult> UpdateTripStatus(int id, string status)
         {
             try
@@ -201,14 +193,14 @@ namespace FTravel.API.Controllers
                 var result = await _tripService.UpdateTripStatusAsync(id, status);
                 if (result)
                 {
-                    return Ok("Trip status updated successfully.");
+                    return Ok("Cập nhật trạng thái chuyến xe thành công!");
                 }
                 else
                 {
                     return BadRequest(new ResponseModel
                     {
                         HttpCode = StatusCodes.Status400BadRequest,
-                        Message = "Failed to update trip status."
+                        Message = "Xảy ra lỗi khi cập nhật trạng thái chuyến xe!"
                     });
                 }
             }
@@ -238,8 +230,8 @@ namespace FTravel.API.Controllers
             }
         }
         [HttpPut("{id}/cancel")]
-        [Authorize(Roles = "BUSCOMPANY")]
-        public async Task<IActionResult> Cancelrip(int id, string status)
+        [Authorize(Roles = "ADMIN, BUSCOMPANY")]
+        public async Task<IActionResult> CancelTrip(int id, string status)
         {
             try
             {
@@ -251,14 +243,14 @@ namespace FTravel.API.Controllers
                 var result = await _tripService.CancelTripAsync(id, status);
                 if (result)
                 {
-                    return Ok("Trip delete successfully.");
+                    return Ok("Xóa chuyến xe thành công!");
                 }
                 else
                 {
                     return BadRequest(new ResponseModel
                     {
                         HttpCode = StatusCodes.Status400BadRequest,
-                        Message = "Fail to delete trip."
+                        Message = "Xảy ra lỗi khi xóa chuyến xe!"
                     });
                 }
             }

@@ -1,4 +1,6 @@
 ﻿using AutoMapper;
+using FTravel.Repositories.Commons;
+using FTravel.Repository.Commons;
 using FTravel.Repository.EntityModels;
 using FTravel.Repository.Repositories;
 using FTravel.Repository.Repositories.Interface;
@@ -7,6 +9,7 @@ using FTravel.Service.Enums;
 using FTravel.Service.Services.Interface;
 using FTravel.Service.Utils;
 using FTravel.Service.Utils.Email;
+using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -25,10 +28,10 @@ namespace FTravel.Service.Services
         private readonly IMailService _mailService;
         private readonly IMapper _mapper;
 
-        public AccountService(IAccountRepository accountRepo, 
-            IUserRepository userRepository, 
-            IRoleRepository roleRepository, 
-            ICustomerRepository customerRepository, 
+        public AccountService(IAccountRepository accountRepo,
+            IUserRepository userRepository,
+            IRoleRepository roleRepository,
+            ICustomerRepository customerRepository,
             IMailService mailService,
             IMapper mapper)
         {
@@ -46,8 +49,10 @@ namespace FTravel.Service.Services
             {
                 try
                 {
-                    
+
                     User newUser = _mapper.Map<User>(model);
+                    newUser.Status = UserStatus.ACTIVE.ToString();
+                    newUser.UnsignFullName = StringUtils.ConvertToUnSign(model.FullName);
 
                     var existUser = await _userRepository.GetUserByEmailAsync(model.Email);
 
@@ -146,20 +151,64 @@ namespace FTravel.Service.Services
             return data;
         }
 
-        public async Task<List<AccountModel>> GetAllUserAscyn()
+        public async Task<User> GetAccountInfoById(int id)
         {
-            try
-            {
-                var account = await _accountRepo.GetAllUser();
-                var map = _mapper.Map<List<AccountModel>>(account);
-                return map;
-            }
-            catch (Exception ex)
-            {   
-                throw new Exception(ex.Message);
-
-            }
+            var data = await _accountRepo.GetUserInfoById(id);
+            return data;
         }
+
+        public async Task<Pagination<AccountModel>> GetAllUserAccountService(PaginationParameter paginationParameter)
+        {
+            var users = await _accountRepo.GetAllUserAccount(paginationParameter);
+            if (!users.Any())
+            {
+                return null;
+            }
+
+            var accountModels = _mapper.Map<List<AccountModel>>(users);
+            foreach (var accountModel in accountModels)
+            {
+                accountModel.Id = accountModel.Id; // Ánh xạ giá trị Id từ UserId
+            }
+
+            return new Pagination<AccountModel>(accountModels,
+                users.TotalCount,
+                users.CurrentPage,
+                users.PageSize);
+        }
+
+        public Task<List<AccountModel>> GetAllUserAsync()
+        {
+            throw new NotImplementedException();
+        }
+
+
+        public async Task<bool> UpdateFcmTokenAsync(string email, string fcmToken)
+        {
+            var user = await _userRepository.GetUserByEmailAsync(email);
+            if (user != null && !fcmToken.IsNullOrEmpty())
+            {
+                user.Fcmtoken = fcmToken;
+                var result = await _userRepository.UpdateAsync(user);
+                return true ? result > 0 : false;
+            }
+            return false;
+        }
+
+        //public async Task<List<AccountModel>> GetAllUserAscyn()
+        //{
+        //    try
+        //    {
+        //        var account = await _accountRepo.GetAllUser();
+        //        var map = _mapper.Map<List<AccountModel>>(account);
+        //        return map;
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        throw new Exception(ex.Message);
+
+        //    }
+        //}
 
 
     }

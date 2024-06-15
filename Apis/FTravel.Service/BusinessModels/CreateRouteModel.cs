@@ -6,15 +6,18 @@ using System.Threading.Tasks;
 
 namespace FTravel.Service.BusinessModels
 {
-    public class StationModel
+    public class CreateRouteModel
     {
-        public int Id { get; set; }
         public string? UnsignName { get; set; }
 
         public string Name { get; set; } = null!;
 
-        public int? BusCompanyId { get; set; }
+        public string? StartPoint { get; set; }
+
+        public string? EndPoint { get; set; }
 
         public string? Status { get; set; }
+
+        public string? BusCompanyName { get; set; }
     }
 }

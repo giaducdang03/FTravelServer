@@ -1,7 +1,9 @@
+using FirebaseAdmin;
 using FTravel.API;
 using FTravel.API.Middlewares;
 using FTravel.Repository.DBContext;
 using FTravel.Service.Utils.Email;
+using Google.Apis.Auth.OAuth2;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -37,6 +39,7 @@ builder.Services.AddCors(options =>
             .AllowAnyMethod();
         });
 });
+
 
 builder.Services.AddAuthentication(options =>
 {
@@ -118,6 +121,13 @@ builder.Services.AddDbContext<FtravelContext>(options =>
 
 // add mail settings
 builder.Services.Configure<MailSettings>(builder.Configuration.GetSection("MailSettings"));
+
+
+// setup firebase
+FirebaseApp.Create(new AppOptions()
+{
+    Credential = GoogleCredential.FromFile("swd392-d2c4e-firebase-adminsdk-t5zts-828fe1145e.json")
+});
 
 var app = builder.Build();
 

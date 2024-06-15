@@ -3,6 +3,7 @@ using FTravel.API.ViewModels.ResponseModels;
 using FTravel.Repository.Commons;
 using FTravel.Repository.EntityModels;
 using FTravel.Service.BusinessModels;
+using FTravel.Service.Services;
 using FTravel.Service.Services.Interface;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -27,8 +28,8 @@ namespace FTravel.API.Controllers
 
 
         [HttpGet]
-        [Authorize(Roles = "BUSCOMPANY")]
-        public async Task<IActionResult> getListRoute([FromQuery] PaginationParameter paginationParameter)
+        [Authorize(Roles = "ADMIN, BUSCOMPANY")]
+        public async Task<IActionResult> GetListRoute([FromQuery] PaginationParameter paginationParameter)
         {
             try
             {
@@ -68,8 +69,8 @@ namespace FTravel.API.Controllers
         }
 
         [HttpGet("{id}")]
-        [Authorize(Roles = "BUSCOMPANY")]
-        public async Task<IActionResult> getRouteDetails(int id)
+        [Authorize(Roles = "ADMIN, BUSCOMPANY")]
+        public async Task<IActionResult> GetRouteDetails(int id)
         {
             try
             {
@@ -96,7 +97,7 @@ namespace FTravel.API.Controllers
         }
 
         [HttpPut]
-        [Authorize(Roles = "BUSCOMPANY")]
+        [Authorize(Roles = "ADMIN, BUSCOMPANY")]
         public async Task<IActionResult> UpdateRoute([FromBody] RouteRequestModel routeRequest)
         {
             try
@@ -135,7 +136,7 @@ namespace FTravel.API.Controllers
         }
 
         [HttpDelete("{id}")]
-        [Authorize(Roles = "BUSCOMPANY")]
+        [Authorize(Roles = "ADMIN, BUSCOMPANY")]
         public async Task<IActionResult> RouteSoftDelete(int id)
         {
             try
@@ -167,7 +168,29 @@ namespace FTravel.API.Controllers
                 });
             }
         }
+        [HttpPost("create-route")]
+        public async Task<IActionResult> CreateRoute(CreateRouteModel route)
+        {
+            try
+            {
+                var data = await _routeService.CreateRoute(route);
+                if (route == null)
+                {
+                    return BadRequest();
+                }
+                return Ok(data);
+            }
+            catch (Exception ex)
+            {
 
-        
+                return BadRequest(new ResponseModel
+                {
+                    HttpCode = 400,
+                    Message = ex.Message
+                });
+            }
+
+        }
+
     }
 }

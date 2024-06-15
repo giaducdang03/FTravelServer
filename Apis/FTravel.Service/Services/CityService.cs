@@ -6,9 +6,11 @@ using FTravel.Repository.Repositories;
 using FTravel.Repository.Repositories.Interface;
 using FTravel.Service.BusinessModels;
 using FTravel.Service.Services.Interface;
+using FTravel.Service.Utils;
 using Microsoft.AspNetCore.Components.Server.Circuits;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -26,21 +28,22 @@ namespace FTravel.Service.Services
             _mapper = mapper;
         }
 
-        public async Task<City> CreateCityAsync(CityModel cityModel)
+        public async Task<int> CreateCityAsync(CityModel cityModel)
         {
            if(cityModel == null)
             {
-                return null;
+                return -1;
 
             }
             var city = _mapper.Map<City>(cityModel);
-            var result = await _cityRepository.AddAsync(city);
-            if (result != null)
+            city.UnsignName = StringUtils.ConvertToUnSign(cityModel.Name);
+            var result = await _cityRepository.CreateCityAsync(city);
+            if (result > 0)
             {
-                return city;
+                return result;
             } else
             {
-                return null;
+                return -1;
             }
         }
 
@@ -58,13 +61,15 @@ namespace FTravel.Service.Services
                 listCity.PageSize);
         }
 
-        public async Task<CityModel> UpdateCityAsync(CityModel cityModel)
+        public async Task<CityModel> UpdateCityAsync(CityModel updateCityModel, int id)
         {
-            var city = _mapper.Map<City>(cityModel);
-            var updateCity = await _cityRepository.UpdateCityAsync(city);
-            if(updateCity != null)
+            var updateCity = _mapper.Map<City>(updateCityModel);
+            updateCity.Id = id;
+            updateCity.UnsignName = StringUtils.ConvertToUnSign(updateCityModel.Name);
+            var result = await _cityRepository.UpdateCityAsync(updateCity);
+            if(result != null)
             {
-                return cityModel;
+                return updateCityModel;
             }
             return null;
         }
