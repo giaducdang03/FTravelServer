@@ -18,13 +18,13 @@ namespace FTravel.API.Controllers
             _orderedTicketService = orderedTicketService;
         }
 
-        [HttpGet("by-orderid/{orderid}")]
-        public async Task<IActionResult> GetOrderedTicketDetailByOrderId(int orderId)
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetOrderedTicketDetailByOrderId(int id)
         {
             try
             {
-                var data = await _orderedTicketService.GetAllOrderedTicketDetailByOrderIdService(orderId);
-                if (orderId == null)
+                var data = await _orderedTicketService.GetAllOrderedTicketDetailByOrderIdService(id);
+                if (id == null)
                 {
                     return BadRequest();
                 }
@@ -43,12 +43,12 @@ namespace FTravel.API.Controllers
         }
 
         [HttpGet("by-cutomerid/{cusid}")]
-        public async Task<IActionResult> GetOrderedTicketByCustomerId(int customerId)
+        public async Task<IActionResult> GetOrderedTicketByCustomerId(int cusid)
         {
             try
             {
-                var data = await _orderedTicketService.GetAllOrderedTicketByCustomerIdService(customerId);
-                if (customerId == null)
+                var data = await _orderedTicketService.GetAllOrderedTicketByCustomerIdService(cusid);
+                if (cusid == null) 
                 {
                     return BadRequest();
                 }
