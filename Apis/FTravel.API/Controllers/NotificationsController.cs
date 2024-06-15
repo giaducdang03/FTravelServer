@@ -1,6 +1,8 @@
-﻿using FTravel.API.ViewModels.ResponseModels;
+﻿using FTravel.API.ViewModels.RequestModels;
+using FTravel.API.ViewModels.ResponseModels;
 using FTravel.Repository.Commons;
 using FTravel.Repository.EntityModels;
+using FTravel.Service.Enums;
 using FTravel.Service.Services;
 using FTravel.Service.Services.Interface;
 using Microsoft.AspNetCore.Authorization;
@@ -178,6 +180,74 @@ namespace FTravel.API.Controllers
                 {
                     HttpCode = StatusCodes.Status400BadRequest,
                     Message = "Can not mark read notification."
+                });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(
+                    new ResponseModel()
+                    {
+                        HttpCode = StatusCodes.Status400BadRequest,
+                        Message = ex.Message.ToString()
+                    }
+               );
+            }
+        }
+
+        [HttpPost("add-notification-for-roles")]
+        [Authorize(Roles = "ADMIN")]
+        public async Task<IActionResult> AddNotificationForRole(CreateNotificationModel createNotificationModel)
+        {
+            try
+            {
+                var newNoti = new Notification
+                {
+                    Title = createNotificationModel.Title,
+                    Message = createNotificationModel.Message
+                };
+                var result = await _notificationService.AddNotificationByRoleAsync(createNotificationModel.RoleEnums.Value, newNoti);
+                if (result != null)
+                {
+                    return Ok(result);
+                }
+                return BadRequest(new ResponseModel
+                {
+                    HttpCode = StatusCodes.Status400BadRequest,
+                    Message = "Can not add notification."
+                });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(
+                    new ResponseModel()
+                    {
+                        HttpCode = StatusCodes.Status400BadRequest,
+                        Message = ex.Message.ToString()
+                    }
+               );
+            }
+        }
+
+        [HttpPost("add-notification-for-users")]
+        [Authorize(Roles = "ADMIN")]
+        public async Task<IActionResult> AddNotificationForUsers(CreateNotificationModel createNotificationModel)
+        {
+            try
+            {
+                var newNoti = new Notification
+                {
+                    Title = createNotificationModel.Title,
+                    Message = createNotificationModel.Message
+                };
+                var result = await _notificationService.AddNotificationByListUser(createNotificationModel.UserIds, newNoti);
+                if (result != null)
+                {
+                    return Ok(result);
+                }
+                return BadRequest(new ResponseModel
+                {
+                    HttpCode = StatusCodes.Status400BadRequest,
+                    Message = "Can not add notification."
                 });
             }
             catch (Exception ex)

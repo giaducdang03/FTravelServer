@@ -26,8 +26,24 @@ namespace FTravel.Service.Utils
             };
 
             var reponse = await FirebaseMessaging.DefaultInstance.SendAsync(message);
-            Console.WriteLine($"Successfully: {reponse}");
             return reponse;
+
+        }
+
+        public static async Task<bool> SendRangeMessageFireBase(string title, string body, List<string> tokens)
+        {
+            var message = new MulticastMessage()
+            {
+                Notification = new Notification()
+                {
+                    Title = title,
+                    Body = body
+                },
+                Tokens = tokens
+            };
+
+            var reponse = await FirebaseMessaging.DefaultInstance.SendEachForMulticastAsync(message);
+            return true;
 
         }
     }

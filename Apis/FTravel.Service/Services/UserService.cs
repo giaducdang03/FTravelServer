@@ -486,6 +486,31 @@ namespace FTravel.Service.Services
             }
         }
 
+        public async Task<List<User>> GetUsersByRoleAsync(RoleEnums roleEnums)
+        {
+            var role = await _roleRepository.GetRoleByName(roleEnums.ToString());
+            if (role != null)
+            {
+                var users = await _userRepository.GetAllAsync();
+                return users.Where(x => x.RoleId == role.Id).ToList();
+            }
+            return null;
+        }
+        public async Task<User> GetUserByEmailAsync(string email)
+        {
+            return await _userRepository.GetUserByEmailAsync(email);
+        }
+
+        public async Task<User> GetUserByIdAsync(int userId)
+        {
+            return await _userRepository.GetByIdAsync(userId);
+        }
+        public async Task<List<User>> GetUsersByUserIdsAsync(List<int> userIds)
+        {
+            var users = await _userRepository.GetAllAsync();
+            return users.Where(x => userIds.Contains(x.Id)).ToList();
+        }
+
         private async Task<string> GenerateAccessToken(string email, User user)
         {
             var role = await _roleRepository.GetByIdAsync(user.RoleId.Value);
@@ -530,6 +555,5 @@ namespace FTravel.Service.Services
             }
             return null;
         }
-
     }
 }
