@@ -113,8 +113,8 @@ else
     connection = Environment.GetEnvironmentVariable("AZURE_SQL_CONNECTIONSTRING");
 }
 
-builder.Services.AddDbContext<FtravelContext>(options =>
-  options.UseSqlServer(connection));
+//builder.Services.AddDbContext<FtravelContext>(options =>
+//  options.UseSqlServer(connection));
 
 // ==================== NO EDIT OR REMOVE COMMENT =======================
 

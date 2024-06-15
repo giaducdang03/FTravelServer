@@ -5,6 +5,7 @@ using FTravel.Repository.EntityModels;
 using FTravel.Repository.Repositories;
 using FTravel.Repository.Repositories.Interface;
 using FTravel.Service.BusinessModels;
+using FTravel.Service.Enums;
 using FTravel.Service.Services.Interface;
 using FTravel.Service.Utils;
 using Microsoft.AspNetCore.Mvc.Abstractions;
@@ -58,7 +59,9 @@ namespace FTravel.Service.Services
             try
             {
                 var map = _mapper.Map<Route>(route);
-                var createRoute = await _routeRepository.CreateRoute(map);
+                map.Status = RouteStatus.ACTIVE.ToString();
+                map.UnsignName = StringUtils.ConvertToUnSign(map.Name);
+                var createRoute = await _routeRepository.AddAsync(map);
                 var resutl = _mapper.Map<CreateRouteModel>(createRoute);
                 return resutl;
             }
@@ -99,12 +102,15 @@ namespace FTravel.Service.Services
                 return -1;
             } else
             {
-                findRouteUpdate = _mapper.Map<Route>(routeUpdate);
-                findRouteUpdate.Id = id;
+                findRouteUpdate.Name = routeUpdate.Name;
+                findRouteUpdate.StartPoint = routeUpdate.StartPoint;
+                findRouteUpdate.EndPoint = routeUpdate.EndPoint;
+                findRouteUpdate.Status = routeUpdate.Status.ToString();
+                findRouteUpdate.BusCompanyId = routeUpdate.BusCompanyId;
                 findRouteUpdate.UnsignName = StringUtils.ConvertToUnSign(routeUpdate.Name);
             }
 
-            var result = await _routeRepository.UpdateRoutesAsync(findRouteUpdate);
+            var result = await _routeRepository.UpdateAsync(findRouteUpdate);
             return result;
         }
     }

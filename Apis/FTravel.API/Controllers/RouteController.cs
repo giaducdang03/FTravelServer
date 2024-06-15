@@ -39,7 +39,7 @@ namespace FTravel.API.Controllers
                     return NotFound(new ResponseModel()
                     {
                         HttpCode = StatusCodes.Status404NotFound,
-                        Message = "Route is empty"
+                        Message = "Không có tuyến đường nào"
                     });
                 }
 
@@ -80,7 +80,7 @@ namespace FTravel.API.Controllers
                     return NotFound(new ResponseModel()
                     {
                         HttpCode = StatusCodes.Status404NotFound,
-                        Message = "Route does not exist"
+                        Message = "Tuyến đường không tồn tại"
                     });
                 }
                 return Ok(routeDetail);
@@ -105,12 +105,20 @@ namespace FTravel.API.Controllers
                 var updateResult = await _routeService.UpdateRouteAsync(routeUpdate, id);
                 if(updateResult > 0)
                 {
-                    return Ok(new ResponseModel() { HttpCode = StatusCodes.Status200OK, Message = "Update Success" });
+                    return Ok(new ResponseModel() 
+                    { 
+                        HttpCode = StatusCodes.Status200OK, 
+                        Message = "Đã cập nhật tuyến đường thành công" 
+                    });
 
                 }
                 else
                 {
-                    return NotFound(new ResponseModel() { HttpCode = StatusCodes.Status404NotFound, Message = "Not found Route to update" });
+                    return NotFound(new ResponseModel() 
+                    { 
+                        HttpCode = StatusCodes.Status404NotFound, 
+                        Message = "Tuyến đường không tồn tại" 
+                    });
 
                 }
             }
@@ -137,14 +145,14 @@ namespace FTravel.API.Controllers
                     return Ok(new ResponseModel()
                     {
                         HttpCode = 200,
-                        Message = "Soft Delete Route Success"
+                        Message = "Xóa tuyến đường thành công"
                     });
                 } else
                 {
                     return NotFound(new ResponseModel()
                     {
                         HttpCode = StatusCodes.Status404NotFound,
-                        Message = "Route not found"
+                        Message = "Tuyến đường không tồn tại"
                     });
                 }
             }
@@ -176,7 +184,7 @@ namespace FTravel.API.Controllers
 
                 return BadRequest(new ResponseModel
                 {
-                    HttpCode = 400,
+                    HttpCode = StatusCodes.Status400BadRequest,
                     Message = ex.Message
                 });
             }
