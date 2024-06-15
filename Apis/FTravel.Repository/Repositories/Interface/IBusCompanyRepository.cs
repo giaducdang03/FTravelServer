@@ -14,5 +14,6 @@ namespace FTravel.Repository.Repositories.Interface
         public Task<Pagination<BusCompany>> GetAllBusCompanies(PaginationParameter paginationParameter);
 
         public Task<BusCompany> GetBusCompanyDetailById(int id);
+        public Task<BusCompany> GetBusCompanyByManagerEmail(string email);
     }
 }
