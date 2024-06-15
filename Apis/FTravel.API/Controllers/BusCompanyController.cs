@@ -37,7 +37,7 @@ namespace FTravel.API.Controllers
                     return Ok(new ResponseModel
                     {
                         HttpCode = StatusCodes.Status201Created,
-                        Message = "Bus company created successfully"
+                        Message = "Tạo nhà xe mới thành công!"
                     });
                 }
                 else
@@ -45,7 +45,7 @@ namespace FTravel.API.Controllers
                     return BadRequest(new ResponseModel
                     {
                         HttpCode = StatusCodes.Status400BadRequest,
-                        Message = "Failed to create bus company"
+                        Message = "Lỗi xảy ra khi tạo nhà xe!"
                     });
                 }
             }

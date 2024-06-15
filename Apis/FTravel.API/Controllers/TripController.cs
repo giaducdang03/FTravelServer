@@ -38,7 +38,7 @@ namespace FTravel.API.Controllers
                     return NotFound(new ResponseModel
                     {
                         HttpCode = StatusCodes.Status404NotFound,
-                        Message = "No trips was found"
+                        Message = "Không tìm thấy chuyến xe!"
                     });
                 }
 
@@ -85,7 +85,7 @@ namespace FTravel.API.Controllers
                     return NotFound(new ResponseModel
                     {
                         HttpCode = StatusCodes.Status404NotFound,
-                        Message = "No trip was found"
+                        Message = "Không tìm tháy chuyến xe!"
                     });
                 }
 
@@ -110,24 +110,18 @@ namespace FTravel.API.Controllers
                 {
                     return BadRequest(ModelState);
                 }
-
-                if (!Enum.TryParse(typeof(TripStatus), tripModel.Status, true, out _))
+                var result = await _tripService.CreateTripAsync(tripModel);
+                if (result)
+                {
+                    return Ok("Tạo chuyến xe mới thành công!");
+                }
+                else
                 {
                     return BadRequest(new ResponseModel
                     {
                         HttpCode = StatusCodes.Status400BadRequest,
-                        Message = $"Invalid status value. Allowed values are: {string.Join(", ", Enum.GetNames(typeof(TripStatus)))}."
+                        Message = "Xảy ra lỗi khi tạo chuyến xe mới!"
                     });
-                }
-
-                var result = await _tripService.CreateTripAsync(tripModel);
-                if (result)
-                {
-                    return Ok("Trip created successfully.");
-                }
-                else
-                {
-                    return StatusCode(StatusCodes.Status500InternalServerError, "Failed to create trip.");
                 }
             }
             catch (Exception ex)
@@ -153,11 +147,15 @@ namespace FTravel.API.Controllers
                 var result = await _tripService.UpdateTripAsync(id, tripModel);
                 if (result)
                 {
-                    return Ok("Trip updated successfully.");
+                    return Ok("Cập nhật chuyến xe thành công!");
                 }
                 else
                 {
-                    return StatusCode(StatusCodes.Status500InternalServerError, "Failed to update trip.");
+                    return BadRequest(new ResponseModel
+                    {
+                        HttpCode = StatusCodes.Status400BadRequest,
+                        Message = "Xảy ra lỗi khi cập nhật chuyến xe!"
+                    });
                 }
             }
             catch (KeyNotFoundException ex)
@@ -199,11 +197,15 @@ namespace FTravel.API.Controllers
                 var result = await _tripService.UpdateTripStatusAsync(id, status);
                 if (result)
                 {
-                    return Ok("Trip status updated successfully.");
+                    return Ok("Cập nhật trạng thái chuyến xe thành công!");
                 }
                 else
                 {
-                    return StatusCode(StatusCodes.Status500InternalServerError, "Failed to update trip status.");
+                    return BadRequest(new ResponseModel
+                    {
+                        HttpCode = StatusCodes.Status400BadRequest,
+                        Message = "Xảy ra lỗi khi cập nhật trạng thái chuyến xe!"
+                    });
                 }
             }
             catch (KeyNotFoundException ex)
@@ -233,7 +235,7 @@ namespace FTravel.API.Controllers
         }
         [HttpPut("{id}/cancel")]
         [Authorize(Roles = "ADMIN, BUSCOMPANY")]
-        public async Task<IActionResult> Cancelrip(int id, string status)
+        public async Task<IActionResult> CancelTrip(int id, string status)
         {
             try
             {
@@ -245,11 +247,15 @@ namespace FTravel.API.Controllers
                 var result = await _tripService.CancelTripAsync(id, status);
                 if (result)
                 {
-                    return Ok("Trip delete successfully.");
+                    return Ok("Xóa chuyến xe thành công!");
                 }
                 else
                 {
-                    return StatusCode(StatusCodes.Status500InternalServerError, "Failed to delete trip.");
+                    return BadRequest(new ResponseModel
+                    {
+                        HttpCode = StatusCodes.Status400BadRequest,
+                        Message = "Xảy ra lỗi khi xóa chuyến xe!"
+                    });
                 }
             }
             catch (KeyNotFoundException ex)
