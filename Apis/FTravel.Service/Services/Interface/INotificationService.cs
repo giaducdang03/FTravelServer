@@ -1,6 +1,7 @@
 ﻿using FTravel.Repositories.Commons;
 using FTravel.Repository.Commons;
 using FTravel.Repository.EntityModels;
+using FTravel.Service.Enums;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using System;
 using System.Collections.Generic;
@@ -14,6 +15,10 @@ namespace FTravel.Service.Services.Interface
     {
         public Task<Notification> AddNotificationByUserId(int userId, Notification notificationModel); 
 
+        public Task<Notification> AddNotificationByRoleAsync(RoleEnums roleEnums, Notification notificationModel);
+
+        public Task<Notification> AddNotificationByListUser(List<int> userIds, Notification notificationModel);
+
         public Task<Notification> GetNotificationById(int id);
 
         public Task<Pagination<Notification>> GetNotificationsByEmail(string email, PaginationParameter paginationParameter);
@@ -23,5 +28,7 @@ namespace FTravel.Service.Services.Interface
         public Task<bool> MarkAllUserNotificationIsReadAsync(string email);
 
         public Task<bool> MarkNotificationIsReadById(int notificationId);
+
+        public Task<bool> PushListMessageFirebase(string title, string body, List<string> fcmTokens);
     }
 }
