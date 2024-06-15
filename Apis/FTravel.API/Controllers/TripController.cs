@@ -26,8 +26,6 @@ namespace FTravel.API.Controllers
 
         [HttpGet]
         [Authorize]
-        //[Authorize(Roles = "BUSCOMPANY")]
-        [Authorize(Roles = "BUSCOMPANY")]
         public async Task<IActionResult> GetAllTripStatusOpening([FromQuery] PaginationParameter paginationParameter)
         {
             try
@@ -69,7 +67,7 @@ namespace FTravel.API.Controllers
         }
 
         [HttpGet("{id}")]
-        [Authorize(Roles = "BUSCOMPANY")]
+        [Authorize]
         public async Task<IActionResult> GetTripDetailByIdStatusOpening(int id)
         {
             try
@@ -269,6 +267,34 @@ namespace FTravel.API.Controllers
                     HttpCode = StatusCodes.Status400BadRequest,
                     Message = ex.Message
                 });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new ResponseModel
+                {
+                    HttpCode = StatusCodes.Status400BadRequest,
+                    Message = ex.Message
+                });
+            }
+        }
+        [HttpGet("template")]
+        [Authorize(Roles = "ADMIN, BUSCOMPANY")]
+        public async Task<IActionResult> GetTemplateTrip()
+        {
+            try
+            {
+                var result = await _tripService.GetTemplateTripAsync();
+
+                if (result == null)
+                {
+                    return NotFound(new ResponseModel
+                    {
+                        HttpCode = StatusCodes.Status404NotFound,
+                        Message = "Không tìm tháy chuyến xe mẫu!"
+                    });
+                }
+
+                return Ok(result);
             }
             catch (Exception ex)
             {
