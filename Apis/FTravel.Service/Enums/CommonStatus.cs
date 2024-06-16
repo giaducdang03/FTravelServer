@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace FTravel.Service.Enums
 {
-    public enum RouteStatus
+    public enum CommonStatus
     {
         ACTIVE,
         INACTIVE
