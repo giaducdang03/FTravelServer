@@ -149,6 +149,38 @@ namespace FTravel.API.Controllers
 
         }
 
+        [HttpDelete("{id}")]
+        [Authorize(Roles = "ADMIN")]
+        public async Task<IActionResult> DeleteAccountById(int id)
+        {
+            try
+            {
+                var result = await _accountService.DeleteAccountAsync(id);
+                if (result)
+                {
+                    return Ok(new ResponseModel
+                    {
+                        HttpCode = StatusCodes.Status200OK,
+                        Message = "Xóa người dùng thành công."
+                    });
+                }
+                return BadRequest(new ResponseModel
+                {
+                    HttpCode = StatusCodes.Status400BadRequest,
+                    Message = "Có lỗi trong quá trình xóa người dùng."
+                });
+            }
+            catch (Exception ex)
+            {
+                var resp = new ResponseModel()
+                {
+                    HttpCode = StatusCodes.Status400BadRequest,
+                    Message = ex.Message.ToString()
+                };
+                return BadRequest(resp);
+            }
+        }
+
         [HttpPut("update-fcm-token")]
         [Authorize]
         public async Task<IActionResult> UpdateFcmToken(UpdateFcmTokenModel updateFcmTokenModel)
