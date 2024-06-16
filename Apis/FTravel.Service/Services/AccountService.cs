@@ -25,6 +25,7 @@ namespace FTravel.Service.Services
         private readonly IUserRepository _userRepository;
         private readonly IRoleRepository _roleRepository;
         private readonly ICustomerRepository _customerRepository;
+        private readonly IWalletRepository _walletRepository;
         private readonly IMailService _mailService;
         private readonly IMapper _mapper;
 
@@ -32,6 +33,7 @@ namespace FTravel.Service.Services
             IUserRepository userRepository,
             IRoleRepository roleRepository,
             ICustomerRepository customerRepository,
+            IWalletRepository walletRepository,
             IMailService mailService,
             IMapper mapper)
         {
@@ -39,6 +41,7 @@ namespace FTravel.Service.Services
             _userRepository = userRepository;
             _roleRepository = roleRepository;
             _customerRepository = customerRepository;
+            _walletRepository = walletRepository;
             _mailService = mailService;
             _mapper = mapper;
         }
@@ -122,6 +125,61 @@ namespace FTravel.Service.Services
                     throw;
                 }
             }
+        }
+
+        public async Task<bool> DeleteAccountAsync(int id)
+        {
+            var account = await _accountRepo.GetByIdAsync(id);
+            if (account != null)
+            {
+                // check confirm email
+                if (account.ConfirmEmail == true)
+                {
+                    account.Status = UserStatus.BANNED.ToString();
+                    await _accountRepo.SoftDeleteAsync(account);
+                    return true;
+                }
+                else
+                {
+                    using (var transaction = await _userRepository.BeginTransactionAsync())
+                    {
+                        try
+                        {
+                            var accountRole = await _roleRepository.GetByIdAsync(account.RoleId.Value);
+                            if (accountRole != null)
+                            {
+                                // if customer delete customer and wallet
+                                if (accountRole.Name == RoleEnums.CUSTOMER.ToString())
+                                {
+                                    var customer = await _customerRepository.GetCustomerByEmailAsync(account.Email);
+                                    if (customer != null)
+                                    {
+                                        await _walletRepository.PermanentDeletedAsync(customer.Wallet);
+                                        await _customerRepository.PermanentDeletedAsync(customer);
+                                        await _accountRepo.PermanentDeletedAsync(account);
+
+                                        await transaction.CommitAsync();
+                                        return true;
+                                    }
+                                }
+                                else
+                                {
+                                    await _accountRepo.PermanentDeletedAsync(account);
+                                    await transaction.CommitAsync();
+                                    return true;
+                                }
+                            }
+                        }
+                        catch
+                        {
+                            await transaction.RollbackAsync();
+                            throw;
+                        }
+                    }
+                        
+                }
+            }
+            throw new Exception("Tài khoản không tồn tại.");
         }
 
         //public async Task<AccountModel> CreateAccount(AccountModel account)

@@ -4,6 +4,7 @@ using FTravel.Repository.DBContext;
 using FTravel.Repository.EntityModels;
 using FTravel.Repository.Repositories.Interface;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.Identity.Client;
 using System;
 using System.Collections.Generic;

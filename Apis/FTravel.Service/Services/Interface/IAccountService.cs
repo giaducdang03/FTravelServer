@@ -21,5 +21,7 @@ namespace FTravel.Service.Services.Interface
         Task<bool> CreateAccountAsync(CreateAccountModel model);
 
         public Task<bool> UpdateFcmTokenAsync(string email, string fcmToken);
+
+        public Task<bool> DeleteAccountAsync(int id);
     }
 }
