@@ -59,7 +59,7 @@ namespace FTravel.Service.Services
             try
             {
                 var map = _mapper.Map<Route>(route);
-                map.Status = RouteStatus.ACTIVE.ToString();
+                map.Status = CommonStatus.ACTIVE.ToString();
                 map.UnsignName = StringUtils.ConvertToUnSign(map.Name);
                 var createRoute = await _routeRepository.AddAsync(map);
                 var resutl = _mapper.Map<CreateRouteModel>(createRoute);

@@ -17,7 +17,7 @@ namespace FTravel.Service.BusinessModels
         public int StartPoint { get; set; }
         public int EndPoint { get; set; }
 
-        public RouteStatus Status { get; set; }
+        public CommonStatus Status { get; set; }
         public int BusCompanyId { get; set; }
     }
 }

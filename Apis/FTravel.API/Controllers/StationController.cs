@@ -1,5 +1,7 @@
-﻿using FTravel.API.ViewModels.ResponseModels;
+﻿using FTravel.API.ViewModels.RequestModels;
+using FTravel.API.ViewModels.ResponseModels;
 using FTravel.Repository.Commons;
+using FTravel.Repository.EntityModels;
 using FTravel.Service.BusinessModels;
 using FTravel.Service.Services;
 using FTravel.Service.Services.Interface;
@@ -108,18 +110,18 @@ namespace FTravel.API.Controllers
         }
         
 
-        [HttpPost("create-station")]
+        [HttpPost]
         [Authorize(Roles = "ADMIN, BUSCOMPANY")]
-        public async Task<IActionResult> CreateStationController(StationModel station)
+        public async Task<IActionResult> CreateStationController(CreateStationModel stationModel)
         {
             try
             {
-                var data = await _stationService.CreateStationService(station);
-                if (station == null)
+                if (ModelState.IsValid)
                 {
-                    return BadRequest();
+                    var data = await _stationService.CreateStationService(stationModel.Name, stationModel.BusCompanyId);
+                    return Ok(data);
                 }
-                return Ok(data);
+                return ValidationProblem(ModelState);
             }
             catch (Exception ex)
             {
