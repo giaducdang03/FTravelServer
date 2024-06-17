@@ -10,6 +10,6 @@ namespace FTravel.Repository.Repositories.Interface
     public interface IOrderedTicketRepository : IGenericRepository<Order>
     {
         public Task<List<Order>> GetOrderedTicketListByCustomerId(int customer);
-        public Task<Order> GetOrderedTicketDetailByOrderId(int orderId);
+        //public Task<Order> GetOrderedTicketDetailByOrderId(int orderId);
     }
 }

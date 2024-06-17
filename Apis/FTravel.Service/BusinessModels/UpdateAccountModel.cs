@@ -10,23 +10,17 @@ namespace FTravel.Service.BusinessModels
     {
         public string Email { get; set; } = null!;
 
-        public string? PasswordHash { get; set; }
-
-        public string? UnsignFullName { get; set; }
-
         public string FullName { get; set; } = null!;
 
         public string? PhoneNumber { get; set; }
 
         public string? Address { get; set; }
 
+        public string Dob { get; set; }
+
         public int? Gender { get; set; }
 
-        public string? Status { get; set; }
-
         public string? AvatarUrl { get; set; }
-
-        public int? RoleId { get; set; }
 
     }
 }

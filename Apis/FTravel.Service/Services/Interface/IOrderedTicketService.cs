@@ -10,7 +10,7 @@ namespace FTravel.Service.Services.Interface
     public interface IOrderedTicketService
     {
         public Task<List<Order>> GetAllOrderedTicketByCustomerIdService(int customer);
-        public Task<Order> GetAllOrderedTicketDetailByOrderIdService(int orderId);
+        //public Task<Order> GetAllOrderedTicketDetailByOrderIdService(int orderId);
 
 
     }

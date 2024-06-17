@@ -193,7 +193,7 @@ namespace FTravel.API.Controllers
 
         }
         [HttpPut("{id}/update")]
-        [Authorize(Roles = "ADMIN")]
+        //[Authorize(Roles = "ADMIN")]
         public async Task<IActionResult> UpdateService(int id, UpdateAccountModel accountModel)
         {
             try

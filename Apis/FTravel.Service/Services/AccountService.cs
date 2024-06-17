@@ -11,6 +11,7 @@ using FTravel.Service.Utils;
 using FTravel.Service.Utils.Email;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -196,7 +197,11 @@ namespace FTravel.Service.Services
                 {
                     return false;
                 }
-
+                if (!DateTime.TryParseExact(accountModel.Dob, "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out var dob))
+                {
+                    //error fomat date time
+                    return false;
+                }
                 _mapper.Map(accountModel, existAccount);
                 await _accountRepo.UpdateAsync(existAccount);
                 return true;

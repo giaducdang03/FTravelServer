@@ -19,17 +19,17 @@ namespace FTravel.Repository.Repositories
             _context = context;
         }
         
-        public async Task<Order> GetOrderedTicketDetailByOrderId(int orderId)
-        {
-            var data = await _context.Orders.Include(o => o.OrderDetails)
-                .ThenInclude(od=>od.Ticket)
-                .ThenInclude(od=> od.TicketType)
-                .ThenInclude(tk => tk.Route).ThenInclude(tk => tk.RouteStations.Where(c=>c.Route.StartPoint.Equals(c.StationId)))
-                .FirstOrDefaultAsync(o=>o.Id.Equals(orderId));
+        //public async Task<Order> GetOrderedTicketDetailByOrderId(int orderId)
+        //{
+        //    var data = await _context.Orders.Include(o => o.OrderDetails)
+        //        .ThenInclude(od=>od.Ticket)
+        //        .ThenInclude(od=> od.TicketType)
+        //        .ThenInclude(tk => tk.Route).ThenInclude(tk => tk.RouteStations.Where(c=>c.Route.StartPoint.Equals(c.StationId)))
+        //        .FirstOrDefaultAsync(o=>o.Id.Equals(orderId));
                 
 
-            return data;
-        }
+        //    return data;
+        //}
 
 
         public async Task<List<Order>> GetOrderedTicketListByCustomerId(int customer)

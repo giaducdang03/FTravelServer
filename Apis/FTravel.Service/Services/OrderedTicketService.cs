@@ -26,10 +26,10 @@ namespace FTravel.Service.Services
             return data;
         }
 
-        public async Task<Order> GetAllOrderedTicketDetailByOrderIdService(int orderId)
-        {
-            var data = await _orderedTicketRepository.GetOrderedTicketDetailByOrderId(orderId);
-            return data;
-        }
+        //public async Task<Order> GetAllOrderedTicketDetailByOrderIdService(int orderId)
+        //{
+        //    var data = await _orderedTicketRepository.GetOrderedTicketDetailByOrderId(orderId);
+        //    return data;
+        //}
     }
 }
