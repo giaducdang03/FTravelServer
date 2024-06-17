@@ -90,30 +90,30 @@ namespace FTravel.API.Controllers
 
         //}
 
-        [HttpPut("{id}/status")]
-        //[Authorize(Roles = "ADMIN")]
-        public async Task<IActionResult> BanAccountControl(int id)
-        {
-            try
-            {
+        //[HttpPut("{id}/status")]
+        ////[Authorize(Roles = "ADMIN")]
+        //public async Task<IActionResult> BanAccountControl(int id)
+        //{
+        //    try
+        //    {
 
-                var result = await _accountService.BanAccount(id);
-                if (id == null)
-                {
-                    return BadRequest();
-                }
-                return Ok(result);
-            }
-            catch (Exception ex)
-            {
+        //        var result = await _accountService.BanAccount(id);
+        //        if (id == null)
+        //        {
+        //            return BadRequest();
+        //        }
+        //        return Ok(result);
+        //    }
+        //    catch (Exception ex)
+        //    {
 
-                return BadRequest(new ResponseModel
-                {
-                    HttpCode = 400,
-                    Message = ex.Message
-                });
-            }
-        }
+        //        return BadRequest(new ResponseModel
+        //        {
+        //            HttpCode = 400,
+        //            Message = ex.Message
+        //        });
+        //    }
+        //}
 
         [HttpGet("{id}")]
         [Authorize]
@@ -279,7 +279,7 @@ namespace FTravel.API.Controllers
                 if (ModelState.IsValid)
                 {
                     var email = _claimsService.GetCurrentUserEmail;
-                    if (email == updateFcmTokenModel.Email) 
+                    if (email == updateFcmTokenModel.Email)
                     {
                         var result = await _accountService.UpdateFcmTokenAsync(email, updateFcmTokenModel.FcmToken);
                         if (result)
