@@ -21,6 +21,17 @@ namespace FTravel.Repository.Repositories
             _context = context;
         }
 
+        public async Task<User> BanAccount(int id)
+        {
+            var user = await _context.Users.FindAsync(id);
+            if (user != null)
+            {
+                user.Status = "BANNED";
+                await _context.SaveChangesAsync();
+            }
+            return user;
+        }
+
         public async Task<User> CreateAccount(User user)
         {
             _context.Add(user);
@@ -77,5 +88,24 @@ namespace FTravel.Repository.Repositories
             }
             return data;
         }
+
+        public async Task<int> UpdateAccountDetail(User user)
+        {
+            try
+            {
+                var data = await _context.Users.FirstOrDefaultAsync(x => x.Id.Equals(user.Id));
+                
+                
+                    _context.Users.Update(user);
+                    var result = await _context.SaveChangesAsync();
+                    return result;
+                
+
+
+            }catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+    }
     }
 }

@@ -42,6 +42,12 @@ namespace FTravel.Service.Services
             _mapper = mapper;
         }
 
+        public Task<User> BanAccount(int id)
+        {
+            var data = _accountRepo.BanAccount(id);
+            return data;
+        }
+
         public async Task<bool> CreateAccountAsync(CreateAccountModel model)
         {
             using (var transaction = await _userRepository.BeginTransactionAsync())
@@ -180,6 +186,30 @@ namespace FTravel.Service.Services
         {
             throw new NotImplementedException();
         }
+
+        public async Task<bool> UpdateAccount(int id, UpdateAccountModel accountModel)
+        {
+            try
+            {
+                var existAccount = await _accountRepo.GetByIdAsync(id);
+                if (existAccount == null)
+                {
+                    return false;
+                }
+
+                _mapper.Map(accountModel, existAccount);
+                await _accountRepo.UpdateAsync(existAccount);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                // Log the exception
+                Console.WriteLine($"Fail to update service {ex.Message}");
+                return false;
+            }
+        }
+
+
 
         //public async Task<List<AccountModel>> GetAllUserAscyn()
         //{

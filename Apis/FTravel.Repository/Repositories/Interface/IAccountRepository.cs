@@ -15,9 +15,13 @@ namespace FTravel.Repository.Repositories.Interface
 
         Task<Pagination<User>> GetAllUserAccount(PaginationParameter paginationParameter);
         public Task<List<string>> GetListOfUser();
-        public Task<User> CreateAccount(User user); 
+        public Task<User> CreateAccount(User user);
         public Task<User> GetUserInfoByEmail(string email);
 
         public Task<User> GetUserInfoById(int id);
+
+        public Task<User> BanAccount(int id);
+
+        public Task<int> UpdateAccountDetail(User user);
     }
 }

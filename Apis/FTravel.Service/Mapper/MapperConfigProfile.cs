@@ -30,6 +30,9 @@ namespace FTravel.Service.Mapper
             CreateMap<City, CityModel>().ReverseMap();
             CreateMap<TicketType, TicketTypeModel>();
             CreateMap<AccountModel, User>().ReverseMap();
+            CreateMap<UpdateAccountModel, User>()
+                .ForMember(dest => dest.UnsignFullName, opt => opt.MapFrom(src => StringUtils.ConvertToUnSign(src.FullName)));
+
 
             CreateMap<Repository.EntityModels.Service, ServiceModel>()
             .ForMember(dest => dest.RouteName, opt => opt.MapFrom(src => src.Route != null ? src.Route.Name : string.Empty))

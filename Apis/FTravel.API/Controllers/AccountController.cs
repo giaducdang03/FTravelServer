@@ -10,6 +10,8 @@ using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
+using System.Web.WebPages.Html;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace FTravel.API.Controllers
 {
@@ -25,7 +27,7 @@ namespace FTravel.API.Controllers
         }
 
         [HttpGet]
-        [Authorize(Roles = "ADMIN")]
+        //[Authorize(Roles = "ADMIN")]
         public async Task<IActionResult> GetAllUserAccount([FromQuery] PaginationParameter paginationParameter)
         {
             try
@@ -84,6 +86,31 @@ namespace FTravel.API.Controllers
         //    }
 
         //}
+
+        [HttpPut("{id}/status")]
+        //[Authorize(Roles = "ADMIN")]
+        public async Task<IActionResult> BanAccountControl(int id)
+        {
+            try
+            {
+
+                var result = await _accountService.BanAccount(id);
+                if (id == null)
+                {
+                    return BadRequest();
+                }
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+
+                return BadRequest(new ResponseModel
+                {
+                    HttpCode = 400,
+                    Message = ex.Message
+                });
+            }
+        }
 
         [HttpGet("{id}")]
         [Authorize]
@@ -165,5 +192,48 @@ namespace FTravel.API.Controllers
             }
 
         }
+        [HttpPut("{id}/update")]
+        [Authorize(Roles = "ADMIN")]
+        public async Task<IActionResult> UpdateService(int id, UpdateAccountModel accountModel)
+        {
+            try
+            {
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest(ModelState);
+                }
+
+                bool isUpdated = await _accountService.UpdateAccount(id, accountModel);
+
+                if (isUpdated)
+                {
+                    // Return a success response
+                    return Ok(new ResponseModel
+                    {
+                        HttpCode = StatusCodes.Status200OK,
+                        Message = "Account updated successfully"
+                    });
+                }
+                else
+                {
+                    // Return a not found response if the service was not updated successfully
+                    return NotFound(new ResponseModel
+                    {
+                        HttpCode = StatusCodes.Status404NotFound,
+                        Message = "Failed to update the Account"
+                    });
+                }
+            }
+            catch (Exception ex)
+            {
+                // Return a bad request response for any other exceptions
+                return BadRequest(new ResponseModel
+                {
+                    HttpCode = StatusCodes.Status400BadRequest,
+                    Message = ex.Message
+                });
+            }
+        }
     }
+
 }
