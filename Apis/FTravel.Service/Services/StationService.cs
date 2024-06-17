@@ -97,5 +97,40 @@ namespace FTravel.Service.Services
             var data = await _stationRepository.GetStationById(id);
             return data;
         }
+        public async Task<int> UpdateStationService(UpdateStationModel updateStation, int stationId)
+        {
+            var oldStation = await _stationRepository.GetStationById(stationId);
+            if(oldStation == null) {
+                return -1;
+            } else
+            {
+                oldStation.Name = updateStation.Name;
+                oldStation.Status = updateStation.Status.ToString();
+                oldStation.UnsignName = StringUtils.ConvertToUnSign(updateStation.Name);
+                oldStation.BusCompanyId = updateStation.BusCompanyId;
+            }
+            var result = await _stationRepository.UpdateAsync(oldStation);
+            return result;
+        }
+        public async Task<bool> DeleteStationService(int stationId)
+        {
+            var deleteStation = await _stationRepository.GetStationById(stationId);
+            if(deleteStation == null)
+            {
+                return false;
+            }
+            else
+            {
+                var result = await _stationRepository.SoftDeleteAsync(deleteStation);
+                if(result > 0)
+                {
+                    return true;
+                } 
+                else
+                {
+                    return false;
+                }
+            }
+        }
     }
 }
