@@ -12,6 +12,5 @@ namespace FTravel.Repository.Repositories.Interface
     {
         public Task<User?> GetUserByEmailAsync(string email);
 
-        Task<IDbContextTransaction> BeginTransactionAsync();
     }
 }

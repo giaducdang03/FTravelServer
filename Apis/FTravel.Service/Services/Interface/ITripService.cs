@@ -18,5 +18,6 @@ namespace FTravel.Service.Services.Interface
         public Task<bool> UpdateTripAsync(int id, UpdateTripModel tripModel);
         public Task<bool> UpdateTripStatusAsync(int id, string status);
         public Task<bool> CancelTripAsync(int id, string status);
+        public Task<TripModel> GetTemplateTripAsync();
     }
 }

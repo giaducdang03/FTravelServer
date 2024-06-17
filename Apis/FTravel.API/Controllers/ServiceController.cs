@@ -262,17 +262,25 @@ namespace FTravel.API.Controllers
                     return Ok(new ResponseModel
                     {
                         HttpCode = StatusCodes.Status200OK,
-                        Message = "Service deleted successfully"
+                        Message = "Xóa dịch vụ thành công!"
                     });
                 }
                 else
                 {
-                    return NotFound(new ResponseModel
+                    return BadRequest(new ResponseModel
                     {
-                        HttpCode = StatusCodes.Status404NotFound,
-                        Message = "Failed to delete the service"
+                        HttpCode = StatusCodes.Status400BadRequest,
+                        Message = "Xảy ra lỗi khi xóa dịch vụ!"
                     });
                 }
+            }
+            catch (KeyNotFoundException)
+            {
+                return NotFound(new ResponseModel
+                {
+                    HttpCode = StatusCodes.Status404NotFound,
+                    Message = $"Không tìm thấy dịch vụ với id: {id}"
+                });
             }
             catch (Exception ex)
             {

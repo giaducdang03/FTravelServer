@@ -9,7 +9,7 @@ namespace FTravel.Service.BusinessModels
     public class CreateRouteModel
     {
 
-        public string Name { get; set; } = null!;
+        public string Name { get; set; } = "";
 
         public int? StartPoint { get; set; }
 

@@ -25,7 +25,8 @@ namespace FTravel.Service.Mapper
                 .ForMember(dest => dest.StartPoint, opt => opt.MapFrom(src => src.StartPointNavigation.Name))
                 .ForMember(dest => dest.EndPoint, opt => opt.MapFrom(src => src.EndPointNavigation.Name))
                 .ForMember(dest => dest.BusCompanyName, opt => opt.MapFrom(src => src.BusCompany.Name));
-            CreateMap<StationModel, Station>().ReverseMap();
+            CreateMap<StationModel, Station>().ReverseMap()
+                .ForMember(dest => dest.BusCompanyName, opt => opt.MapFrom(src => src.BusCompany.Name));
 
             CreateMap<City, CityModel>().ReverseMap();
             CreateMap<TicketType, TicketTypeModel>();
@@ -55,7 +56,8 @@ namespace FTravel.Service.Mapper
             .ForMember(dest => dest.Tickets, opt => opt.Ignore()); 
 
             CreateMap<Ticket, TicketModel>()
-            .ForMember(dest => dest.TicketTypeName, opt => opt.MapFrom(src => src.TicketType.Name));
+            .ForMember(dest => dest.TicketTypeName, opt => opt.MapFrom(src => src.TicketType.Name))
+            .ReverseMap();
 
             CreateMap<CreateTripModel, Trip>()
             .ForMember(dest => dest.UnsignName, opt => opt.MapFrom(src => StringUtils.ConvertToUnSign(src.Name)))
@@ -73,6 +75,8 @@ namespace FTravel.Service.Mapper
             .ForMember(dest => dest.Role, opt => opt.Ignore());
 
             CreateMap<OrderModel, Order>();
+            CreateMap<Route, UpdateRouteModel>().ForMember(dest => dest.Status, opt => opt.Ignore()).ReverseMap();
+              
         }
     }
 }

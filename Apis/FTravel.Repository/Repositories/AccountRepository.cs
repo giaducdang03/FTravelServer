@@ -4,6 +4,7 @@ using FTravel.Repository.DBContext;
 using FTravel.Repository.EntityModels;
 using FTravel.Repository.Repositories.Interface;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.Identity.Client;
 using System;
 using System.Collections.Generic;
@@ -47,7 +48,7 @@ namespace FTravel.Repository.Repositories
 
         public async Task<Pagination<User>> GetAllUserAccount(PaginationParameter paginationParameter)
         {
-            var query = _context.Users.AsQueryable();
+            var query = _context.Users.Include(a => a.Role).AsQueryable();
 
             var totalCount = await query.CountAsync();
             var paginatedQuery = query.Skip((paginationParameter.PageIndex - 1) * paginationParameter.PageSize)

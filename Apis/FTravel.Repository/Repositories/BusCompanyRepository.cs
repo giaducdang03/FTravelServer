@@ -33,6 +33,11 @@ namespace FTravel.Repository.Repositories
             return result;
         }
 
+        public async Task<BusCompany> GetBusCompanyByManagerEmail(string email)
+        {
+            return await _context.BusCompanies.FirstOrDefaultAsync(x => x.ManagerEmail == email);
+        }
+
         public Task<BusCompany> GetBusCompanyDetailById(int id)
         {
 

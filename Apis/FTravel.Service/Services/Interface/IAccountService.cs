@@ -12,16 +12,18 @@ namespace FTravel.Service.Services.Interface
 {
     public interface IAccountService
     {
-        Task<List<AccountModel>> GetAllUserAscyn();
         Task<User> GetAccountInfoByEmail(string email);
+
         Task<User> GetAccountInfoById(int id);
 
         Task<User> BanAccount(int id);
 
         Task<bool> UpdateAccount(int id,UpdateAccountModel accountModel);
 
-        //Task<AccountModel> CreateAccount(AccountModel account);
-        public Task<Pagination<AccountModel>> GetAllUserAccountService(PaginationParameter paginationParameter);
         Task<bool> CreateAccountAsync(CreateAccountModel model);
+
+        public Task<bool> UpdateFcmTokenAsync(string email, string fcmToken);
+
+        public Task<bool> DeleteAccountAsync(int id);
     }
 }

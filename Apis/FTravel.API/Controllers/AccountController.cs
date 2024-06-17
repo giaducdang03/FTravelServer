@@ -1,4 +1,5 @@
-﻿using FTravel.API.ViewModels.ResponseModels;
+﻿using FTravel.API.ViewModels.RequestModels;
+using FTravel.API.ViewModels.ResponseModels;
 using FTravel.Repository.Commons;
 using FTravel.Repository.EntityModels;
 using FTravel.Service.BusinessModels;
@@ -20,10 +21,12 @@ namespace FTravel.API.Controllers
     public class AccountController : ControllerBase
     {
         private readonly IAccountService _accountService;
+        private readonly IClaimsService _claimsService;
 
-        public AccountController(IAccountService accountService)
+        public AccountController(IAccountService accountService, IClaimsService claimsService)
         {
             _accountService = accountService;
+            _claimsService = claimsService;
         }
 
         [HttpGet]
@@ -32,7 +35,7 @@ namespace FTravel.API.Controllers
         {
             try
             {
-                var result = await _accountService.GetAllUserAccountService(paginationParameter);
+                var result = await _accountService.GetAllUsersAsync(paginationParameter);
                 if (result == null)
                 {
                     return NotFound(new ResponseModel()
@@ -232,6 +235,84 @@ namespace FTravel.API.Controllers
                     HttpCode = StatusCodes.Status400BadRequest,
                     Message = ex.Message
                 });
+            }
+        }
+
+        [HttpDelete("{id}")]
+        [Authorize(Roles = "ADMIN")]
+        public async Task<IActionResult> DeleteAccountById(int id)
+        {
+            try
+            {
+                var result = await _accountService.DeleteAccountAsync(id);
+                if (result)
+                {
+                    return Ok(new ResponseModel
+                    {
+                        HttpCode = StatusCodes.Status200OK,
+                        Message = "Xóa người dùng thành công."
+                    });
+                }
+                return BadRequest(new ResponseModel
+                {
+                    HttpCode = StatusCodes.Status400BadRequest,
+                    Message = "Có lỗi trong quá trình xóa người dùng."
+                });
+            }
+            catch (Exception ex)
+            {
+                var resp = new ResponseModel()
+                {
+                    HttpCode = StatusCodes.Status400BadRequest,
+                    Message = ex.Message.ToString()
+                };
+                return BadRequest(resp);
+            }
+        }
+
+        [HttpPut("update-fcm-token")]
+        [Authorize]
+        public async Task<IActionResult> UpdateFcmToken(UpdateFcmTokenModel updateFcmTokenModel)
+        {
+            try
+            {
+                if (ModelState.IsValid)
+                {
+                    var email = _claimsService.GetCurrentUserEmail;
+                    if (email == updateFcmTokenModel.Email) 
+                    {
+                        var result = await _accountService.UpdateFcmTokenAsync(email, updateFcmTokenModel.FcmToken);
+                        if (result)
+                        {
+                            return Ok(new ResponseModel()
+                            {
+                                HttpCode = StatusCodes.Status200OK,
+                                Message = "Update FCM token successfully."
+                            });
+                        }
+                        return Ok(new ResponseModel()
+                        {
+                            HttpCode = StatusCodes.Status400BadRequest,
+                            Message = "Update FCM token error."
+                        });
+                    }
+                    return Ok(new ResponseModel()
+                    {
+                        HttpCode = StatusCodes.Status400BadRequest,
+                        Message = "User does not exist."
+                    });
+                }
+                return ValidationProblem(ModelState);
+
+            }
+            catch (Exception ex)
+            {
+                var resp = new ResponseModel()
+                {
+                    HttpCode = StatusCodes.Status400BadRequest,
+                    Message = ex.Message.ToString()
+                };
+                return BadRequest(resp);
             }
         }
     }
