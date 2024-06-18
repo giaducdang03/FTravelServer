@@ -18,7 +18,12 @@ namespace FTravel.Repository.Repositories
         {
             _context = context;
         }
-        
+
+        public Task<List<Order>> GetHistoryOfTripsTakenByCustomerId(int customer)
+        {
+            throw new NotImplementedException();
+        }
+
         //public async Task<Order> GetOrderedTicketDetailByOrderId(int orderId)
         //{
         //    var data = await _context.Orders.Include(o => o.OrderDetails)
@@ -26,7 +31,7 @@ namespace FTravel.Repository.Repositories
         //        .ThenInclude(od=> od.TicketType)
         //        .ThenInclude(tk => tk.Route).ThenInclude(tk => tk.RouteStations.Where(c=>c.Route.StartPoint.Equals(c.StationId)))
         //        .FirstOrDefaultAsync(o=>o.Id.Equals(orderId));
-                
+
 
         //    return data;
         //}

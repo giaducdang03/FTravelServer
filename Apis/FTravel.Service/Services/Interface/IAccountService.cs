@@ -12,6 +12,7 @@ namespace FTravel.Service.Services.Interface
 {
     public interface IAccountService
     {
+        Task<Pagination<AccountModel>> GetAllUsersAsync(PaginationParameter paginationParameter);
         Task<User> GetAccountInfoByEmail(string email);
 
         Task<User> GetAccountInfoById(int id);

@@ -11,5 +11,8 @@ namespace FTravel.Repository.Repositories.Interface
     {
         public Task<List<Order>> GetOrderedTicketListByCustomerId(int customer);
         //public Task<Order> GetOrderedTicketDetailByOrderId(int orderId);
+
+        public Task<List<Order>> GetHistoryOfTripsTakenByCustomerId(int customer);
+
     }
 }
