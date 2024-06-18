@@ -65,5 +65,28 @@ namespace FTravel.API.Controllers
             }
 
         }
+        [HttpGet("historytrip/{cusid}")]
+        public async Task<IActionResult> GetHistoryOfTripsTakenByCustomerId(int cusid)
+        {
+            try
+            {
+                var data = await _orderedTicketService.GetHistoryOfTripsTakenByCustomerIdService(cusid);
+                if (cusid == null)
+                {
+                    return BadRequest();
+                }
+                return Ok(data);
+            }
+            catch (Exception ex)
+            {
+
+                return BadRequest(new ResponseModel
+                {
+                    HttpCode = 400,
+                    Message = ex.Message
+                });
+            }
+
+        }
     }
 }

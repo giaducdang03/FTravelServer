@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using FTravel.Repository.EntityModels;
 using FTravel.Repository.Repositories.Interface;
+using FTravel.Service.BusinessModels;
 using FTravel.Service.Services.Interface;
 using System;
 using System.Collections.Generic;
@@ -24,6 +25,28 @@ namespace FTravel.Service.Services
         {
             var data = await _orderedTicketRepository.GetOrderedTicketListByCustomerId(customer);  
             return data;
+        }
+
+        public async Task<List<OrderedTicketModel>> GetHistoryOfTripsTakenByCustomerIdService(int customer)
+        {
+            var data = await _orderedTicketRepository.GetHistoryOfTripsTakenByCustomerId(customer);
+            if (!data.Any())
+            {
+                return null;
+            }
+
+            var routeModels = data.Select(x => new OrderedTicketModel
+            {
+                Id = x.Id,
+                ActualEndDate = x.Ticket.Trip.ActualEndDate,
+                ActualStartDate = x.Ticket.Trip.ActualStartDate,
+                BuscompanyName = x.Ticket.Trip.Route.BusCompany.Name,
+                StartPointName = x.Ticket.Trip.Route.EndPointNavigation.Name,
+                EndPointName = x.Ticket.Trip.Route.StartPointNavigation.Name,
+
+            }).ToList();
+
+            return routeModels;
         }
 
         //public async Task<Order> GetAllOrderedTicketDetailByOrderIdService(int orderId)

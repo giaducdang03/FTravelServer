@@ -18,4 +18,19 @@ namespace FTravel.Service.BusinessModels
 
         public virtual ICollection<OrderDetail> OrderDetails { get; set; } = new List<OrderDetail>();
     }
+
+    public class OrderedTicketModel
+    {
+        public int Id { get; set; }
+        public string? SeatCode { get; set; }
+
+        public DateTime? ActualStartDate { get; set; }
+
+        public DateTime? ActualEndDate { get; set; }
+        public string? StartPointName { get; set; }
+
+        public string? EndPointName { get; set; }
+        public string BuscompanyName { get; set; } = null!;
+
+    }
 }

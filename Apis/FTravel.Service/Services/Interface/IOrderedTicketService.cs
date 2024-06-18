@@ -1,4 +1,5 @@
 ﻿using FTravel.Repository.EntityModels;
+using FTravel.Service.BusinessModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,6 +12,7 @@ namespace FTravel.Service.Services.Interface
     {
         public Task<List<Order>> GetAllOrderedTicketByCustomerIdService(int customer);
         //public Task<Order> GetAllOrderedTicketDetailByOrderIdService(int orderId);
+        public Task<List<OrderedTicketModel>> GetHistoryOfTripsTakenByCustomerIdService(int customer);
 
 
     }

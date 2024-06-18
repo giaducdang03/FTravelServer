@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.WebSockets;
 using System.Text;
 using System.Threading.Tasks;
 using static System.Runtime.InteropServices.JavaScript.JSType;
@@ -19,9 +20,29 @@ namespace FTravel.Repository.Repositories
             _context = context;
         }
 
-        public Task<List<Order>> GetHistoryOfTripsTakenByCustomerId(int customer)
+        public async Task<List<OrderDetail>> GetHistoryOfTripsTakenByCustomerId(int customer)
         {
-            throw new NotImplementedException();
+            var data = await _context.OrderDetails
+
+        .Include(o => o.Order)
+        .Include(o => o.Ticket.Trip)
+        .ThenInclude(t => t.Route)
+        .ThenInclude(r => r.StartPointNavigation)
+
+        .Include(o => o.Order)
+        .Include(o => o.Ticket.Trip)
+        .ThenInclude(t => t.Route)
+        .ThenInclude(r => r.EndPointNavigation)
+
+        .Include(o => o.Order)
+        .Include(o => o.Ticket.Trip)
+        .ThenInclude(t => t.Route)
+        .ThenInclude(r => r.BusCompany)
+        .Where(o => o.Order.CustomerId == customer)
+
+        .ToListAsync();
+
+            return data;
         }
 
         //public async Task<Order> GetOrderedTicketDetailByOrderId(int orderId)
@@ -39,7 +60,7 @@ namespace FTravel.Repository.Repositories
 
         public async Task<List<Order>> GetOrderedTicketListByCustomerId(int customer)
         {
-            var data = await _context.Orders.Where(x => x.CustomerId.Equals(customer)).ToListAsync();   
+            var data = await _context.Orders.Where(x => x.CustomerId.Equals(customer)).ToListAsync();
             return data;
         }
     }
