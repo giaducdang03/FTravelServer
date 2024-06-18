@@ -56,6 +56,41 @@ namespace FTravel.API.Controllers
             }
         }
 
+        [HttpPost("check-user")]
+        public async Task<IActionResult> CheckExistUser(CheckExistUser checkExistUser)
+        {
+            try
+            {
+                var existUser = await _userService.GetUserByEmailAsync(checkExistUser.Email);
+                if (existUser != null)
+                {
+                    var resp = new ResponseModel()
+                    {
+                        HttpCode = StatusCodes.Status200OK,
+                        Message = "Tài khoản đã có trên hệ thống."
+                    };
+                    return Ok(resp);
+                }
+                else
+                {
+                    return NotFound(new ResponseModel
+                    {
+                        HttpCode = StatusCodes.Status404NotFound,
+                        Message = "Không tìm thấy tài khoản."
+                    });
+                }
+            }
+            catch (Exception ex)
+            {
+                var resp = new ResponseModel()
+                {
+                    HttpCode = StatusCodes.Status400BadRequest,
+                    Message = ex.Message.ToString()
+                };
+                return BadRequest(resp);
+            }
+        }
+
         [HttpPost("login")]
         public async Task<IActionResult> LoginWithEmail(LoginRequestModel model)
         {

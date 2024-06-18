@@ -155,7 +155,8 @@ namespace FTravel.API.Controllers
         {
             try
             {
-                var result = await _accountService.DeleteAccountAsync(id);
+                var currentEmail = _claimsService.GetCurrentUserEmail;
+                var result = await _accountService.DeleteAccountAsync(id, currentEmail);
                 if (result)
                 {
                     return Ok(new ResponseModel

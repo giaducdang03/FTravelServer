@@ -127,11 +127,17 @@ namespace FTravel.Service.Services
             }
         }
 
-        public async Task<bool> DeleteAccountAsync(int id)
+        public async Task<bool> DeleteAccountAsync(int id, string currentEmail)
         {
             var account = await _accountRepo.GetByIdAsync(id);
             if (account != null)
             {
+                // check current user
+                if (account.Email == currentEmail)
+                {
+                    throw new Exception("Tài khoản đang đăng nhập. Không thể xóa.");
+                }
+
                 // check confirm email
                 if (account.ConfirmEmail == true)
                 {
