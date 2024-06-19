@@ -29,10 +29,5 @@ namespace FTravel.Repository.Repositories
         {
             return await _context.Wallets.Include(x => x.Transactions).FirstOrDefaultAsync(x => x.Id == walletId);
         }
-
-        public async Task<IDbContextTransaction> BeginTransactionAsync()
-        {
-            return await _context.Database.BeginTransactionAsync();
-        }
     }
 }
