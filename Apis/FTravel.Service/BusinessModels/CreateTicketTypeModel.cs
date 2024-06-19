@@ -7,13 +7,14 @@ using System.Threading.Tasks;
 
 namespace FTravel.Service.BusinessModels
 {
-    public class TicketTypeModel 
+    public class CreateTicketTypeModel
     {
-        
+        public int? RouteId { get; set; }
+
         public string Name { get; set; } = null!;
 
         public int? Price { get; set; }
 
-        public string RouteName { get; set; } = "";
+        public DateTime CreateDate { get; set; }
     }
 }

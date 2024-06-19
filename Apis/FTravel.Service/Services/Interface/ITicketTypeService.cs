@@ -15,5 +15,9 @@ namespace FTravel.Service.Services.Interface
         public Task<Pagination<TicketTypeModel>> GetAllTicketType(PaginationParameter paginationParameter);
 
         public Task<TicketTypeModel> GetTicketTypeById(int id);
+
+        public Task<CreateTicketTypeModel> CreateTicketTypeAsync(CreateTicketTypeModel ticketTypeModel);
+
+        public Task<bool> UpdateTicketTypeAsync(int id, UpdateTicketTypeModel ticketTypeModel);
     }
 }

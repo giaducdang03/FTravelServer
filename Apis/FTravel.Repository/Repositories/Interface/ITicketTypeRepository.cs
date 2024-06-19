@@ -14,5 +14,8 @@ namespace FTravel.Repository.Repositories.Interface
         public Task<Pagination<TicketType>> GetAllTicketType(PaginationParameter paginationParameter);
 
         public Task<TicketType> GetTicketTypeByIdAsync(int id);
+
+        public Task<TicketType> CreateTicketTypeAsync(TicketType ticketType);
+
     }
 }

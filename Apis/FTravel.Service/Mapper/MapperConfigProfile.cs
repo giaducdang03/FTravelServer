@@ -15,7 +15,22 @@ namespace FTravel.Service.Mapper
         public MapperConfigProfile()
         {
             // add mapper model
+            CreateMap<BusCompany, BusCompanyModel>().ReverseMap();
+
             CreateMap<CreateRouteModel, Route>().ReverseMap();
+
+            CreateMap<CreateTicketTypeModel, TicketType>().ReverseMap();
+
+            CreateMap<UpdateTicketTypeModel, TicketType>()
+            .ForMember(dest => dest.UpdateDate, opt => opt.Ignore())
+            .ForMember(dest => dest.CreateDate, opt => opt.Ignore())
+            .ForMember(dest => dest.IsDeleted, opt => opt.Ignore());
+
+            CreateMap<UpdateBusCompanyModel, BusCompany>()
+            .ForMember(dest => dest.UpdateDate, opt => opt.Ignore())
+            .ForMember(dest => dest.CreateDate, opt => opt.Ignore())
+            .ForMember(dest => dest.IsDeleted, opt => opt.Ignore())
+            .ForMember(dest => dest.UnsignName, opt => opt.MapFrom(src => StringUtils.ConvertToUnSign(src.Name)));
 
             CreateMap<UserModel, User>().ReverseMap().ForMember(dest => dest.Role, opt => opt.Ignore());
             CreateMap<Customer, User>().ReverseMap();
