@@ -23,5 +23,7 @@ namespace FTravel.Service.Services.Interface
         public Task<bool> UpdateFcmTokenAsync(string email, string fcmToken);
 
         public Task<bool> DeleteAccountAsync(int id , string currentEmail);
+        Task<bool> UpdateAccount(int id, UpdateAccountModel accountModel);
+
     }
 }

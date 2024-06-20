@@ -79,6 +79,8 @@ namespace FTravel.Service.Mapper
             CreateMap<OrderModel, Order>();
             CreateMap<Route, UpdateRouteModel>().ForMember(dest => dest.Status, opt => opt.Ignore()).ReverseMap();
 
+            CreateMap<UpdateAccountModel, User>()
+                .ForMember(dest => dest.UnsignFullName, opt => opt.MapFrom(src => StringUtils.ConvertToUnSign(src.FullName)));
         }
     }
 }

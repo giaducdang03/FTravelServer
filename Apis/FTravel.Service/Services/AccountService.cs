@@ -12,6 +12,7 @@ using FTravel.Service.Utils.Email;
 using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -261,7 +262,31 @@ namespace FTravel.Service.Services
 
         //    }
         //}
-
+        public async Task<bool> UpdateAccount(int id, UpdateAccountModel accountModel)
+        {
+            try
+            {
+                var existAccount = await _accountRepo.GetByIdAsync(id);
+                if (existAccount == null)
+                {
+                    return false;
+                }
+                if (!DateTime.TryParseExact(accountModel.Dob, "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out var dob))
+                {
+                    //error fomat date time
+                    return false;
+                }
+                _mapper.Map(accountModel, existAccount);
+                await _accountRepo.UpdateAsync(existAccount);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                // Log the exception
+                Console.WriteLine($"Fail to update service {ex.Message}");
+                return false;
+            }
+        }
 
     }
 }

@@ -227,5 +227,47 @@ namespace FTravel.API.Controllers
                 return BadRequest(resp);
             }
         }
+        [HttpPut("{id}/update")]
+        [Authorize(Roles = "ADMIN")]
+        public async Task<IActionResult> UpdateService(int id, UpdateAccountModel accountModel)
+        {
+            try
+            {
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest(ModelState);
+                }
+
+                bool isUpdated = await _accountService.UpdateAccount(id, accountModel);
+
+                if (isUpdated)
+                {
+                    // Return a success response
+                    return Ok(new ResponseModel
+                    {
+                        HttpCode = StatusCodes.Status200OK,
+                        Message = "Account updated successfully"
+                    });
+                }
+                else
+                {
+                    // Return a not found response if the service was not updated successfully
+                    return NotFound(new ResponseModel
+                    {
+                        HttpCode = StatusCodes.Status404NotFound,
+                        Message = "Failed to update the Account"
+                    });
+                }
+            }
+            catch (Exception ex)
+            {
+                // Return a bad request response for any other exceptions
+                return BadRequest(new ResponseModel
+                {
+                    HttpCode = StatusCodes.Status400BadRequest,
+                    Message = ex.Message
+                });
+            }
+        }
     }
 }
