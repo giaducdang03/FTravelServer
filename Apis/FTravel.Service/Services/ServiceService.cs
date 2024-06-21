@@ -86,9 +86,7 @@ namespace FTravel.Service.Services
             }
             catch (Exception ex)
             {
-                // Log the exception
                 throw new Exception("Xảy ra lỗi khi thêm dịch vụ");
-                return false; // Return false indicating failure
             }
         }
 
@@ -108,9 +106,7 @@ namespace FTravel.Service.Services
             }
             catch (Exception ex)
             {
-                // Log the exception
                 throw new Exception("Xảy ra lỗi khi cập nhật dịch vụ");
-                return false;
             }
         }
         public async Task<bool> DeleteServiceAsync(int id)
@@ -128,9 +124,7 @@ namespace FTravel.Service.Services
             }
             catch (Exception ex)
             {
-                // Log the exception
                 throw new Exception("Xảy ra lỗi khi xóa dịch vụ");
-                return false;
             }
         }
     }
