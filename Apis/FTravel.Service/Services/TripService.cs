@@ -69,7 +69,7 @@ namespace FTravel.Service.Services
                     throw new Exception($"Không tìm thấy tuyến xe có id: {tripModel.RouteId}");
                     return false;
                 }
-                if (route.Status != RouteStatus.ACTIVE.ToString())
+                if (route.Status != CommonStatus.ACTIVE.ToString())
                 {
                     throw new Exception("Tuyến xe không hoạt động");
                 }

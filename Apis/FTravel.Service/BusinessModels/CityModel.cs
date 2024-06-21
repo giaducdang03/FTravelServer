@@ -9,14 +9,9 @@ using System.Threading.Tasks;
 
 namespace FTravel.Service.BusinessModels
 {
-    public class CityModel
+    public class CityModel : BaseEntity
     {
-        public int Id { get; set; }
-        [MaxLength(100)]
-        [FromQuery(Name = "name")]
-        public string Name { get; set; } = null!;
-
-        [FromQuery(Name = "code")]
+        public string Name { get; set; } = "";
         public int Code { get; set; }
     }
 }
