@@ -191,7 +191,7 @@ namespace FTravel.API.Controllers
                 if (ModelState.IsValid)
                 {
                     var email = _claimsService.GetCurrentUserEmail;
-                    if (email == updateFcmTokenModel.Email) 
+                    if (email == updateFcmTokenModel.Email)
                     {
                         var result = await _accountService.UpdateFcmTokenAsync(email, updateFcmTokenModel.FcmToken);
                         if (result)
@@ -227,41 +227,44 @@ namespace FTravel.API.Controllers
                 return BadRequest(resp);
             }
         }
-        [HttpPut("{id}/update")]
-        [Authorize(Roles = "ADMIN")]
+        [HttpPut("{id}")]
+        [Authorize]
         public async Task<IActionResult> UpdateService(int id, UpdateAccountModel accountModel)
         {
             try
             {
-                if (!ModelState.IsValid)
+                if (ModelState.IsValid)
                 {
-                    return BadRequest(ModelState);
-                }
-
-                bool isUpdated = await _accountService.UpdateAccount(id, accountModel);
-
-                if (isUpdated)
-                {
-                    // Return a success response
-                    return Ok(new ResponseModel
+                    if (id == accountModel.AccountId)
                     {
-                        HttpCode = StatusCodes.Status200OK,
-                        Message = "Account updated successfully"
-                    });
-                }
-                else
-                {
-                    // Return a not found response if the service was not updated successfully
-                    return NotFound(new ResponseModel
+                        bool isUpdated = await _accountService.UpdateAccount(accountModel);
+
+                        if (isUpdated)
+                        {
+                            return Ok(new ResponseModel
+                            {
+                                HttpCode = StatusCodes.Status200OK,
+                                Message = "Cập nhật thông tin tài khoản thành công."
+                            });
+                        }
+                        return NotFound(new ResponseModel
+                        {
+                            HttpCode = StatusCodes.Status404NotFound,
+                            Message = "Có lỗi trong quá trình cập nhật thông tin tài khoản."
+                        });
+                    }
+                    return BadRequest(new ResponseModel
                     {
-                        HttpCode = StatusCodes.Status404NotFound,
-                        Message = "Failed to update the Account"
+                        HttpCode = StatusCodes.Status400BadRequest,
+                        Message = "Id tài khoản không hợp lệ."
                     });
+
                 }
+                return ValidationProblem(ModelState);
+
             }
             catch (Exception ex)
             {
-                // Return a bad request response for any other exceptions
                 return BadRequest(new ResponseModel
                 {
                     HttpCode = StatusCodes.Status400BadRequest,

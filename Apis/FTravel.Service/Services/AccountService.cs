@@ -10,13 +10,6 @@ using FTravel.Service.Services.Interface;
 using FTravel.Service.Utils;
 using FTravel.Service.Utils.Email;
 using Microsoft.IdentityModel.Tokens;
-using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using static System.Net.WebRequestMethods;
 
 namespace FTravel.Service.Services
 {
@@ -189,27 +182,6 @@ namespace FTravel.Service.Services
             throw new Exception("Tài khoản không tồn tại.");
         }
 
-        //public async Task<AccountModel> CreateAccount(AccountModel account)
-        //{
-        //    try
-        //    {
-        //        var data = await _accountRepo.GetAllUser();
-        //        var checkExist = data.Where(x => x.Email.Equals(account.Email));
-
-        //        if (checkExist.Any())
-        //        {
-        //            return null;
-        //        }
-
-        //        var map = _mapper.Map<User>(account);
-        //        var createAccount = await _accountRepo.CreateAccount(map);
-        //        var resutl = _mapper.Map<AccountModel>(createAccount);
-        //        return resutl;  
-        //    }catch (Exception ex) {
-        //        throw new Exception(ex.Message);
-        //    }
-        //}
-
         public async Task<User> GetAccountInfoByEmail(string email)
         {
             var data = await _accountRepo.GetUserInfoByEmail(email);
@@ -248,43 +220,67 @@ namespace FTravel.Service.Services
             return false;
         }
 
-        //public async Task<List<AccountModel>> GetAllUserAscyn()
-        //{
-        //    try
-        //    {
-        //        var account = await _accountRepo.GetAllUser();
-        //        var map = _mapper.Map<List<AccountModel>>(account);
-        //        return map;
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        throw new Exception(ex.Message);
-
-        //    }
-        //}
-        public async Task<bool> UpdateAccount(int id, UpdateAccountModel accountModel)
+        public async Task<bool> UpdateAccount(UpdateAccountModel accountModel)
         {
-            try
+            var existAccount = await _accountRepo.GetByIdAsync(accountModel.AccountId);
+
+            if (existAccount != null) 
             {
-                var existAccount = await _accountRepo.GetByIdAsync(id);
-                if (existAccount == null)
-                {
-                    return false;
+                var newUnsignName = StringUtils.ConvertToUnSign(accountModel.FullName);
+                var accountRole = await _roleRepository.GetByIdAsync(existAccount.RoleId.Value);
+                if (accountRole != null) 
+                { 
+                    // update account
+                    existAccount.FullName = accountModel.FullName;
+                    existAccount.UnsignFullName = newUnsignName;
+                    existAccount.PhoneNumber = accountModel.PhoneNumber;
+                    existAccount.Dob = accountModel.Dob;
+                    existAccount.Address = accountModel.Address;
+                    existAccount.Gender = accountModel.Gender;
+                    
+
+                    if (accountRole.Name == RoleEnums.CUSTOMER.ToString())
+                    {
+                        using (var updatedTransaction = await _accountRepo.BeginTransactionAsync())
+                        {
+                            try
+                            {
+                                var existCustomer = await _customerRepository.GetCustomerByEmailAsync(existAccount.Email);
+                                if (existCustomer != null) 
+                                {
+                                    // update customer
+                                    existCustomer.FullName = accountModel.FullName;
+                                    existCustomer.UnsignFullName = newUnsignName;
+                                    existCustomer.PhoneNumber = accountModel.PhoneNumber;
+                                    existCustomer.Dob = accountModel.Dob;
+                                    existCustomer.Address = accountModel.Address;
+                                    existCustomer.Gender = accountModel.Gender;
+
+                                    await _customerRepository.UpdateAsync(existCustomer);
+                                    await _accountRepo.UpdateAsync(existAccount);
+
+                                    await updatedTransaction.CommitAsync();
+                                    return true;
+                                }
+                            }
+                            catch
+                            {
+                                await updatedTransaction.RollbackAsync();
+                                throw;
+                            }
+                        }
+                    } 
+                    else
+                    {
+                        await _accountRepo.UpdateAsync(existAccount);
+                        return true;
+                    }
                 }
-                if (!DateTime.TryParseExact(accountModel.Dob, "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out var dob))
-                {
-                    //error fomat date time
-                    return false;
-                }
-                _mapper.Map(accountModel, existAccount);
-                await _accountRepo.UpdateAsync(existAccount);
-                return true;
-            }
-            catch (Exception ex)
-            {
-                // Log the exception
-                Console.WriteLine($"Fail to update service {ex.Message}");
                 return false;
+            } 
+            else
+            {
+                throw new Exception("Tài khoản không tồn tại.");
             }
         }
 
