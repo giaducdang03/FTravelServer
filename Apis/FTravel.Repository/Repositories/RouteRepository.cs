@@ -49,7 +49,8 @@ namespace FTravel.Repository.Repositories
                 .Include(x => x.StartPointNavigation)
                 .Include(x => x.EndPointNavigation)
                 .Include(x => x.Services)
-                .Include(x=> x.TicketTypes)
+                .Include(x => x.TicketTypes)
+                .Include(x => x.RouteStations).ThenInclude(x => x.Station)
                 .FirstOrDefaultAsync(x => x.Id == routeId);
         }
 

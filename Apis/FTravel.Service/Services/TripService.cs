@@ -5,6 +5,7 @@ using FTravel.Repository.EntityModels;
 using FTravel.Repository.Repositories;
 using FTravel.Repository.Repositories.Interface;
 using FTravel.Service.BusinessModels;
+using FTravel.Service.BusinessModels.TripModels;
 using FTravel.Service.Enums;
 using FTravel.Service.Services.Interface;
 using FTravel.Service.Utils;
@@ -102,21 +103,23 @@ namespace FTravel.Service.Services
                     var ticketType = route.TicketTypes.FirstOrDefault(t => t.Id == ticketTypeId);
                     if (ticketType != null)
                     {
-                        newTrip.TripTicketTypes.Add(new TripTicketType { TicketType = ticketType });
+                        newTrip.TripTicketTypes.Add(new TripTicketType { TicketType = ticketType, TicketTypeId = ticketType.Id});
                     }
                 }
 
                 var ticketList = _mapper.Map<List<Ticket>>(tripModel.TripTickets);
                 foreach( var ticket in ticketList)
                 {
-                    if(newTrip.TripTicketTypes.Any(tt => tt.Id == ticket.TicketTypeId))
+                    ticket.TripId = 0;
+                    if(newTrip.TripTicketTypes.Any(tt => tt.TicketTypeId == ticket.TicketTypeId))
                     {
                         newTrip.Tickets.Add(ticket);
                     }
                 }
 
                 // Add newTrip to the repository
-                return await _tripRepository.CreateTripAsync(newTrip);
+               await _tripRepository.AddAsync(newTrip);
+                return true;
             }
             catch (Exception ex)
             {

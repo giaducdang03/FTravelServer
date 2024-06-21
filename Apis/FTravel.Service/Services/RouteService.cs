@@ -83,6 +83,7 @@ namespace FTravel.Service.Services
             routeModel.StartPoint = route.StartPointNavigation.Name;
             routeModel.EndPoint = route.EndPointNavigation.Name;
             routeModel.BusCompanyName = route.BusCompany.Name;
+            routeModel.RouteStations = route.RouteStations;
             return routeModel;
 
         }

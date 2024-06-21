@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using FTravel.Repository.EntityModels;
 using FTravel.Service.BusinessModels;
+using FTravel.Service.BusinessModels.TripModels;
 using FTravel.Service.Utils;
 using System;
 using System.Collections.Generic;
@@ -59,6 +60,9 @@ namespace FTravel.Service.Mapper
 
             CreateMap<Ticket, TicketModel>()
             .ForMember(dest => dest.TicketTypeName, opt => opt.MapFrom(src => src.TicketType.Name))
+            .ReverseMap();
+
+            CreateMap<Ticket, CreateTicketTripModel>()
             .ReverseMap();
 
             CreateMap<CreateTripModel, Trip>()

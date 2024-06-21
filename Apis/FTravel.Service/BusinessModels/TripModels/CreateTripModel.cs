@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace FTravel.Service.BusinessModels
+namespace FTravel.Service.BusinessModels.TripModels
 {
     public class CreateTripModel
     {
@@ -27,6 +27,6 @@ namespace FTravel.Service.BusinessModels
         [MinLength(1, ErrorMessage = "At least one TicketTypeId is required.")]
         public List<int> TicketTypeIds { get; set; }
         public List<TripServiceModel> TripServices { get; set; }
-        public List<TicketModel> TripTickets { get; set; }
+        public List<CreateTicketTripModel> TripTickets { get; set; }
     }
 }
