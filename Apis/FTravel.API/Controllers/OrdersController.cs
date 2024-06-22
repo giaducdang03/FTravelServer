@@ -1,5 +1,5 @@
 ﻿using FTravel.API.ViewModels.ResponseModels;
-using FTravel.Service.BusinessModels;
+using FTravel.Service.BusinessModels.OrderModels;
 using FTravel.Service.Enums;
 using FTravel.Service.Services;
 using FTravel.Service.Services.Interface;

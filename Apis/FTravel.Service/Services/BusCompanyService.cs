@@ -3,7 +3,7 @@ using FTravel.Repositories.Commons;
 using FTravel.Repository.Commons;
 using FTravel.Repository.EntityModels;
 using FTravel.Repository.Repositories.Interface;
-using FTravel.Service.BusinessModels;
+using FTravel.Service.BusinessModels.BuscompanyModels;
 using FTravel.Service.Enums;
 using FTravel.Service.Services.Interface;
 using Google.Apis.Util;

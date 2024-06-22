@@ -4,7 +4,7 @@ using FTravel.Repository.Commons;
 using FTravel.Repository.EntityModels;
 using FTravel.Repository.Repositories;
 using FTravel.Repository.Repositories.Interface;
-using FTravel.Service.BusinessModels;
+using FTravel.Service.BusinessModels.RouteModels;
 using FTravel.Service.Enums;
 using FTravel.Service.Services.Interface;
 using FTravel.Service.Utils;
@@ -83,7 +83,7 @@ namespace FTravel.Service.Services
             routeModel.StartPoint = route.StartPointNavigation.Name;
             routeModel.EndPoint = route.EndPointNavigation.Name;
             routeModel.BusCompanyName = route.BusCompany.Name;
-            routeModel.RouteStations = route.RouteStations;
+            routeModel.RouteStations = _mapper.Map<List<RouteStationModel>>(route.RouteStations);
             return routeModel;
 
         }
