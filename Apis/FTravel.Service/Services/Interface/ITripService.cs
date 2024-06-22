@@ -2,6 +2,7 @@
 using FTravel.Repository.Commons;
 using FTravel.Repository.EntityModels;
 using FTravel.Service.BusinessModels;
+using FTravel.Service.BusinessModels.TripModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
