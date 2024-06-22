@@ -19,15 +19,18 @@ namespace FTravel.Service.Services
         private readonly ITransactionService _transactionService;
         private readonly IWalletService _walletService;
         private readonly IMapper _mapper;
+        private readonly IBusCompanyRepository _busCompanyRepository;
 
         public OrderService(IOrderRepository orderRepository,
             ITransactionService transactionService,
             IWalletService walletService,
+            IBusCompanyRepository busCompanyRepository,
             IMapper mapper)
         {
             _orderRepository = orderRepository;
             _transactionService = transactionService;
             _walletService = walletService;
+            _busCompanyRepository = busCompanyRepository;
             _mapper = mapper;
         }
 
@@ -132,6 +135,39 @@ namespace FTravel.Service.Services
             DateTime now = TimeUtils.GetTimeVietNam();
             string orderCode = now.ToString("yyyyMMddHHmmss");
             return orderCode;
+        }
+        public async Task<List<OrderViewModel>> GetAllOrderAsync()
+        {
+            var orderList = await _orderRepository.GetAllOrderAsync();
+            List<OrderViewModel> listOrders = _mapper.Map<List<OrderViewModel>>(orderList);
+            if(listOrders.Count > 0)
+            {
+                return listOrders;
+            }
+            return null;
+        }
+        public async Task<OrderViewModel> GetOrderDetailByIdAsync(int orderId)
+        {
+            var findOrderDetail = await _orderRepository.GetOrderDetailByIdAsync(orderId);
+            var findOrder = await _orderRepository.GetByIdAsync(orderId);
+            if(findOrderDetail == null)
+            {
+                return null; 
+            }
+            var result = new OrderViewModel()
+            {
+                Id = findOrder.Id,
+                CreateDate = findOrder.CreateDate,
+                UpdateDate = findOrder.UpdateDate,
+                IsDeleted = findOrder.IsDeleted,
+                TotalPrice = findOrder.TotalPrice,
+                Code = findOrder.Code,
+                PaymentDate = (DateTime)findOrder.PaymentDate,
+                PaymentOrderStatus = findOrder.PaymentStatus.ToString(),
+                CustomerName = findOrder.Customer.FullName,
+                OrderDetailModel =  _mapper.Map<List<OrderDetailModel>>(findOrderDetail),
+            };
+            return result;
         }
     }
 }

@@ -115,20 +115,27 @@ namespace FTravel.Service.Services
         public async Task<bool> DeleteStationService(int stationId)
         {
             var deleteStation = await _stationRepository.GetStationById(stationId);
+            var routeStation = await _stationRepository.GetRouteStationById(stationId);
             if(deleteStation == null)
             {
                 return false;
             }
             else
             {
-                var result = await _stationRepository.SoftDeleteAsync(deleteStation);
-                if(result > 0)
-                {
-                    return true;
-                } 
-                else
-                {
+                if(routeStation.Count > 0) {
                     return false;
+                } else
+                {
+                    deleteStation.Status = CommonStatus.INACTIVE.ToString();
+                    var result = await _stationRepository.SoftDeleteAsync(deleteStation);
+                    if (result > 0)
+                    {
+                        return true;
+                    }
+                    else
+                    {
+                        return false;
+                    }
                 }
             }
         }

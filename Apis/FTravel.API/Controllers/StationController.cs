@@ -189,7 +189,7 @@ namespace FTravel.API.Controllers
                     return NotFound(new ResponseModel()
                     {
                         HttpCode = StatusCodes.Status404NotFound,
-                        Message = "Không tìm thấy trạm để xóa"
+                        Message = "Không tìm thấy trạm để xóa hoặc trạm còn tuyến đường sử dụng"
                     });
                 }
             }
