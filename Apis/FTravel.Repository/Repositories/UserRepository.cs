@@ -24,10 +24,5 @@ namespace FTravel.Repository.Repositories
             var user = await _context.Users.FirstOrDefaultAsync(x => x.Email == email);
             return user;
         }
-
-        public async Task<IDbContextTransaction> BeginTransactionAsync()
-        {
-            return await _context.Database.BeginTransactionAsync();
-        }
     }
 }

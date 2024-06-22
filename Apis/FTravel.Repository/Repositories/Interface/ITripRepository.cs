@@ -12,8 +12,9 @@ namespace FTravel.Repository.Repositories.Interface
     public interface ITripRepository : IGenericRepository<Trip>
     {
         public Task<Trip> GetTripById(int id);
-        Task<bool> CreateTripAsync(Trip trip);
+        //Task<bool> CreateTripAsync(Trip trip);
         Task<bool> UpdateTripAsync(Trip trip);
         public Task<Pagination<Trip>> GetAllTrips(PaginationParameter paginationParameter);
+        public Task<Trip> GetTemplateTrip();
     }
 }

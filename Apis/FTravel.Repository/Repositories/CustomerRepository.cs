@@ -21,7 +21,7 @@ namespace FTravel.Repository.Repositories
 
         public async Task<Customer?> GetCustomerByEmailAsync(string email) 
         {
-            return await _context.Customers.FirstOrDefaultAsync(c => c.Email == email);
+            return await _context.Customers.Include(c => c.Wallet).FirstOrDefaultAsync(c => c.Email == email);
         }
 
         public async Task<List<Customer>> GetCustomersByIdsAsync(IEnumerable<int> customerIds)

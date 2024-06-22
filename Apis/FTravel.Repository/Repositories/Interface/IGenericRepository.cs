@@ -1,6 +1,7 @@
 ﻿using FTravel.Repositories.Commons;
 using FTravel.Repository.Commons;
 using FTravel.Repository.EntityModels;
+using Microsoft.EntityFrameworkCore.Storage;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -22,5 +23,7 @@ namespace FTravel.Repository.Repositories.Interface
         Task<int> PermanentDeletedAsync(TEntity entity);
 
         Task<Pagination<TEntity>> ToPagination(PaginationParameter paginationParameter);
+
+        Task<IDbContextTransaction> BeginTransactionAsync();
     }
 }

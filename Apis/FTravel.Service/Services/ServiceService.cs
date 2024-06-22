@@ -86,9 +86,7 @@ namespace FTravel.Service.Services
             }
             catch (Exception ex)
             {
-                // Log the exception
-                Console.WriteLine($"Fail to add service {ex.Message}");
-                return false; // Return false indicating failure
+                throw new Exception("Xảy ra lỗi khi thêm dịch vụ");
             }
         }
 
@@ -108,9 +106,7 @@ namespace FTravel.Service.Services
             }
             catch (Exception ex)
             {
-                // Log the exception
-                Console.WriteLine($"Fail to update service {ex.Message}");
-                return false;
+                throw new Exception("Xảy ra lỗi khi cập nhật dịch vụ");
             }
         }
         public async Task<bool> DeleteServiceAsync(int id)
@@ -120,6 +116,7 @@ namespace FTravel.Service.Services
                 var existingService = await _serviceRepository.GetServiceById(id);
                 if (existingService == null)
                 {
+                    throw new KeyNotFoundException("Không tìm thấy dịch vụ!");
                     return false;
                 }
                 await _serviceRepository.SoftDeleteAsync(existingService);
@@ -127,9 +124,7 @@ namespace FTravel.Service.Services
             }
             catch (Exception ex)
             {
-                // Log the exception
-                Console.WriteLine($"Fail to delete service {ex.Message}");
-                return false;
+                throw new Exception("Xảy ra lỗi khi xóa dịch vụ");
             }
         }
     }

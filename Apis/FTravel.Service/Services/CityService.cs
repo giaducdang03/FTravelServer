@@ -28,20 +28,20 @@ namespace FTravel.Service.Services
             _mapper = mapper;
         }
 
-        public async Task<int> CreateCityAsync(CityModel cityModel)
+        public async Task<int> CreateCityAsync(int cityCode, string cityName)
         {
-           if(cityModel == null)
+            var city = new City
             {
-                return -1;
-
-            }
-            var city = _mapper.Map<City>(cityModel);
-            city.UnsignName = StringUtils.ConvertToUnSign(cityModel.Name);
+                Code = cityCode,
+                Name = cityName,
+                UnsignName = StringUtils.ConvertToUnSign(cityName)
+            };
             var result = await _cityRepository.CreateCityAsync(city);
             if (result > 0)
             {
                 return result;
-            } else
+            }
+            else
             {
                 return -1;
             }
@@ -61,21 +61,21 @@ namespace FTravel.Service.Services
                 listCity.PageSize);
         }
 
-        public async Task<CityModel> UpdateCityAsync(CityModel updateCityModel, int id)
-        {
-            var updateCity = _mapper.Map<City>(updateCityModel);
-            updateCity.Id = id;
-            updateCity.UnsignName = StringUtils.ConvertToUnSign(updateCityModel.Name);
-            var result = await _cityRepository.UpdateCityAsync(updateCity);
-            if(result != null)
-            {
-                return updateCityModel;
-            }
-            return null;
-        }
+        //public async Task<CityModel> UpdateCityAsync(CityModel updateCityModel, int id)
+        //{
+        //    var updateCity = _mapper.Map<City>(updateCityModel);
+        //    updateCity.Id = id;
+        //    updateCity.UnsignName = StringUtils.ConvertToUnSign(updateCityModel.Name);
+        //    var result = await _cityRepository.UpdateCityAsync(updateCity);
+        //    if(result != null)
+        //    {
+        //        return updateCityModel;
+        //    }
+        //    return null;
+        //}
         public async Task<bool> RemoveSoftCityAsync(int deleteCity)
         {
-           return await _cityRepository.RemoveSoftCityAsync(deleteCity);
+            return await _cityRepository.RemoveSoftCityAsync(deleteCity);
         }
 
     }

@@ -41,7 +41,7 @@ namespace FTravel.Repository.Repositories
 
         public async Task<Pagination<Station>> GetAllStation(PaginationParameter paginationParameter)
         {
-            var query = _context.Stations.AsQueryable();
+            var query = _context.Stations.Include(s => s.BusCompany).AsQueryable();
 
             var totalCount = await query.CountAsync();
             var paginatedQuery = query.Skip((paginationParameter.PageIndex - 1) * paginationParameter.PageSize)
@@ -55,6 +55,11 @@ namespace FTravel.Repository.Repositories
         public async Task<Station> GetStationById(int id)
         {
             var station = await _context.Stations.Include(s => s.BusCompany).FirstOrDefaultAsync( x => x.Id == id);
+            return station;
+        }
+        public async Task<List<RouteStation>> GetRouteStationById(int id)
+        {
+            var station = await _context.RouteStations.Where(x => x.StationId == id).ToListAsync();
             return station;
         }
     }

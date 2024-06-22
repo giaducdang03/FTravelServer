@@ -5,7 +5,9 @@ using FTravel.Repository.EntityModels;
 using FTravel.Repository.Repositories;
 using FTravel.Repository.Repositories.Interface;
 using FTravel.Service.BusinessModels;
+using FTravel.Service.Enums;
 using FTravel.Service.Services.Interface;
+using FTravel.Service.Utils;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -14,11 +16,15 @@ namespace FTravel.Service.Services
     public class StationService : IStationService
     {
         private readonly IStationRepository _stationRepository;
+        private readonly IBusCompanyRepository _busCompanyRepository;
         private readonly IMapper _mapper;
 
-        public StationService(IStationRepository stationRepository, IMapper mapper)
+        public StationService(IStationRepository stationRepository, 
+            IBusCompanyRepository busCompanyRepository,
+            IMapper mapper)
         {
             _stationRepository = stationRepository;
+            _busCompanyRepository = busCompanyRepository;
             _mapper = mapper;
         }
 
@@ -38,53 +44,51 @@ namespace FTravel.Service.Services
 
         }
 
-        public async Task<StationModel> CreateStationService(StationModel station)
+        public async Task<StationModel> CreateStationService(string stationName, int buscompanyId)
         {
-            try
+            var buscompany = await _busCompanyRepository.GetByIdAsync(buscompanyId);
+            if (buscompany == null) 
             {
-                var paginationParameter = new PaginationParameter
+                throw new Exception("Nhà xe không tồn tại.");
+            }
+            var stationUnsign = StringUtils.ConvertToUnSign(stationName);
+            var stations = await _stationRepository.GetAllAsync();
+            var existStation = stations.Where(x => x.BusCompanyId == buscompanyId && x.UnsignName.ToLower() == stationUnsign.ToLower());
+
+            if (!existStation.Any())
+            {
+                var newStation = new Station
                 {
-                    PageIndex = 1,
-                    PageSize = 10
+                    Name = stationName,
+                    UnsignName = stationUnsign,
+                    BusCompanyId = buscompanyId,
+                    Status = CommonStatus.ACTIVE.ToString()
                 };
-                var data = await _stationRepository.GetAllStation(paginationParameter);
-                var checkExist = data.Where(x => x.Name.Equals(station.Name));
-
-                if (checkExist.Any())
-                {
-                    return null;
-                }
-
-                var map = _mapper.Map<Station>(station);
-                var createStation = await _stationRepository.createStation(map);
+                var createStation = await _stationRepository.createStation(newStation);
                 var result = _mapper.Map<StationModel>(createStation);
                 return result;
-            }
-            catch (Exception ex)
+            } 
+            else
             {
-                throw new Exception(ex.Message);
+                throw new Exception("Trạm đã tồn tại.");
             }
         }
 
-        
+
         public async Task<Pagination<StationModel>> GetAllStationService(PaginationParameter paginationParameter)
         {
-            var routes = await _stationRepository.GetAllStation(paginationParameter);
-            if (!routes.Any())
+            var stations = await _stationRepository.GetAllStation(paginationParameter);
+            if (!stations.Any())
             {
                 return null;
             }
 
-            var stationModels = _mapper.Map<List<StationModel>>(routes);
-            foreach (var stationModel in stationModels)
-            {
-                stationModel.Id = stationModel.Id; 
-            }
+            var stationModels = _mapper.Map<List<StationModel>>(stations);
 
             return new Pagination<StationModel>(stationModels,
-                routes.TotalCount,
-                routes.CurrentPage,
-                routes.PageSize);
+                stations.TotalCount,
+                stations.CurrentPage,
+                stations.PageSize);
 
         }
 
@@ -92,6 +96,48 @@ namespace FTravel.Service.Services
         {
             var data = await _stationRepository.GetStationById(id);
             return data;
+        }
+        public async Task<int> UpdateStationService(UpdateStationModel updateStation, int stationId)
+        {
+            var oldStation = await _stationRepository.GetStationById(stationId);
+            if(oldStation == null) {
+                return -1;
+            } else
+            {
+                oldStation.Name = updateStation.Name;
+                oldStation.Status = updateStation.Status.ToString();
+                oldStation.UnsignName = StringUtils.ConvertToUnSign(updateStation.Name);
+                oldStation.BusCompanyId = updateStation.BusCompanyId;
+            }
+            var result = await _stationRepository.UpdateAsync(oldStation);
+            return result;
+        }
+        public async Task<bool> DeleteStationService(int stationId)
+        {
+            var deleteStation = await _stationRepository.GetStationById(stationId);
+            var routeStation = await _stationRepository.GetRouteStationById(stationId);
+            if(deleteStation == null)
+            {
+                return false;
+            }
+            else
+            {
+                if(routeStation.Count > 0) {
+                    return false;
+                } else
+                {
+                    deleteStation.Status = CommonStatus.INACTIVE.ToString();
+                    var result = await _stationRepository.SoftDeleteAsync(deleteStation);
+                    if (result > 0)
+                    {
+                        return true;
+                    }
+                    else
+                    {
+                        return false;
+                    }
+                }
+            }
         }
     }
 }

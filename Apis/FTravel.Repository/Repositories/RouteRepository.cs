@@ -21,6 +21,13 @@ namespace FTravel.Repository.Repositories
             _context = context;
         }
 
+        public async Task<Route> CreateRoute(Route route)
+        {
+            _context.Add(route);
+            await _context.SaveChangesAsync();
+            return route;
+        }
+
         public async Task<Pagination<Route>> GetListRoutesAsync(PaginationParameter paginationParameter)
         {
             var itemCount = await _context.Routes.CountAsync();
@@ -42,7 +49,8 @@ namespace FTravel.Repository.Repositories
                 .Include(x => x.StartPointNavigation)
                 .Include(x => x.EndPointNavigation)
                 .Include(x => x.Services)
-                .Include(x=> x.TicketTypes)
+                .Include(x => x.TicketTypes)
+                .Include(x => x.RouteStations).ThenInclude(x => x.Station)
                 .FirstOrDefaultAsync(x => x.Id == routeId);
         }
 
@@ -57,7 +65,19 @@ namespace FTravel.Repository.Repositories
         {
             try
             {
-                _context.Routes.Update(route);
+                var updateRoute = await _context.Routes.FirstOrDefaultAsync(x => x.Id == route.Id);
+                if(updateRoute == null)
+                {
+                    return -1;
+                }
+                updateRoute.Name = route.Name;
+                updateRoute.StartPoint = route.StartPoint;
+                updateRoute.EndPoint = route.EndPoint;
+                updateRoute.Status = route.Status;
+                updateRoute.BusCompanyId = route.BusCompanyId;
+                updateRoute.UpdateDate = DateTime.UtcNow.AddHours(7);
+                updateRoute.UnsignName = route.UnsignName;
+                _context.Routes.Update(updateRoute);
                 var result = await _context.SaveChangesAsync();
                 return result;
             }

@@ -6,6 +6,7 @@ using FTravel.Repository.Repositories.Interface;
 using FTravel.Service.BusinessModels;
 using FTravel.Service.Enums;
 using FTravel.Service.Services.Interface;
+using Google.Apis.Util;
 
 namespace FTravel.Service.Services
 {
@@ -29,12 +30,17 @@ namespace FTravel.Service.Services
             {   var user = await _userRepository.GetUserByEmailAsync(model.ManagerEmail);
                 if (user == null)
                 {
-                    throw new KeyNotFoundException("Manager account not exist");
+                    throw new KeyNotFoundException("Tài khoản không tồn tại!");
                 }
                 var role = await _roleRepository.GetByIdAsync(user.RoleId.Value);
                 if (role.Name != RoleEnums.BUSCOMPANY.ToString())
                 {
-                    throw new ArgumentException("user account is not a manager account");
+                    throw new ArgumentException("Tài khoản không phải là tài khoản của quản lý!");
+                }
+                var existedManager = await _busRepository.GetBusCompanyByManagerEmail(model.ManagerEmail);
+                if (existedManager != null)
+                {
+                    throw new ArgumentException($"Tài khoản đã là quản lý của nhà xe: {existedManager.Name}!");
                 }
                 var busCompany = _mapper.Map<BusCompany>(model);
 

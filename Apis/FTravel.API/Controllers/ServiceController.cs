@@ -59,7 +59,7 @@ namespace FTravel.API.Controllers
             }
         }
 
-        [HttpGet("by-station-id{stationId}")]
+        [HttpGet("by-station-id/{stationId}")]
         [Authorize(Roles = "ADMIN, BUSCOMPANY")]
         public async Task<IActionResult> GetServicesByStationId(int stationId, [FromQuery] PaginationParameter paginationParameter)
         {
@@ -184,7 +184,7 @@ namespace FTravel.API.Controllers
                     return Ok(new ResponseModel
                     {
                         HttpCode = StatusCodes.Status200OK,
-                        Message = "Service added successfully"
+                        Message = "Thêm dịch vụ thành công."
                     });
                 }
                 else
@@ -193,7 +193,7 @@ namespace FTravel.API.Controllers
                     return NotFound(new ResponseModel
                     {
                         HttpCode = StatusCodes.Status404NotFound,
-                        Message = "Failed to add the service"
+                        Message = "Không thể thêm dịch vụ này."
                     });
                 }
             }
@@ -226,7 +226,7 @@ namespace FTravel.API.Controllers
                     return Ok(new ResponseModel
                     {
                         HttpCode = StatusCodes.Status200OK,
-                        Message = "Service updated successfully"
+                        Message = "Cập nhật dịch vụ thành công."
                     });
                 }
                 else
@@ -235,7 +235,7 @@ namespace FTravel.API.Controllers
                     return NotFound(new ResponseModel
                     {
                         HttpCode = StatusCodes.Status404NotFound,
-                        Message = "Failed to update the service"
+                        Message = "Không thể cập nhật dịch vụ này."
                     });
                 }
             }
@@ -262,17 +262,25 @@ namespace FTravel.API.Controllers
                     return Ok(new ResponseModel
                     {
                         HttpCode = StatusCodes.Status200OK,
-                        Message = "Service deleted successfully"
+                        Message = "Xóa dịch vụ thành công!"
                     });
                 }
                 else
                 {
-                    return NotFound(new ResponseModel
+                    return BadRequest(new ResponseModel
                     {
-                        HttpCode = StatusCodes.Status404NotFound,
-                        Message = "Failed to delete the service"
+                        HttpCode = StatusCodes.Status400BadRequest,
+                        Message = "Xảy ra lỗi khi xóa dịch vụ!"
                     });
                 }
+            }
+            catch (KeyNotFoundException)
+            {
+                return NotFound(new ResponseModel
+                {
+                    HttpCode = StatusCodes.Status404NotFound,
+                    Message = $"Không tìm thấy dịch vụ với id: {id}"
+                });
             }
             catch (Exception ex)
             {

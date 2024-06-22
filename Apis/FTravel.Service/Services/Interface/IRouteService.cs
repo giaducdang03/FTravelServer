@@ -15,7 +15,10 @@ namespace FTravel.Service.Services.Interface
         public Task<Pagination<RouteModel>> GetListRouteAsync(PaginationParameter paginationParameter);
         public Task<RouteModel?> GetRouteDetailByRouteIdAsync(int routeId);
 
-        public Task<int> UpdateRouteAsync(Route routeUpdate);
+        public Task<int> UpdateRouteAsync(UpdateRouteModel routeUpdate, int id);
         public Task<int> RouteSoftDeleteAsync(int routeId);
+
+        public Task<CreateRouteModel> CreateRoute(CreateRouteModel route);
+
     }
 }
