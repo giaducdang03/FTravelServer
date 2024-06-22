@@ -1,5 +1,5 @@
 ﻿using FTravel.Repository.EntityModels;
-using FTravel.Service.BusinessModels;
+using FTravel.Service.BusinessModels.OrderModels;
 using FTravel.Service.Enums;
 using System;
 using System.Collections.Generic;

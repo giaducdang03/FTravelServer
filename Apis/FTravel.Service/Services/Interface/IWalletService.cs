@@ -2,7 +2,7 @@
 using FTravel.Repository.Commons;
 using FTravel.Repository.EntityModels;
 using FTravel.Repository.Repositories.Interface;
-using FTravel.Service.BusinessModels;
+using FTravel.Service.BusinessModels.PaymentModels;
 using FTravel.Service.Enums;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore.Metadata.Conventions;

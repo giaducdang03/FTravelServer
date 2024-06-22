@@ -1,6 +1,6 @@
 ﻿using FTravel.Repositories.Commons;
 using FTravel.Repository.Commons;
-using FTravel.Service.BusinessModels;
+using FTravel.Service.BusinessModels.ServiceModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;

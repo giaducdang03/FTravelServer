@@ -1,7 +1,6 @@
 ﻿using FTravel.API.ViewModels.ResponseModels;
 using FTravel.Repository.Commons;
 using FTravel.Repository.EntityModels;
-using FTravel.Service.BusinessModels;
 using FTravel.Service.BusinessModels.TripModels;
 using FTravel.Service.Enums;
 using FTravel.Service.Services.Interface;

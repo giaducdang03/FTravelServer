@@ -1,7 +1,7 @@
 ﻿using FTravel.API.ViewModels.RequestModels;
 using FTravel.API.ViewModels.ResponseModels;
 using FTravel.Repository.Commons;
-using FTravel.Service.BusinessModels;
+using FTravel.Service.BusinessModels.PaymentModels;
 using FTravel.Service.Services;
 using FTravel.Service.Services.Interface;
 using FTravel.Service.Utils;

@@ -2,7 +2,7 @@
 using FTravel.API.ViewModels.ResponseModels;
 using FTravel.Repository.Commons;
 using FTravel.Repository.EntityModels;
-using FTravel.Service.BusinessModels;
+using FTravel.Service.BusinessModels.AccountModels;
 using FTravel.Service.Services;
 using FTravel.Service.Services.Interface;
 using Microsoft.AspNetCore.Authorization;

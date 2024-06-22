@@ -1,6 +1,14 @@
 ﻿using AutoMapper;
 using FTravel.Repository.EntityModels;
 using FTravel.Service.BusinessModels;
+using FTravel.Service.BusinessModels.AccountModels;
+using FTravel.Service.BusinessModels.BuscompanyModels;
+using FTravel.Service.BusinessModels.OrderModels;
+using FTravel.Service.BusinessModels.PaymentModels;
+using FTravel.Service.BusinessModels.RouteModels;
+using FTravel.Service.BusinessModels.ServiceModels;
+using FTravel.Service.BusinessModels.StationModels;
+using FTravel.Service.BusinessModels.TicketModels;
 using FTravel.Service.BusinessModels.TripModels;
 using FTravel.Service.Utils;
 using System;
@@ -22,13 +30,6 @@ namespace FTravel.Service.Mapper
             CreateMap<Customer, User>().ReverseMap();
             CreateMap<Wallet, WalletModel>();
             CreateMap<Transaction, TransactionModel>();
-            CreateMap<Route, RouteModel>()
-                .ForMember(dest => dest.StartPoint, opt => opt.MapFrom(src => src.StartPointNavigation.Name))
-                .ForMember(dest => dest.EndPoint, opt => opt.MapFrom(src => src.EndPointNavigation.Name))
-                .ForMember(dest => dest.BusCompanyName, opt => opt.MapFrom(src => src.BusCompany.Name))
-                .ForPath(dest => dest.BusCompany.Id, opt => opt.MapFrom(src => src.BusCompany.Id))
-                .ForPath(dest => dest.BusCompany.Name, opt => opt.MapFrom(src => src.BusCompany.Name))
-                .ForPath(dest => dest.BusCompany.ImgUrl, opt => opt.MapFrom(src => src.BusCompany.ImgUrl));
 
             CreateMap<StationModel, Station>().ReverseMap()
                 .ForMember(dest => dest.BusCompanyName, opt => opt.MapFrom(src => src.BusCompany.Name));
@@ -96,6 +97,17 @@ namespace FTravel.Service.Mapper
 
             CreateMap<UpdateAccountModel, User>()
                 .ForMember(dest => dest.UnsignFullName, opt => opt.MapFrom(src => StringUtils.ConvertToUnSign(src.FullName)));
+
+            // for route
+            CreateMap<Route, RouteModel>()
+                .ForMember(dest => dest.StartPoint, opt => opt.MapFrom(src => src.StartPointNavigation.Name))
+                .ForMember(dest => dest.EndPoint, opt => opt.MapFrom(src => src.EndPointNavigation.Name))
+                .ForMember(dest => dest.BusCompanyName, opt => opt.MapFrom(src => src.BusCompany.Name))
+                .ForPath(dest => dest.BusCompany.Id, opt => opt.MapFrom(src => src.BusCompany.Id))
+                .ForPath(dest => dest.BusCompany.Name, opt => opt.MapFrom(src => src.BusCompany.Name))
+                .ForPath(dest => dest.BusCompany.ImgUrl, opt => opt.MapFrom(src => src.BusCompany.ImgUrl));
+
+            CreateMap<RouteStation, RouteStationModel>();
         }
     }
 }
