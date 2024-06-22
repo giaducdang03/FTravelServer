@@ -20,7 +20,8 @@ namespace FTravel.Service.Utils
                 Notification = new Notification()
                 {
                     Title = title,
-                    Body = body
+                    Body = body,
+                    ImageUrl = "https://firebasestorage.googleapis.com/v0/b/swd392-d2c4e.appspot.com/o/FTravel%2FLogo_FTravel_3.png?alt=media&token=744b0241-f414-4139-affa-5c523c3bcbc2"
                 },
                 Token = token
             };
@@ -37,7 +38,8 @@ namespace FTravel.Service.Utils
                 Notification = new Notification()
                 {
                     Title = title,
-                    Body = body
+                    Body = body,
+                    ImageUrl = "https://firebasestorage.googleapis.com/v0/b/swd392-d2c4e.appspot.com/o/FTravel%2FLogo_FTravel_3.png?alt=media&token=744b0241-f414-4139-affa-5c523c3bcbc2"
                 },
                 Tokens = tokens
             };
