@@ -14,5 +14,8 @@ namespace FTravel.Service.Services.Interface
         public Task<Order> CreateOrderAsync(OrderModel orderModel);
 
         public Task<PaymentOrderStatus> PaymentOrderAsync(int orderId);
+        public Task<List<OrderViewModel>> GetAllOrderAsync();
+        public Task<OrderViewModel> GetOrderDetailByIdAsync(int orderId);
+       
     }
 }

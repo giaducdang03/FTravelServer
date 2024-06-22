@@ -57,5 +57,10 @@ namespace FTravel.Repository.Repositories
             var station = await _context.Stations.Include(s => s.BusCompany).FirstOrDefaultAsync( x => x.Id == id);
             return station;
         }
+        public async Task<List<RouteStation>> GetRouteStationById(int id)
+        {
+            var station = await _context.RouteStations.Where(x => x.StationId == id).ToListAsync();
+            return station;
+        }
     }
 }
