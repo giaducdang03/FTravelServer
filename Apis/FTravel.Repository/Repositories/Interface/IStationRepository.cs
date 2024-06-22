@@ -19,6 +19,7 @@ namespace FTravel.Repository.Repositories.Interface
         public Task<Route> CreateRoute(Route route);
 
         public Task<Station> createStation(Station station);
+        public Task<List<RouteStation>> GetRouteStationById(int id);
 
     }
 }
