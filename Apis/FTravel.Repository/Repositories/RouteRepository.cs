@@ -107,5 +107,27 @@ namespace FTravel.Repository.Repositories
             }
         }
 
+        public async Task<int> AddStationForRoute(RouteStation routeStation)
+        {
+            try
+            {
+                var checkRouteExist = await _context.Routes.FirstOrDefaultAsync(x => x.Id == routeStation.RouteId);
+                var checkStationExist = await _context.Routes.FirstOrDefaultAsync(x => x.Id == routeStation.StationId);
+                
+                if(checkRouteExist == null && checkStationExist == null) {
+                    return -1;
+                }
+                await _context.RouteStations.AddAsync(routeStation);
+                var result = await _context.SaveChangesAsync();
+                return result;
+            }
+            catch (Exception ex)
+            {
+
+                return -1;
+            }
+        }
+
+
     }
 }

@@ -92,10 +92,10 @@ builder.Services.AddSwaggerGen(c =>
 
 // ===================== FOR LOCAL DB =======================
 
-// builder.Services.AddDbContext<FtravelContext>(options =>
-// {
-//     options.UseSqlServer(builder.Configuration.GetConnectionString("FTravelLocal"));
-// });
+//builder.Services.AddDbContext<FtravelContext>(options =>
+//{
+//    options.UseSqlServer(builder.Configuration.GetConnectionString("FTravelLocal"));
+//});
 
 // ==========================================================
 
@@ -106,11 +106,11 @@ builder.Services.AddSwaggerGen(c =>
 var connection = String.Empty;
 if (builder.Environment.IsDevelopment())
 {
-   connection = builder.Configuration.GetConnectionString("AZURE_SQL_CONNECTIONSTRING");
+    connection = builder.Configuration.GetConnectionString("AZURE_SQL_CONNECTIONSTRING");
 }
 else
 {
-   connection = Environment.GetEnvironmentVariable("AZURE_SQL_CONNECTIONSTRING");
+    connection = Environment.GetEnvironmentVariable("AZURE_SQL_CONNECTIONSTRING");
 }
 
 builder.Services.AddDbContext<FtravelContext>(options =>

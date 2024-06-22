@@ -9,6 +9,7 @@ using FTravel.Service.Enums;
 using FTravel.Service.Services.Interface;
 using FTravel.Service.Utils;
 using Microsoft.AspNetCore.Mvc.Abstractions;
+using MimeKit.Cryptography;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -114,5 +115,20 @@ namespace FTravel.Service.Services
             var result = await _routeRepository.UpdateAsync(findRouteUpdate);
             return result;
         }
+
+        public Task<int> AddStationForRoute(AddStationForRouteModel addStation)
+        {
+            var addRouteStation = new RouteStation()
+            {
+                RouteId = addStation.RouteId,
+                StationId = addStation.StationId,
+                StationIndex = addStation.StationIndex,
+                CreateDate = DateTime.UtcNow.AddHours(7),
+                IsDeleted = false
+            };
+            var result = _routeRepository.AddStationForRoute(addRouteStation);
+            return result;
+        }
+
     }
 }
