@@ -1,6 +1,6 @@
 ﻿using FTravel.API.ViewModels.ResponseModels;
 using FTravel.Repository.Commons;
-using FTravel.Service.BusinessModels;
+using FTravel.Service.BusinessModels.BuscompanyModels;
 using FTravel.Service.Services.Interface;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
