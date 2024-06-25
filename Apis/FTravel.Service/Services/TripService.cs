@@ -23,12 +23,17 @@ namespace FTravel.Service.Services
         private readonly ITripRepository _tripRepository;
         private readonly ITicketRepository _ticketRepository;
         private readonly IRouteRepository _routeRepository;
+        private readonly IRoleRepository _roleRepository;
+        private readonly IUserRepository _userRepository;
         private readonly IMapper _mapper;
-        public TripService(ITripRepository repository, ITicketRepository ticketRepository, IRouteRepository routeRepository, IMapper mapper)
+        public TripService(ITripRepository repository, ITicketRepository ticketRepository, IRouteRepository routeRepository,
+            IUserRepository userRepository, IRoleRepository roleRepository ,IMapper mapper)
         {
             _tripRepository = repository;
             _ticketRepository = ticketRepository;
             _routeRepository = routeRepository;
+            _roleRepository = roleRepository;
+            _userRepository = userRepository;
             _mapper = mapper;
         }
 
@@ -75,6 +80,16 @@ namespace FTravel.Service.Services
                 }
 
                 var newTrip = _mapper.Map<Trip>(tripModel);
+                var driver = await _userRepository.GetByIdAsync(newTrip.DriverId.Value);
+                if (driver == null)
+                {
+                    throw new Exception("Không tìm thấy người lái");
+                }
+                var userRole = await _roleRepository.GetByIdAsync(driver.RoleId.Value);
+                if (userRole.Name != RoleEnums.DRIVER.ToString())
+                {
+                    throw new Exception("Người dùng không phải là tài xế");
+                }
                 if (tripModel.OpenTicketDate.Date.Hour > TimeUtils.GetTimeVietNam().Date.Hour)
                 {
                     newTrip.Status = TripStatus.PENDING.ToString();
