@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using FTravel.Repositories.Commons;
 using FTravel.Repository.Commons;
+using FTravel.Repository.Commons.Filter;
 using FTravel.Repository.EntityModels;
 using FTravel.Repository.Repositories;
 using FTravel.Repository.Repositories.Interface;
@@ -76,9 +77,9 @@ namespace FTravel.Service.Services
         }
 
 
-        public async Task<Pagination<StationModel>> GetAllStationService(PaginationParameter paginationParameter)
+        public async Task<Pagination<StationModel>> GetAllStationService(PaginationParameter paginationParameter, StationFilter stationFilter)
         {
-            var stations = await _stationRepository.GetAllStation(paginationParameter);
+            var stations = await _stationRepository.GetAllStation(paginationParameter, stationFilter);
             if (!stations.Any())
             {
                 return null;

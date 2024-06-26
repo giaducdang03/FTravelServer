@@ -1,5 +1,6 @@
 ﻿using FTravel.Repositories.Commons;
 using FTravel.Repository.Commons;
+using FTravel.Repository.Commons.Filter;
 using FTravel.Repository.EntityModels;
 using FTravel.Service.BusinessModels.RouteModels;
 using FTravel.Service.BusinessModels.StationModels;
@@ -13,7 +14,7 @@ namespace FTravel.Service.Services.Interface
 {
     public interface IStationService
     {
-        public Task<Pagination<StationModel>> GetAllStationService(PaginationParameter paginationParameter);
+        public Task<Pagination<StationModel>> GetAllStationService(PaginationParameter paginationParameter, StationFilter filter);
         
         public Task<Station> GetStationServiceDetailById(int id);
 

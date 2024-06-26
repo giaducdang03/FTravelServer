@@ -1,5 +1,6 @@
 ﻿using FTravel.Repositories.Commons;
 using FTravel.Repository.Commons;
+using FTravel.Repository.Commons.Filter;
 using FTravel.Repository.EntityModels;
 using System;
 using System.Collections.Generic;
@@ -11,7 +12,7 @@ namespace FTravel.Repository.Repositories.Interface
 {
     public interface IStationRepository : IGenericRepository<Station>
     {
-        Task<Pagination<Station>> GetAllStation(PaginationParameter paginationParameter);
+        Task<Pagination<Station>> GetAllStation(PaginationParameter paginationParameter, StationFilter stationFilter);
 
 
         public Task<Station> GetStationById(int id);
