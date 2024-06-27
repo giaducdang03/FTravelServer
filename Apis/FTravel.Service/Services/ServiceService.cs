@@ -87,7 +87,6 @@ namespace FTravel.Service.Services
             catch (Exception ex)
             {
                 throw ex;
-                return false;
             }
         }
 
@@ -108,7 +107,6 @@ namespace FTravel.Service.Services
             catch (Exception ex)
             {
                 throw ex;
-                return false;
             }
         }
         public async Task<bool> DeleteServiceAsync(int id)
@@ -126,8 +124,8 @@ namespace FTravel.Service.Services
             catch (Exception ex)
             {
                 throw ex;
-                return false;
             }
         }
+
     }
 }
