@@ -54,33 +54,69 @@ namespace FTravel.API.Controllers
                 var responseModel = new ResponseModel()
                 {
                     HttpCode = StatusCodes.Status400BadRequest,
-                    Message = "Có lỗi xảy ra"
+                    Message = ex.Message
                 };
                 return BadRequest(responseModel);
             }
         }
 
-        [HttpPut("{id}")]
+        //[HttpPut("{id}")]
+        //[Authorize(Roles = "ADMIN")]
+        //public async Task<IActionResult> UpdateCity([FromBody] CityModel cityModel, [FromRoute] int id)
+        //{
+        //    try
+        //    {
+        //        var result = await _cityService.UpdateCityAsync(cityModel, id);
+        //        if(result == null)
+        //        {
+        //            return NotFound(new ResponseModel()
+        //            {
+        //                HttpCode = StatusCodes.Status404NotFound,
+        //                Message = "Không thể thay đổi thông tin thành phố"
+        //            });
+        //        }
+        //        return Ok(new ResponseModel()
+        //        {
+        //            HttpCode = StatusCodes.Status200OK,
+
+        //            Message = "Thay đổi thành công"
+        //        });
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return BadRequest(new ResponseModel()
+        //        {
+        //            HttpCode = StatusCodes.Status400BadRequest,
+        //            Message = ex.Message
+        //        });
+        //    }
+        //}
+
+        [HttpPost]
         [Authorize(Roles = "ADMIN")]
-        public async Task<IActionResult> UpdateCity([FromBody] CityModel cityModel, [FromRoute] int id)
-        {
+        public async Task<IActionResult> CreateCity([FromBody] CreateCityModel createCityModel)
+		{
             try
             {
-                var result = await _cityService.UpdateCityAsync(cityModel, id);
-                if(result == null)
+                if (ModelState.IsValid)
                 {
-                    return NotFound(new ResponseModel()
+                    var result = await _cityService.CreateCityAsync(createCityModel.Code, createCityModel.Name);
+                    if (result <= 0)
                     {
-                        HttpCode = StatusCodes.Status404NotFound,
-                        Message = "Không thể thay đổi thông tin thành phố"
+                        return BadRequest(new ResponseModel()
+                        {
+                            HttpCode = StatusCodes.Status400BadRequest,
+                            Message = "Không thể thêm thành phố này"
+                        });
+                    }
+                    return Ok(new ResponseModel 
+                    { 
+                        HttpCode = StatusCodes.Status200OK, 
+                        Message = "Thêm thành phố thành công" 
                     });
                 }
-                return Ok(new ResponseModel()
-                {
-                    HttpCode = StatusCodes.Status200OK,
+                return ValidationProblem(ModelState);
 
-                    Message = "Thay đổi thành công"
-                });
             }
             catch (Exception ex)
             {
@@ -92,37 +128,9 @@ namespace FTravel.API.Controllers
             }
         }
 
-        [HttpPost]
-        [Authorize(Roles = "ADMIN")]
-        public async Task<IActionResult> CreateCity([FromBody] CityModel cityCreateModel)
-		{
-            try
-            {
-                var result = await _cityService.CreateCityAsync(cityCreateModel);
-                if (result <= 0)
-                {
-                    return NotFound(new ResponseModel()
-                    {
-                        HttpCode = StatusCodes.Status404NotFound,
-                        Message = "Không thể thêm thành phố này"
-                    });
-                }
-                return Ok(new ResponseModel() { HttpCode = StatusCodes.Status200OK, Message = "Thêm thành phố thành công" });
-
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(new ResponseModel()
-                {
-                    HttpCode = StatusCodes.Status400BadRequest,
-                    Message = ex.Message.ToString()
-                });
-            }
-        }
-
         [HttpDelete("{id}")]
         [Authorize(Roles = "ADMIN")]
-        public async Task<IActionResult> removeSoftCity (int id)
+        public async Task<IActionResult> RemoveSoftCity (int id)
         {
             try
             {
@@ -145,11 +153,10 @@ namespace FTravel.API.Controllers
             }
             catch (Exception ex)
             {
-
                 return BadRequest(new ResponseModel()
                 {
                     HttpCode = StatusCodes.Status400BadRequest,
-                    Message = "Có lỗi xảy ra"
+                    Message = ex.Message
                 });
             }
         }

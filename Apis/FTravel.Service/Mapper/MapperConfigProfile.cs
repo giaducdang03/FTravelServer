@@ -39,23 +39,29 @@ namespace FTravel.Service.Mapper
             CreateMap<Route, RouteModel>()
                 .ForMember(dest => dest.StartPoint, opt => opt.MapFrom(src => src.StartPointNavigation.Name))
                 .ForMember(dest => dest.EndPoint, opt => opt.MapFrom(src => src.EndPointNavigation.Name))
+                .ForMember(dest => dest.BusCompanyName, opt => opt.MapFrom(src => src.BusCompany.Name))
+                .ForPath(dest => dest.BusCompany.Id, opt => opt.MapFrom(src => src.BusCompany.Id))
+                .ForPath(dest => dest.BusCompany.Name, opt => opt.MapFrom(src => src.BusCompany.Name))
+                .ForPath(dest => dest.BusCompany.ImgUrl, opt => opt.MapFrom(src => src.BusCompany.ImgUrl));
+
+            CreateMap<StationModel, Station>().ReverseMap()
                 .ForMember(dest => dest.BusCompanyName, opt => opt.MapFrom(src => src.BusCompany.Name));
-            CreateMap<StationModel, Station>().ReverseMap();
 
             CreateMap<City, CityModel>().ReverseMap();
             CreateMap<TicketType, TicketTypeModel>();
-            CreateMap<AccountModel, User>().ReverseMap();
+            CreateMap<AccountModel, User>().ReverseMap()
+                .ForMember(dest => dest.Role, opt => opt.MapFrom(src => src.Role.Name));
 
             CreateMap<Repository.EntityModels.Service, ServiceModel>()
             .ForMember(dest => dest.RouteName, opt => opt.MapFrom(src => src.Route != null ? src.Route.Name : string.Empty))
             .ForMember(dest => dest.StationName, opt => opt.MapFrom(src => src.Station != null ? src.Station.Name : string.Empty))
             .ReverseMap();
-            
+
             CreateMap<CreateServiceModel, Repository.EntityModels.Service>()
             .ForMember(dest => dest.UnsignName, opt => opt.MapFrom(src => StringUtils.ConvertToUnSign(src.Name)));
-            
+
             CreateMap<UpdateServiceModel, Repository.EntityModels.Service>()
-            .ForMember(dest => dest.UpdateDate, opt => opt.Ignore()) 
+            .ForMember(dest => dest.UpdateDate, opt => opt.Ignore())
             .ForMember(dest => dest.CreateDate, opt => opt.Ignore())
             .ForMember(dest => dest.IsDeleted, opt => opt.Ignore())
             .ForMember(dest => dest.UnsignName, opt => opt.MapFrom(src => StringUtils.ConvertToUnSign(src.Name)));
@@ -64,10 +70,11 @@ namespace FTravel.Service.Mapper
             .ForMember(dest => dest.RouteName, opt => opt.MapFrom(src => src.Route != null ? src.Route.Name : string.Empty));
             CreateMap<Trip, TripModel>()
             .ForMember(dest => dest.RouteName, opt => opt.MapFrom(src => src.Route.Name))
-            .ForMember(dest => dest.Tickets, opt => opt.Ignore()); 
+            .ForMember(dest => dest.Tickets, opt => opt.Ignore());
 
             CreateMap<Ticket, TicketModel>()
-            .ForMember(dest => dest.TicketTypeName, opt => opt.MapFrom(src => src.TicketType.Name));
+            .ForMember(dest => dest.TicketTypeName, opt => opt.MapFrom(src => src.TicketType.Name))
+            .ReverseMap();
 
             CreateMap<CreateTripModel, Trip>()
             .ForMember(dest => dest.UnsignName, opt => opt.MapFrom(src => StringUtils.ConvertToUnSign(src.Name)))
@@ -86,7 +93,7 @@ namespace FTravel.Service.Mapper
 
             CreateMap<OrderModel, Order>();
             CreateMap<Route, UpdateRouteModel>().ForMember(dest => dest.Status, opt => opt.Ignore()).ReverseMap();
-              
+
         }
     }
 }

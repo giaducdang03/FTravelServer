@@ -33,7 +33,7 @@ namespace FTravel.API.Controllers
         {
             try
             {
-                var result = await _accountService.GetAllUserAccountService(paginationParameter);
+                var result = await _accountService.GetAllUsersAsync(paginationParameter);
                 if (result == null)
                 {
                     return NotFound(new ResponseModel()
@@ -67,26 +67,6 @@ namespace FTravel.API.Controllers
                );
             }
         }
-
-        //[HttpGet("account-list")]
-        //public async Task<IActionResult> GetAllUser()
-        //{
-        //    try
-        //    {
-        //        var user = await _accountService.GetAllUserAscyn();
-        //        return Ok(user);
-        //    }
-        //    catch (Exception ex)
-        //    {
-
-        //        return BadRequest(new ResponseModel
-        //        {
-        //            HttpCode = 400,
-        //            Message = ex.Message
-        //        });
-        //    }
-
-        //}
 
         [HttpGet("{id}")]
         [Authorize]
@@ -167,6 +147,39 @@ namespace FTravel.API.Controllers
                 return BadRequest(resp);
             }
 
+        }
+
+        [HttpDelete("{id}")]
+        [Authorize(Roles = "ADMIN")]
+        public async Task<IActionResult> DeleteAccountById(int id)
+        {
+            try
+            {
+                var currentEmail = _claimsService.GetCurrentUserEmail;
+                var result = await _accountService.DeleteAccountAsync(id, currentEmail);
+                if (result)
+                {
+                    return Ok(new ResponseModel
+                    {
+                        HttpCode = StatusCodes.Status200OK,
+                        Message = "Xóa người dùng thành công."
+                    });
+                }
+                return BadRequest(new ResponseModel
+                {
+                    HttpCode = StatusCodes.Status400BadRequest,
+                    Message = "Có lỗi trong quá trình xóa người dùng."
+                });
+            }
+            catch (Exception ex)
+            {
+                var resp = new ResponseModel()
+                {
+                    HttpCode = StatusCodes.Status400BadRequest,
+                    Message = ex.Message.ToString()
+                };
+                return BadRequest(resp);
+            }
         }
 
         [HttpPut("update-fcm-token")]

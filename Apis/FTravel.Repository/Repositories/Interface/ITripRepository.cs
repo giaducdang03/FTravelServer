@@ -15,5 +15,6 @@ namespace FTravel.Repository.Repositories.Interface
         Task<bool> CreateTripAsync(Trip trip);
         Task<bool> UpdateTripAsync(Trip trip);
         public Task<Pagination<Trip>> GetAllTrips(PaginationParameter paginationParameter);
+        public Task<Trip> GetTemplateTrip();
     }
 }

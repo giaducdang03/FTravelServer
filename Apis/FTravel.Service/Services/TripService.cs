@@ -7,6 +7,7 @@ using FTravel.Repository.Repositories.Interface;
 using FTravel.Service.BusinessModels;
 using FTravel.Service.Enums;
 using FTravel.Service.Services.Interface;
+using FTravel.Service.Utils;
 using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
@@ -61,19 +62,27 @@ namespace FTravel.Service.Services
         {
             try
             {
-                if (!Enum.TryParse(typeof(TripStatus), tripModel.Status, true, out _))
-                {
-                    throw new ArgumentException($"Trạng thái không hợp lệ. Trạng thái có thể là: {string.Join(", ", Enum.GetNames(typeof(TripStatus)))}.");
-                }
                 var route = await _routeRepository.GetRouteDetailByRouteIdAsync(tripModel.RouteId);
                 if (route == null)
                 {
-                    Console.WriteLine($"Không tìm thấy tuyến xe có id: {tripModel.RouteId}");
+                    throw new Exception($"Không tìm thấy tuyến xe có id: {tripModel.RouteId}");
                     return false;
+                }
+                if (route.Status != CommonStatus.ACTIVE.ToString())
+                {
+                    throw new Exception("Tuyến xe không hoạt động");
                 }
 
                 var newTrip = _mapper.Map<Trip>(tripModel);
-
+                if (tripModel.OpenTicketDate.Date.Hour > TimeUtils.GetTimeVietNam().Date.Hour)
+                {
+                    newTrip.Status = TripStatus.PENDING.ToString();
+                }
+                else if (tripModel.OpenTicketDate.Date.Hour == TimeUtils.GetTimeVietNam().Date.Hour)
+                {
+                    newTrip.Status =TripStatus.OPENING.ToString();
+                }
+                newTrip.IsTemplate = false;
                 // Add valid newTrip services
                 foreach (var tripService in tripModel.TripServices)
                 {
@@ -97,13 +106,21 @@ namespace FTravel.Service.Services
                     }
                 }
 
+                var ticketList = _mapper.Map<List<Ticket>>(tripModel.TripTickets);
+                foreach( var ticket in ticketList)
+                {
+                    if(newTrip.TripTicketTypes.Any(tt => tt.Id == ticket.TicketTypeId))
+                    {
+                        newTrip.Tickets.Add(ticket);
+                    }
+                }
+
                 // Add newTrip to the repository
                 return await _tripRepository.CreateTripAsync(newTrip);
             }
             catch (Exception ex)
             {
                 throw new Exception("Xảy ra lỗi khi tạo chuyến xe mới!");
-                return false;
             }
         }
 
@@ -193,7 +210,7 @@ namespace FTravel.Service.Services
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw new Exception(ex.Message);
             }
         }
         public async Task<bool> CancelTripAsync(int id, string status)
@@ -228,23 +245,43 @@ namespace FTravel.Service.Services
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw new Exception(ex.Message);
             }
+        }
+        public async Task<TripModel> GetTemplateTripAsync()
+        {
+            var trip = await _tripRepository.GetTemplateTrip();
+            if (trip == null)
+            {
+                return null;
+            }
+            var tripModel = _mapper.Map<TripModel>(trip);
+            tripModel.Tickets = _mapper.Map<List<TicketModel>>(trip.Tickets);
+            return tripModel;
         }
         private bool IsValidStatusTransition(string newStatus, string currentStatus)
         {
             currentStatus = currentStatus?.ToUpper();
             newStatus = newStatus?.ToUpper();
 
-            switch (currentStatus)
+            if (!Enum.TryParse<TripStatus>(currentStatus, true, out TripStatus current))
             {
-                case "PENDING":
-                    return newStatus == "OPENING" || newStatus == "CANCELED";
-                case "OPENING":
-                    return newStatus == "DEPARTED" || newStatus == "COMPLETED";
-                case "DEPARTED":
-                    return newStatus == "COMPLETED";
-                case "COMPLETED":
+                return false;
+            }
+
+            if (!Enum.TryParse<TripStatus>(newStatus, true, out TripStatus next))
+            {
+                return false;
+            }
+            switch (current)
+            {
+                case TripStatus.PENDING:
+                    return next == TripStatus.OPENING || next == TripStatus.CANCELED;
+                case TripStatus.OPENING:
+                    return next == TripStatus.DEPARTED || next == TripStatus.COMPLETED;
+                case TripStatus.DEPARTED:
+                    return next == TripStatus.COMPLETED;
+                case TripStatus.COMPLETED:
                     // Once the trip is in "DONE" status, no further status changes are allowed
                     return false;
                 default:

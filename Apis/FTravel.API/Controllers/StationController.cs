@@ -1,5 +1,7 @@
-﻿using FTravel.API.ViewModels.ResponseModels;
+﻿using FTravel.API.ViewModels.RequestModels;
+using FTravel.API.ViewModels.ResponseModels;
 using FTravel.Repository.Commons;
+using FTravel.Repository.EntityModels;
 using FTravel.Service.BusinessModels;
 using FTravel.Service.Services;
 using FTravel.Service.Services.Interface;
@@ -108,18 +110,18 @@ namespace FTravel.API.Controllers
         }
         
 
-        [HttpPost("create-station")]
+        [HttpPost]
         [Authorize(Roles = "ADMIN, BUSCOMPANY")]
-        public async Task<IActionResult> CreateStationController(StationModel station)
+        public async Task<IActionResult> CreateStationController(CreateStationModel stationModel)
         {
             try
             {
-                var data = await _stationService.CreateStationService(station);
-                if (station == null)
+                if (ModelState.IsValid)
                 {
-                    return BadRequest();
+                    var data = await _stationService.CreateStationService(stationModel.Name, stationModel.BusCompanyId);
+                    return Ok(data);
                 }
-                return Ok(data);
+                return ValidationProblem(ModelState);
             }
             catch (Exception ex)
             {
@@ -131,6 +133,75 @@ namespace FTravel.API.Controllers
                 });
             }
 
+        }
+
+        [HttpPut("{id}")]
+        [Authorize(Roles = "ADMIN, BUSCOMPANY")]
+        public async Task<IActionResult> UpdateStation([FromBody] UpdateStationModel updateStation, [FromRoute] int id)
+        {
+            try
+            {
+                    var data = await _stationService.UpdateStationService(updateStation, id);
+                    if(data > 0)
+                    {
+                        return Ok(new ResponseModel()
+                        {
+                            HttpCode = StatusCodes.Status200OK,
+                            Message = "Cập nhật trạm thành công"
+                        });
+                    } 
+                    else
+                    {
+                        return NotFound(new ResponseModel()
+                        {
+                            HttpCode = StatusCodes.Status404NotFound,
+                            Message = "Không tìm thấy trạm để cập nhật"
+                        });
+                    }
+            }
+            catch (Exception ex)
+            {
+
+                return BadRequest(new ResponseModel
+                {
+                    HttpCode = 400,
+                    Message = ex.Message
+                });
+            }
+        }
+
+        [HttpDelete("{id}")]
+        [Authorize(Roles = "ADMIN, BUSCOMPANY")]
+        public async Task<IActionResult> DeleteStation([FromRoute] int id)
+        {
+            try
+            {
+                var result = await _stationService.DeleteStationService(id);
+                if(result)
+                {
+                    return Ok(new ResponseModel()
+                    {
+                        HttpCode = StatusCodes.Status200OK,
+                        Message = "Xóa trạm thành công"
+                    });
+                } else
+                {
+                    return NotFound(new ResponseModel()
+                    {
+                        HttpCode = StatusCodes.Status404NotFound,
+                        Message = "Không tìm thấy trạm để xóa"
+                    });
+                }
+            }
+            catch (Exception ex)
+            {
+
+                return BadRequest(new ResponseModel
+                {
+                    HttpCode = 400,
+                    Message = ex.Message
+                });
+            }
         }
     }
 }

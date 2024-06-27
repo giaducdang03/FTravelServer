@@ -25,8 +25,8 @@ namespace FTravel.API.Controllers
         }
 
         [HttpGet]
-        [Authorize]
         [Authorize(Roles = "ADMIN, BUSCOMPANY")]
+
         public async Task<IActionResult> GetAllTripStatusOpening([FromQuery] PaginationParameter paginationParameter)
         {
             try
@@ -41,8 +41,6 @@ namespace FTravel.API.Controllers
                         Message = "Không tìm thấy chuyến xe!"
                     });
                 }
-
-
                 else
                 {
                     var metadata = new
@@ -57,8 +55,6 @@ namespace FTravel.API.Controllers
 
                     Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
                 }
-
-
                 return Ok(result);
             }
             catch (Exception ex)
@@ -72,8 +68,8 @@ namespace FTravel.API.Controllers
         }
 
         [HttpGet("{id}")]
-        [Authorize]
         [Authorize(Roles = "ADMIN, BUSCOMPANY")]
+
         public async Task<IActionResult> GetTripDetailByIdStatusOpening(int id)
         {
             try
@@ -273,6 +269,34 @@ namespace FTravel.API.Controllers
                     HttpCode = StatusCodes.Status400BadRequest,
                     Message = ex.Message
                 });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new ResponseModel
+                {
+                    HttpCode = StatusCodes.Status400BadRequest,
+                    Message = ex.Message
+                });
+            }
+        }
+        [HttpGet("template")]
+        [Authorize(Roles = "ADMIN, BUSCOMPANY")]
+        public async Task<IActionResult> GetTemplateTrip()
+        {
+            try
+            {
+                var result = await _tripService.GetTemplateTripAsync();
+
+                if (result == null)
+                {
+                    return NotFound(new ResponseModel
+                    {
+                        HttpCode = StatusCodes.Status404NotFound,
+                        Message = "Không tìm tháy chuyến xe mẫu!"
+                    });
+                }
+
+                return Ok(result);
             }
             catch (Exception ex)
             {

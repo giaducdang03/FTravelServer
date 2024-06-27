@@ -18,6 +18,8 @@ namespace FTravel.Service.Services.Interface
 
         public Task<RouteModel> CreateRoute(RouteModel route);
 
-        public Task<StationModel> CreateStationService(StationModel station);
+        public Task<StationModel> CreateStationService(string stationName, int buscompanyId);
+        public Task<int> UpdateStationService(UpdateStationModel updateStation, int stationId);
+        public Task<bool> DeleteStationService(int stationId);
     }
 }

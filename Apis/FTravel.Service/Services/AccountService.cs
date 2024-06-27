@@ -25,6 +25,7 @@ namespace FTravel.Service.Services
         private readonly IUserRepository _userRepository;
         private readonly IRoleRepository _roleRepository;
         private readonly ICustomerRepository _customerRepository;
+        private readonly IWalletRepository _walletRepository;
         private readonly IMailService _mailService;
         private readonly IMapper _mapper;
 
@@ -32,6 +33,7 @@ namespace FTravel.Service.Services
             IUserRepository userRepository,
             IRoleRepository roleRepository,
             ICustomerRepository customerRepository,
+            IWalletRepository walletRepository,
             IMailService mailService,
             IMapper mapper)
         {
@@ -39,6 +41,7 @@ namespace FTravel.Service.Services
             _userRepository = userRepository;
             _roleRepository = roleRepository;
             _customerRepository = customerRepository;
+            _walletRepository = walletRepository;
             _mailService = mailService;
             _mapper = mapper;
         }
@@ -58,7 +61,7 @@ namespace FTravel.Service.Services
 
                     if (existUser != null)
                     {
-                        throw new Exception("Account already exists.");
+                        throw new Exception("Tài khoản đã tồn tại.");
                     }
 
                     // generate password
@@ -124,6 +127,67 @@ namespace FTravel.Service.Services
             }
         }
 
+        public async Task<bool> DeleteAccountAsync(int id, string currentEmail)
+        {
+            var account = await _accountRepo.GetByIdAsync(id);
+            if (account != null)
+            {
+                // check current user
+                if (account.Email == currentEmail)
+                {
+                    throw new Exception("Tài khoản đang đăng nhập. Không thể xóa.");
+                }
+
+                // check confirm email
+                if (account.ConfirmEmail == true)
+                {
+                    account.Status = UserStatus.BANNED.ToString();
+                    await _accountRepo.SoftDeleteAsync(account);
+                    return true;
+                }
+                else
+                {
+                    using (var transaction = await _userRepository.BeginTransactionAsync())
+                    {
+                        try
+                        {
+                            var accountRole = await _roleRepository.GetByIdAsync(account.RoleId.Value);
+                            if (accountRole != null)
+                            {
+                                // if customer delete customer and wallet
+                                if (accountRole.Name == RoleEnums.CUSTOMER.ToString())
+                                {
+                                    var customer = await _customerRepository.GetCustomerByEmailAsync(account.Email);
+                                    if (customer != null)
+                                    {
+                                        await _walletRepository.PermanentDeletedAsync(customer.Wallet);
+                                        await _customerRepository.PermanentDeletedAsync(customer);
+                                        await _accountRepo.PermanentDeletedAsync(account);
+
+                                        await transaction.CommitAsync();
+                                        return true;
+                                    }
+                                }
+                                else
+                                {
+                                    await _accountRepo.PermanentDeletedAsync(account);
+                                    await transaction.CommitAsync();
+                                    return true;
+                                }
+                            }
+                        }
+                        catch
+                        {
+                            await transaction.RollbackAsync();
+                            throw;
+                        }
+                    }
+                        
+                }
+            }
+            throw new Exception("Tài khoản không tồn tại.");
+        }
+
         //public async Task<AccountModel> CreateAccount(AccountModel account)
         //{
         //    try
@@ -157,29 +221,14 @@ namespace FTravel.Service.Services
             return data;
         }
 
-        public async Task<Pagination<AccountModel>> GetAllUserAccountService(PaginationParameter paginationParameter)
+        public async Task<Pagination<AccountModel>> GetAllUsersAsync(PaginationParameter paginationParameter)
         {
             var users = await _accountRepo.GetAllUserAccount(paginationParameter);
-            if (!users.Any())
-            {
-                return null;
-            }
-
             var accountModels = _mapper.Map<List<AccountModel>>(users);
-            foreach (var accountModel in accountModels)
-            {
-                accountModel.Id = accountModel.Id; // Ánh xạ giá trị Id từ UserId
-            }
-
             return new Pagination<AccountModel>(accountModels,
                 users.TotalCount,
                 users.CurrentPage,
                 users.PageSize);
-        }
-
-        public Task<List<AccountModel>> GetAllUserAsync()
-        {
-            throw new NotImplementedException();
         }
 
 
@@ -188,9 +237,12 @@ namespace FTravel.Service.Services
             var user = await _userRepository.GetUserByEmailAsync(email);
             if (user != null && !fcmToken.IsNullOrEmpty())
             {
-                user.Fcmtoken = fcmToken;
-                var result = await _userRepository.UpdateAsync(user);
-                return true ? result > 0 : false;
+                if (user.Fcmtoken != fcmToken) 
+                {
+                    user.Fcmtoken = fcmToken;
+                    var result = await _userRepository.UpdateAsync(user);
+                    return true ? result > 0 : false;
+                }
             }
             return false;
         }
