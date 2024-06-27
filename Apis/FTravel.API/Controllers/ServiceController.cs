@@ -1,5 +1,6 @@
 ﻿using FTravel.API.ViewModels.ResponseModels;
 using FTravel.Repository.Commons;
+using FTravel.Repository.Commons.Filter;
 using FTravel.Repository.EntityModels;
 using FTravel.Service.BusinessModels.ServiceModels;
 using FTravel.Service.Services;
@@ -99,11 +100,11 @@ namespace FTravel.API.Controllers
         }
         [HttpGet()]
         [Authorize(Roles = "ADMIN, BUSCOMPANY")]
-        public async Task<IActionResult> GetAllServices([FromQuery] PaginationParameter paginationParameter)
+        public async Task<IActionResult> GetAllServices([FromQuery] PaginationParameter paginationParameter, ServiceFilter filter)
         {
             try
             {
-                var result = await _service.GetAllAsync(paginationParameter);
+                var result = await _service.GetAllAsync(paginationParameter, filter);
                 if (result == null)
                 {
                     return NotFound(new ResponseModel
@@ -189,7 +190,6 @@ namespace FTravel.API.Controllers
                 }
                 else
                 {
-                    // Return a not found response if the service was not added successfully
                     return NotFound(new ResponseModel
                     {
                         HttpCode = StatusCodes.Status404NotFound,
@@ -199,7 +199,6 @@ namespace FTravel.API.Controllers
             }
             catch (Exception ex)
             {
-                // Return a bad request response for any other exceptions
                 return BadRequest(new ResponseModel
                 {
                     HttpCode = StatusCodes.Status400BadRequest,
@@ -222,7 +221,6 @@ namespace FTravel.API.Controllers
 
                 if (isUpdated)
                 {
-                    // Return a success response
                     return Ok(new ResponseModel
                     {
                         HttpCode = StatusCodes.Status200OK,
@@ -231,7 +229,6 @@ namespace FTravel.API.Controllers
                 }
                 else
                 {
-                    // Return a not found response if the service was not updated successfully
                     return NotFound(new ResponseModel
                     {
                         HttpCode = StatusCodes.Status404NotFound,
@@ -241,7 +238,6 @@ namespace FTravel.API.Controllers
             }
             catch (Exception ex)
             {
-                // Return a bad request response for any other exceptions
                 return BadRequest(new ResponseModel
                 {
                     HttpCode = StatusCodes.Status400BadRequest,
