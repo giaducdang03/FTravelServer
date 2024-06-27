@@ -1,5 +1,6 @@
 ﻿using FTravel.Repositories.Commons;
 using FTravel.Repository.Commons;
+using FTravel.Repository.Commons.Filter;
 using FTravel.Repository.EntityModels;
 using System;
 using System.Collections.Generic;
@@ -20,6 +21,7 @@ namespace FTravel.Repository.Repositories.Interface
 
         public Task<Station> createStation(Station station);
         public Task<List<RouteStation>> GetRouteStationById(int id);
+        public Task<List<Station>> GetStationByBusCompanyId(int id);
 
     }
 }
