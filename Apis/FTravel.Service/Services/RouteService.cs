@@ -2,10 +2,14 @@
 using FTravel.Repositories.Commons;
 using FTravel.Repository.Commons;
 using FTravel.Repository.EntityModels;
+using FTravel.Repository.Repositories;
 using FTravel.Repository.Repositories.Interface;
-using FTravel.Service.BusinessModels;
+using FTravel.Service.BusinessModels.RouteModels;
+using FTravel.Service.Enums;
 using FTravel.Service.Services.Interface;
+using FTravel.Service.Utils;
 using Microsoft.AspNetCore.Mvc.Abstractions;
+using MimeKit.Cryptography;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -51,6 +55,23 @@ namespace FTravel.Service.Services
                 routes.PageSize);
         }
 
+        public async Task<CreateRouteModel> CreateRoute(CreateRouteModel route)
+        {
+            try
+            {
+                var map = _mapper.Map<Route>(route);
+                map.Status = CommonStatus.ACTIVE.ToString();
+                map.UnsignName = StringUtils.ConvertToUnSign(map.Name);
+                var createRoute = await _routeRepository.AddAsync(map);
+                var resutl = _mapper.Map<CreateRouteModel>(createRoute);
+                return resutl;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+
+        }
         public async Task<RouteModel?> GetRouteDetailByRouteIdAsync(int routeId)
         {
             var route = await _routeRepository.GetRouteDetailByRouteIdAsync(routeId);
@@ -63,6 +84,7 @@ namespace FTravel.Service.Services
             routeModel.StartPoint = route.StartPointNavigation.Name;
             routeModel.EndPoint = route.EndPointNavigation.Name;
             routeModel.BusCompanyName = route.BusCompany.Name;
+            routeModel.RouteStations = _mapper.Map<List<RouteStationModel>>(route.RouteStations);
             return routeModel;
 
         }
@@ -74,24 +96,39 @@ namespace FTravel.Service.Services
             
         }
 
-        public async Task<int> UpdateRouteAsync(Route routeUpdate)
+        public async Task<int> UpdateRouteAsync(UpdateRouteModel routeUpdate, int id)
         {
-            var findRouteUpdate = await _routeRepository.GetRouteDetailByRouteIdAsync(routeUpdate.Id);
+            var findRouteUpdate = await _routeRepository.GetRouteDetailByRouteIdAsync(id);
             if(findRouteUpdate == null)
             {
                 return -1;
             } else
             {
-                findRouteUpdate.UpdateDate = DateTime.Now;
-                findRouteUpdate.BusCompanyId = routeUpdate.BusCompanyId;
+                findRouteUpdate.Name = routeUpdate.Name;
                 findRouteUpdate.StartPoint = routeUpdate.StartPoint;
                 findRouteUpdate.EndPoint = routeUpdate.EndPoint;
-                findRouteUpdate.Status = routeUpdate.Status;
-                findRouteUpdate.Name = routeUpdate.Name;
+                findRouteUpdate.Status = routeUpdate.Status.ToString();
+                findRouteUpdate.BusCompanyId = routeUpdate.BusCompanyId;
+                findRouteUpdate.UnsignName = StringUtils.ConvertToUnSign(routeUpdate.Name);
             }
 
-            var result = await _routeRepository.UpdateRoutesAsync(findRouteUpdate);
+            var result = await _routeRepository.UpdateAsync(findRouteUpdate);
             return result;
         }
+
+        public Task<int> AddStationForRoute(AddStationForRouteModel addStation)
+        {
+            var addRouteStation = new RouteStation()
+            {
+                RouteId = addStation.RouteId,
+                StationId = addStation.StationId,
+                StationIndex = addStation.StationIndex,
+                CreateDate = DateTime.UtcNow.AddHours(7),
+                IsDeleted = false
+            };
+            var result = _routeRepository.AddStationForRoute(addRouteStation);
+            return result;
+        }
+
     }
 }

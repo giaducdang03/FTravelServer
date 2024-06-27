@@ -1,18 +1,16 @@
 ﻿using AutoMapper;
+using FTravel.Repositories.Commons;
+using FTravel.Repository.Commons;
 using FTravel.Repository.EntityModels;
 using FTravel.Repository.Repositories;
 using FTravel.Repository.Repositories.Interface;
 using FTravel.Service.BusinessModels;
+using FTravel.Service.BusinessModels.AccountModels;
 using FTravel.Service.Enums;
 using FTravel.Service.Services.Interface;
 using FTravel.Service.Utils;
 using FTravel.Service.Utils.Email;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using static System.Net.WebRequestMethods;
+using Microsoft.IdentityModel.Tokens;
 
 namespace FTravel.Service.Services
 {
@@ -22,13 +20,15 @@ namespace FTravel.Service.Services
         private readonly IUserRepository _userRepository;
         private readonly IRoleRepository _roleRepository;
         private readonly ICustomerRepository _customerRepository;
+        private readonly IWalletRepository _walletRepository;
         private readonly IMailService _mailService;
         private readonly IMapper _mapper;
 
-        public AccountService(IAccountRepository accountRepo, 
-            IUserRepository userRepository, 
-            IRoleRepository roleRepository, 
-            ICustomerRepository customerRepository, 
+        public AccountService(IAccountRepository accountRepo,
+            IUserRepository userRepository,
+            IRoleRepository roleRepository,
+            ICustomerRepository customerRepository,
+            IWalletRepository walletRepository,
             IMailService mailService,
             IMapper mapper)
         {
@@ -36,6 +36,7 @@ namespace FTravel.Service.Services
             _userRepository = userRepository;
             _roleRepository = roleRepository;
             _customerRepository = customerRepository;
+            _walletRepository = walletRepository;
             _mailService = mailService;
             _mapper = mapper;
         }
@@ -46,14 +47,16 @@ namespace FTravel.Service.Services
             {
                 try
                 {
-                    
+
                     User newUser = _mapper.Map<User>(model);
+                    newUser.Status = UserStatus.ACTIVE.ToString();
+                    newUser.UnsignFullName = StringUtils.ConvertToUnSign(model.FullName);
 
                     var existUser = await _userRepository.GetUserByEmailAsync(model.Email);
 
                     if (existUser != null)
                     {
-                        throw new Exception("Account already exists.");
+                        throw new Exception("Tài khoản đã tồn tại.");
                     }
 
                     // generate password
@@ -119,26 +122,66 @@ namespace FTravel.Service.Services
             }
         }
 
-        //public async Task<AccountModel> CreateAccount(AccountModel account)
-        //{
-        //    try
-        //    {
-        //        var data = await _accountRepo.GetAllUser();
-        //        var checkExist = data.Where(x => x.Email.Equals(account.Email));
+        public async Task<bool> DeleteAccountAsync(int id, string currentEmail)
+        {
+            var account = await _accountRepo.GetByIdAsync(id);
+            if (account != null)
+            {
+                // check current user
+                if (account.Email == currentEmail)
+                {
+                    throw new Exception("Tài khoản đang đăng nhập. Không thể xóa.");
+                }
 
-        //        if (checkExist.Any())
-        //        {
-        //            return null;
-        //        }
+                // check confirm email
+                if (account.ConfirmEmail == true)
+                {
+                    account.Status = UserStatus.BANNED.ToString();
+                    await _accountRepo.SoftDeleteAsync(account);
+                    return true;
+                }
+                else
+                {
+                    using (var transaction = await _userRepository.BeginTransactionAsync())
+                    {
+                        try
+                        {
+                            var accountRole = await _roleRepository.GetByIdAsync(account.RoleId.Value);
+                            if (accountRole != null)
+                            {
+                                // if customer delete customer and wallet
+                                if (accountRole.Name == RoleEnums.CUSTOMER.ToString())
+                                {
+                                    var customer = await _customerRepository.GetCustomerByEmailAsync(account.Email);
+                                    if (customer != null)
+                                    {
+                                        await _walletRepository.PermanentDeletedAsync(customer.Wallet);
+                                        await _customerRepository.PermanentDeletedAsync(customer);
+                                        await _accountRepo.PermanentDeletedAsync(account);
 
-        //        var map = _mapper.Map<User>(account);
-        //        var createAccount = await _accountRepo.CreateAccount(map);
-        //        var resutl = _mapper.Map<AccountModel>(createAccount);
-        //        return resutl;  
-        //    }catch (Exception ex) {
-        //        throw new Exception(ex.Message);
-        //    }
-        //}
+                                        await transaction.CommitAsync();
+                                        return true;
+                                    }
+                                }
+                                else
+                                {
+                                    await _accountRepo.PermanentDeletedAsync(account);
+                                    await transaction.CommitAsync();
+                                    return true;
+                                }
+                            }
+                        }
+                        catch
+                        {
+                            await transaction.RollbackAsync();
+                            throw;
+                        }
+                    }
+                        
+                }
+            }
+            throw new Exception("Tài khoản không tồn tại.");
+        }
 
         public async Task<User> GetAccountInfoByEmail(string email)
         {
@@ -146,21 +189,101 @@ namespace FTravel.Service.Services
             return data;
         }
 
-        public async Task<List<AccountModel>> GetAllUserAscyn()
+        public async Task<User> GetAccountInfoById(int id)
         {
-            try
-            {
-                var account = await _accountRepo.GetAllUser();
-                var map = _mapper.Map<List<AccountModel>>(account);
-                return map;
-            }
-            catch (Exception ex)
-            {   
-                throw new Exception(ex.Message);
-
-            }
+            var data = await _accountRepo.GetUserInfoById(id);
+            return data;
         }
 
+        public async Task<Pagination<AccountModel>> GetAllUsersAsync(PaginationParameter paginationParameter)
+        {
+            var users = await _accountRepo.GetAllUserAccount(paginationParameter);
+            var accountModels = _mapper.Map<List<AccountModel>>(users);
+            return new Pagination<AccountModel>(accountModels,
+                users.TotalCount,
+                users.CurrentPage,
+                users.PageSize);
+        }
+
+
+        public async Task<bool> UpdateFcmTokenAsync(string email, string fcmToken)
+        {
+            var user = await _userRepository.GetUserByEmailAsync(email);
+            if (user != null && !fcmToken.IsNullOrEmpty())
+            {
+                if (user.Fcmtoken != fcmToken) 
+                {
+                    user.Fcmtoken = fcmToken;
+                    var result = await _userRepository.UpdateAsync(user);
+                    return true ? result > 0 : false;
+                }
+            }
+            return false;
+        }
+
+        public async Task<bool> UpdateAccount(UpdateAccountModel accountModel)
+        {
+            var existAccount = await _accountRepo.GetByIdAsync(accountModel.AccountId);
+
+            if (existAccount != null) 
+            {
+                var newUnsignName = StringUtils.ConvertToUnSign(accountModel.FullName);
+                var accountRole = await _roleRepository.GetByIdAsync(existAccount.RoleId.Value);
+                if (accountRole != null) 
+                { 
+                    // update account
+                    existAccount.FullName = accountModel.FullName;
+                    existAccount.UnsignFullName = newUnsignName;
+                    existAccount.PhoneNumber = accountModel.PhoneNumber;
+                    existAccount.Dob = accountModel.Dob;
+                    existAccount.Address = accountModel.Address;
+                    existAccount.Gender = accountModel.Gender;
+                    
+
+                    if (accountRole.Name == RoleEnums.CUSTOMER.ToString())
+                    {
+                        using (var updatedTransaction = await _accountRepo.BeginTransactionAsync())
+                        {
+                            try
+                            {
+                                var existCustomer = await _customerRepository.GetCustomerByEmailAsync(existAccount.Email);
+                                if (existCustomer != null) 
+                                {
+                                    // update customer
+                                    existCustomer.FullName = accountModel.FullName;
+                                    existCustomer.UnsignFullName = newUnsignName;
+                                    existCustomer.PhoneNumber = accountModel.PhoneNumber;
+                                    existCustomer.Dob = accountModel.Dob;
+                                    existCustomer.Address = accountModel.Address;
+                                    existCustomer.Gender = accountModel.Gender;
+
+                                    await _customerRepository.UpdateAsync(existCustomer);
+                                    await _accountRepo.UpdateAsync(existAccount);
+
+                                    await updatedTransaction.CommitAsync();
+                                    return true;
+                                }
+                            }
+                            catch
+                            {
+                                await updatedTransaction.RollbackAsync();
+                                throw;
+                            }
+                        }
+                    } 
+                    else
+                    {
+                        await _accountRepo.UpdateAsync(existAccount);
+                        return true;
+                    }
+                }
+                return false;
+            } 
+            else
+            {
+                throw new Exception("Tài khoản không tồn tại.");
+            }
+        }
 
     }
 }

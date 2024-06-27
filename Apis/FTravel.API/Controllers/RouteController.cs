@@ -2,7 +2,8 @@
 using FTravel.API.ViewModels.ResponseModels;
 using FTravel.Repository.Commons;
 using FTravel.Repository.EntityModels;
-using FTravel.Service.BusinessModels;
+using FTravel.Service.BusinessModels.RouteModels;
+using FTravel.Service.Services;
 using FTravel.Service.Services.Interface;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -27,8 +28,8 @@ namespace FTravel.API.Controllers
 
 
         [HttpGet]
-        [Authorize(Roles = "BUSCOMPANY")]
-        public async Task<IActionResult> getListRoute([FromQuery] PaginationParameter paginationParameter)
+        [Authorize(Roles = "ADMIN, BUSCOMPANY")]
+        public async Task<IActionResult> GetListRoute([FromQuery] PaginationParameter paginationParameter)
         {
             try
             {
@@ -38,7 +39,7 @@ namespace FTravel.API.Controllers
                     return NotFound(new ResponseModel()
                     {
                         HttpCode = StatusCodes.Status404NotFound,
-                        Message = "Route is empty"
+                        Message = "Không có tuyến đường nào"
                     });
                 }
 
@@ -68,8 +69,8 @@ namespace FTravel.API.Controllers
         }
 
         [HttpGet("{id}")]
-        [Authorize(Roles = "BUSCOMPANY")]
-        public async Task<IActionResult> getRouteDetails(int id)
+        [Authorize(Roles = "ADMIN, BUSCOMPANY")]
+        public async Task<IActionResult> GetRouteDetails(int id)
         {
             try
             {
@@ -79,7 +80,7 @@ namespace FTravel.API.Controllers
                     return NotFound(new ResponseModel()
                     {
                         HttpCode = StatusCodes.Status404NotFound,
-                        Message = "Route does not exist"
+                        Message = "Tuyến đường không tồn tại"
                     });
                 }
                 return Ok(routeDetail);
@@ -95,31 +96,29 @@ namespace FTravel.API.Controllers
             }
         }
 
-        [HttpPut]
-        [Authorize(Roles = "BUSCOMPANY")]
-        public async Task<IActionResult> UpdateRoute([FromBody] RouteRequestModel routeRequest)
+        [HttpPut("{id}")]
+        [Authorize(Roles = "ADMIN, BUSCOMPANY")]
+        public async Task<IActionResult> UpdateRoute([FromBody] UpdateRouteModel routeUpdate, [FromRoute] int id)
         {
             try
             {
-                var routeUpdate = new Route()
-                {
-                    Id = routeRequest.Id,
-                    BusCompanyId = routeRequest.BusCompanyId,
-                    StartPoint = routeRequest.StartPoint,
-                    EndPoint = routeRequest.EndPoint,
-                    Name = routeRequest.Name,
-                    Status = routeRequest.Status,
-                    UpdateDate = DateTime.Now,
-                };
-                var updateResult = await _routeService.UpdateRouteAsync(routeUpdate);
+                var updateResult = await _routeService.UpdateRouteAsync(routeUpdate, id);
                 if(updateResult > 0)
                 {
-                    return Ok(new ResponseModel() { HttpCode = StatusCodes.Status200OK, Message = "Update Success" });
+                    return Ok(new ResponseModel() 
+                    { 
+                        HttpCode = StatusCodes.Status200OK, 
+                        Message = "Đã cập nhật tuyến đường thành công" 
+                    });
 
                 }
                 else
                 {
-                    return NotFound(new ResponseModel() { HttpCode = StatusCodes.Status404NotFound, Message = "Not found Route to update" });
+                    return NotFound(new ResponseModel() 
+                    { 
+                        HttpCode = StatusCodes.Status404NotFound, 
+                        Message = "Tuyến đường không tồn tại" 
+                    });
 
                 }
             }
@@ -135,7 +134,7 @@ namespace FTravel.API.Controllers
         }
 
         [HttpDelete("{id}")]
-        [Authorize(Roles = "BUSCOMPANY")]
+        [Authorize(Roles = "ADMIN, BUSCOMPANY")]
         public async Task<IActionResult> RouteSoftDelete(int id)
         {
             try
@@ -146,14 +145,14 @@ namespace FTravel.API.Controllers
                     return Ok(new ResponseModel()
                     {
                         HttpCode = 200,
-                        Message = "Soft Delete Route Success"
+                        Message = "Xóa tuyến đường thành công"
                     });
                 } else
                 {
                     return NotFound(new ResponseModel()
                     {
                         HttpCode = StatusCodes.Status404NotFound,
-                        Message = "Route not found"
+                        Message = "Tuyến đường không tồn tại"
                     });
                 }
             }
@@ -167,7 +166,65 @@ namespace FTravel.API.Controllers
                 });
             }
         }
+        [HttpPost]
+        [Authorize(Roles = "ADMIN, BUSCOMPANY")]
+        public async Task<IActionResult> CreateRoute(CreateRouteModel route)
+        {
+            try
+            {
+                var data = await _routeService.CreateRoute(route);
+                if (route == null)
+                {
+                    return BadRequest();
+                }
+                return Ok(data);
+            }
+            catch (Exception ex)
+            {
 
-        
+                return BadRequest(new ResponseModel
+                {
+                    HttpCode = StatusCodes.Status400BadRequest,
+                    Message = ex.Message
+                });
+            }
+
+        }
+
+        [HttpPost("add-station")]
+        //[Authorize(Roles = "ADMIN, BUSCOMPANY")]
+        public async Task<IActionResult> AddStationForRoute([FromBody] AddStationForRouteModel addStation)
+        {
+            try
+            {
+                var data = await _routeService.AddStationForRoute(addStation);
+                if(data > 0)
+                {
+                    return Ok(new ResponseModel
+                    {
+                        HttpCode = StatusCodes.Status200OK,
+                        Message = "Thêm trạm cho tuyến đường thành công"
+                    });
+                } else
+                {
+                    return NotFound(new ResponseModel
+                    {
+                        HttpCode = StatusCodes.Status404NotFound,
+                        Message = "Không tìm thấy trạm cho tuyến đường"
+                    });
+                }
+
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new ResponseModel
+                {
+                    HttpCode = StatusCodes.Status400BadRequest,
+                    Message = ex.Message,
+                });
+               
+            }
+        }
+
     }
 }

@@ -14,6 +14,8 @@ namespace FTravel.API
         public static IServiceCollection AddWebAPIService(this IServiceCollection services)
         {
             // use DI here
+            services.AddScoped<IOrderedTicketRepository, OrderedTicketRepository>();
+            services.AddScoped<IOrderedTicketService, OrderedTicketService>();
 
             services.AddScoped<IAccountRepository, AccountRepository>();
             services.AddScoped<IAccountService, AccountService>();
@@ -65,6 +67,9 @@ namespace FTravel.API
 
             services.AddScoped<IOrderRepository, OrderRepository>();
             services.AddScoped<IOrderService, OrderService>();
+
+            services.AddScoped<INotificationRepository, NotificationRepository>();
+            services.AddScoped<INotificationService, NotificationService>();
             
             services.AddHealthChecks();
             services.AddSingleton<GlobalExceptionMiddleware>();

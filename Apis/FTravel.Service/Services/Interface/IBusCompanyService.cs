@@ -1,7 +1,7 @@
 ﻿using FTravel.Repositories.Commons;
 using FTravel.Repository.Commons;
 using FTravel.Repository.EntityModels;
-using FTravel.Service.BusinessModels;
+using FTravel.Service.BusinessModels.BuscompanyModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;

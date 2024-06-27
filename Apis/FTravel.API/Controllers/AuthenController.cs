@@ -2,7 +2,7 @@
 using FTravel.API.ViewModels.ResponseModels;
 using FTravel.Repository.Commons;
 using FTravel.Repository.Commons.Filter;
-using FTravel.Service.BusinessModels;
+using FTravel.Service.BusinessModels.AuthenModels;
 using FTravel.Service.Enums;
 using FTravel.Service.Services;
 using FTravel.Service.Services.Interface;
@@ -38,12 +38,47 @@ namespace FTravel.API.Controllers
                     var resp = new ResponseModel()
                     {
                         HttpCode = StatusCodes.Status200OK,
-                        Message = "Otp was sent via email"
+                        Message = "Mã OTP đã được gửi về email của bạn."
                     };
                     return Ok(resp);
                 }
                 return ValidationProblem(ModelState);
 
+            }
+            catch (Exception ex)
+            {
+                var resp = new ResponseModel()
+                {
+                    HttpCode = StatusCodes.Status400BadRequest,
+                    Message = ex.Message.ToString()
+                };
+                return BadRequest(resp);
+            }
+        }
+
+        [HttpPost("check-user")]
+        public async Task<IActionResult> CheckExistUser(CheckExistUser checkExistUser)
+        {
+            try
+            {
+                var existUser = await _userService.GetUserByEmailAsync(checkExistUser.Email);
+                if (existUser != null)
+                {
+                    var resp = new ResponseModel()
+                    {
+                        HttpCode = StatusCodes.Status200OK,
+                        Message = "Tài khoản đã có trên hệ thống."
+                    };
+                    return Ok(resp);
+                }
+                else
+                {
+                    return NotFound(new ResponseModel
+                    {
+                        HttpCode = StatusCodes.Status404NotFound,
+                        Message = "Không tìm thấy tài khoản."
+                    });
+                }
             }
             catch (Exception ex)
             {
@@ -169,13 +204,13 @@ namespace FTravel.API.Controllers
                     return Ok(new ResponseModel
                     {
                         HttpCode = StatusCodes.Status200OK,
-                        Message = "Change password successfully"
+                        Message = "Đổi mật khẩu thành công."
                     });
                 }
                 return BadRequest(new ResponseModel
                 {
                     HttpCode = StatusCodes.Status400BadRequest,
-                    Message = "Change password error"
+                    Message = "Không thể đổi mật khẩu."
                 });
             }
             catch (Exception ex)
@@ -200,13 +235,13 @@ namespace FTravel.API.Controllers
                     return Ok(new ResponseModel
                     {
                         HttpCode = StatusCodes.Status200OK,
-                        Message = "Otp reset password was send via email"
+                        Message = "Mã OTP đặt lại mật khẩu đã được gửi qua email."
                     });
                 }
                 return BadRequest(new ResponseModel
                 {
                     HttpCode = StatusCodes.Status400BadRequest,
-                    Message = "Reset password error"
+                    Message = "Đặt lại mật khẩu thất bại."
                 });
             }
             catch (Exception ex)
@@ -231,13 +266,13 @@ namespace FTravel.API.Controllers
                     return Ok(new ResponseModel
                     {
                         HttpCode = StatusCodes.Status200OK,
-                        Message = "You can reset password now"
+                        Message = "Bạn có thể đặt lại mật khẩu ngay bây giờ."
                     });
                 }
                 return BadRequest(new ResponseModel
                 {
                     HttpCode = StatusCodes.Status400BadRequest,
-                    Message = "Otp is not valid"
+                    Message = "OTP không hợp lệ. Hãy thử lại."
                 });
             }
             catch (Exception ex)
@@ -262,13 +297,42 @@ namespace FTravel.API.Controllers
                     return Ok(new ResponseModel
                     {
                         HttpCode = StatusCodes.Status200OK,
-                        Message = "Reset password successfully"
+                        Message = "Đặt lại mật khẩu thành công."
                     });
                 }
                 return BadRequest(new ResponseModel
                 {
                     HttpCode = StatusCodes.Status400BadRequest,
-                    Message = "Reset password error"
+                    Message = "Đặt lại mật khẩu thất bại."
+                });
+            }
+            catch (Exception ex)
+            {
+                var resp = new ResponseModel()
+                {
+                    HttpCode = StatusCodes.Status400BadRequest,
+                    Message = ex.Message.ToString()
+                };
+                return BadRequest(resp);
+            }
+        }
+
+        [HttpGet("current-user")]
+        [Authorize]
+        public async Task<IActionResult> GetLoginUserInfo()
+        {
+            try
+            {
+                var email = _claimsService.GetCurrentUserEmail;
+                var result = await _userService.GetLoginUserInformationAsync(email);
+                if (result != null)
+                {
+                    return Ok(result);
+                }
+                return BadRequest(new ResponseModel
+                {
+                    HttpCode = StatusCodes.Status400BadRequest,
+                    Message = "Không thể lấy thông tin tài khoản."
                 });
             }
             catch (Exception ex)

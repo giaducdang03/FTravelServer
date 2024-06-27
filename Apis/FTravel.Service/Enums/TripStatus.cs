@@ -11,6 +11,7 @@ namespace FTravel.Service.Enums
         PENDING,
         OPENING,
         DEPARTED,
-        DONE
+        COMPLETED,
+        CANCELED
     }
 }

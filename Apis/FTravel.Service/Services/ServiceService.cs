@@ -4,7 +4,7 @@ using FTravel.Repository.Commons;
 using FTravel.Repository.EntityModels;
 using FTravel.Repository.Repositories;
 using FTravel.Repository.Repositories.Interface;
-using FTravel.Service.BusinessModels;
+using FTravel.Service.BusinessModels.ServiceModels;
 using FTravel.Service.Services.Interface;
 using System;
 using System.Collections.Generic;
@@ -86,7 +86,7 @@ namespace FTravel.Service.Services
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw new Exception("Xảy ra lỗi khi thêm dịch vụ");
             }
         }
 
@@ -106,7 +106,7 @@ namespace FTravel.Service.Services
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw new Exception("Xảy ra lỗi khi cập nhật dịch vụ");
             }
         }
         public async Task<bool> DeleteServiceAsync(int id)
@@ -116,6 +116,7 @@ namespace FTravel.Service.Services
                 var existingService = await _serviceRepository.GetServiceById(id);
                 if (existingService == null)
                 {
+                    throw new KeyNotFoundException("Không tìm thấy dịch vụ!");
                     return false;
                 }
                 await _serviceRepository.SoftDeleteAsync(existingService);
@@ -123,7 +124,7 @@ namespace FTravel.Service.Services
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw new Exception("Xảy ra lỗi khi xóa dịch vụ");
             }
         }
 

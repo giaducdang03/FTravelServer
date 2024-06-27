@@ -14,6 +14,5 @@ namespace FTravel.Repository.Repositories.Interface
 
         public Task<Wallet> GetWalletByIdAsync(int walletId);
 
-        Task<IDbContextTransaction> BeginTransactionAsync();
     }
 }

@@ -6,9 +6,11 @@ using FTravel.Repository.Repositories;
 using FTravel.Repository.Repositories.Interface;
 using FTravel.Service.BusinessModels;
 using FTravel.Service.Services.Interface;
+using FTravel.Service.Utils;
 using Microsoft.AspNetCore.Components.Server.Circuits;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -26,21 +28,22 @@ namespace FTravel.Service.Services
             _mapper = mapper;
         }
 
-        public async Task<City> CreateCityAsync(CityModel cityModel)
+        public async Task<int> CreateCityAsync(int cityCode, string cityName)
         {
-           if(cityModel == null)
+            var city = new City
             {
-                return null;
-
+                Code = cityCode,
+                Name = cityName,
+                UnsignName = StringUtils.ConvertToUnSign(cityName)
+            };
+            var result = await _cityRepository.CreateCityAsync(city);
+            if (result > 0)
+            {
+                return result;
             }
-            var city = _mapper.Map<City>(cityModel);
-            var result = await _cityRepository.AddAsync(city);
-            if (result != null)
+            else
             {
-                return city;
-            } else
-            {
-                return null;
+                return -1;
             }
         }
 
@@ -58,19 +61,21 @@ namespace FTravel.Service.Services
                 listCity.PageSize);
         }
 
-        public async Task<CityModel> UpdateCityAsync(CityModel cityModel)
-        {
-            var city = _mapper.Map<City>(cityModel);
-            var updateCity = await _cityRepository.UpdateCityAsync(city);
-            if(updateCity != null)
-            {
-                return cityModel;
-            }
-            return null;
-        }
+        //public async Task<CityModel> UpdateCityAsync(CityModel updateCityModel, int id)
+        //{
+        //    var updateCity = _mapper.Map<City>(updateCityModel);
+        //    updateCity.Id = id;
+        //    updateCity.UnsignName = StringUtils.ConvertToUnSign(updateCityModel.Name);
+        //    var result = await _cityRepository.UpdateCityAsync(updateCity);
+        //    if(result != null)
+        //    {
+        //        return updateCityModel;
+        //    }
+        //    return null;
+        //}
         public async Task<bool> RemoveSoftCityAsync(int deleteCity)
         {
-           return await _cityRepository.RemoveSoftCityAsync(deleteCity);
+            return await _cityRepository.RemoveSoftCityAsync(deleteCity);
         }
 
     }

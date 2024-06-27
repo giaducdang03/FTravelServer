@@ -21,7 +21,31 @@ namespace FTravel.Repository.Repositories
             _context = context;
         }
 
-        public async Task<Pagination<City>> GetListCityAsync(PaginationParameter paginationParameter)
+		public async Task<int> CreateCityAsync(City createCity)
+		{
+			var cityCheck = await _context.Cities.
+                FirstOrDefaultAsync(x => x.Name.ToLower().Equals(createCity.Name.ToLower()) && x.Code == createCity.Code);
+            if (cityCheck != null)
+            {
+                if(cityCheck.IsDeleted)
+                {
+                    cityCheck.IsDeleted = false;
+                } 
+                else
+                {
+                    return -1;
+                }
+            } 
+            else
+            {
+            await _context.Cities.AddAsync(createCity);
+            }
+            var result = await _context.SaveChangesAsync();
+            return result;
+
+		}
+
+		public async Task<Pagination<City>> GetListCityAsync(PaginationParameter paginationParameter)
         {
             var itemCount = await _context.Cities.CountAsync();
             var items = await _context.Cities.Skip((paginationParameter.PageIndex - 1) * paginationParameter.PageSize)
@@ -38,27 +62,33 @@ namespace FTravel.Repository.Repositories
             var removeSoftCity = await _context.Cities.FirstOrDefaultAsync(x => x.Id == deleteCity);    
             if(removeSoftCity != null)
             {
-                removeSoftCity.IsDeleted = true;
-                _context.SaveChanges();
-                return true;
+                if(removeSoftCity.IsDeleted == false)
+                {
+                    removeSoftCity.IsDeleted = true;
+                    _context.SaveChanges();
+					return true;
+				}
+				else
+                {
+                    return false;
+                }
             } else
             {
                 return false;
             }
         }
 
-        public async Task<City> UpdateCityAsync(City city)
+        public async Task<City> UpdateCityAsync(City updateCity)
         {
-            var cityUpdate =  await _context.Cities.FirstOrDefaultAsync(x => x.Id == city.Id); 
+            var cityUpdate =  await _context.Cities.FirstOrDefaultAsync(x => x.Id == updateCity.Id); 
             if (cityUpdate != null)
             {
-                cityUpdate.Name = city.Name;
-                cityUpdate.UpdateDate = city.UpdateDate;
-                cityUpdate.IsDeleted = city.IsDeleted;
-                cityUpdate.UnsignName = city.UnsignName;
+                cityUpdate.Name = updateCity.Name;
+                cityUpdate.UnsignName = updateCity.UnsignName;
+                cityUpdate.Code = updateCity.Code;
+                cityUpdate.UpdateDate = DateTime.Now;
                await _context.SaveChangesAsync();
                return cityUpdate;
-
             }
             return null;
         }
