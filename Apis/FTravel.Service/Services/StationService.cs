@@ -77,9 +77,9 @@ namespace FTravel.Service.Services
         }
 
 
-        public async Task<Pagination<StationModel>> GetAllStationService(PaginationParameter paginationParameter, StationFilter stationFilter)
+        public async Task<Pagination<StationModel>> GetAllStationService(PaginationParameter paginationParameter)
         {
-            var stations = await _stationRepository.GetAllStation(paginationParameter, stationFilter);
+            var stations = await _stationRepository.GetAllStation(paginationParameter);
             if (!stations.Any())
             {
                 return null;
@@ -141,5 +141,13 @@ namespace FTravel.Service.Services
                 }
             }
         }
+
+        public async Task<List<StationModel>> GetStationByBusCompanyId(int id)
+        {
+             var listStation = await _stationRepository.GetStationByBusCompanyId(id);
+             var listStationModel = _mapper.Map<List<StationModel>>(listStation); 
+            return listStationModel;
+        }
+
     }
 }

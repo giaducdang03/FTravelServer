@@ -40,7 +40,7 @@ namespace FTravel.Repository.Repositories
 
         
 
-        public async Task<Pagination<Station>> GetAllStation(PaginationParameter paginationParameter, StationFilter stationFilter)
+        public async Task<Pagination<Station>> GetAllStation(PaginationParameter paginationParameter)
         {
             var query = _context.Stations.Include(s => s.BusCompany).AsQueryable();
 
@@ -49,33 +49,6 @@ namespace FTravel.Repository.Repositories
                                       .Take(paginationParameter.PageSize);
 
             var stations = await paginatedQuery.ToListAsync();
-
-            try
-            {
-                if (!string.IsNullOrEmpty(stationFilter.Search))
-                {
-                    stations = stations.Where(x => x.BusCompany.UnsignName.ToLower().Contains(stationFilter.Search.ToLower())).ToList();
-                }
-                if (!string.IsNullOrEmpty(stationFilter.SortBy))
-                {
-                    if (stationFilter.SortBy.Equals("bus-company-id"))
-                    {
-                        if(stationFilter.Dir.ToLower().Equals("asc"))
-                        {
-                            stations = stations.OrderBy(x => x.BusCompanyId).ToList();
-                        }
-                        if(stationFilter.Dir.ToLower().Equals("desc"))
-                        {
-                            stations = stations.OrderByDescending(x => x.BusCompanyId).ToList();
-                        }
-                    }
-                }
-            }
-            catch (Exception)
-            {
-
-                return null;
-            }
 
             return new Pagination<Station>(stations, totalCount, paginationParameter.PageIndex, paginationParameter.PageSize);
         }
@@ -90,5 +63,12 @@ namespace FTravel.Repository.Repositories
             var station = await _context.RouteStations.Where(x => x.StationId == id).ToListAsync();
             return station;
         }
+
+        public async Task<List<Station>> GetStationByBusCompanyId(int id)
+        {
+            var listStation = await _context.Stations.Include(x => x.BusCompany).Where(x => x.BusCompanyId == id).ToListAsync();
+            return listStation;
+        }
+
     }
 }

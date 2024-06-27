@@ -47,11 +47,11 @@ namespace FTravel.API.Controllers
 
         [HttpGet]
         [Authorize(Roles = "ADMIN, BUSCOMPANY")]
-        public async Task<IActionResult> GetAllStation([FromQuery] PaginationParameter paginationParameter, [FromQuery] StationFilter filter)
+        public async Task<IActionResult> GetAllStation([FromQuery] PaginationParameter paginationParameter)
         {
             try
             {
-                var result = await _stationService.GetAllStationService(paginationParameter, filter);
+                var result = await _stationService.GetAllStationService(paginationParameter);
                 if (result == null)
                 {
                     return NotFound(new ResponseModel()
@@ -200,6 +200,34 @@ namespace FTravel.API.Controllers
                 return BadRequest(new ResponseModel
                 {
                     HttpCode = 400,
+                    Message = ex.Message
+                });
+            }
+        }
+
+        [HttpGet("get-station-by-bus-company/{id}")]
+        [Authorize(Roles = "ADMIN, BUSCOMPANY")]
+        public async Task<IActionResult> GetStationByBusCompany([FromRoute] int id)
+        {
+            try
+            {
+                var result = await _stationService.GetStationByBusCompanyId(id);
+                if(result == null)
+                {
+                    return NotFound(new ResponseModel()
+                    {
+                        HttpCode = StatusCodes.Status404NotFound,
+                        Message = "Không tìm thấy nhà xe"
+                    });
+                }
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+
+                return BadRequest(new ResponseModel()
+                {
+                    HttpCode = StatusCodes.Status400BadRequest,
                     Message = ex.Message
                 });
             }

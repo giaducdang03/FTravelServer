@@ -14,7 +14,7 @@ namespace FTravel.Service.Services.Interface
 {
     public interface IStationService
     {
-        public Task<Pagination<StationModel>> GetAllStationService(PaginationParameter paginationParameter, StationFilter filter);
+        public Task<Pagination<StationModel>> GetAllStationService(PaginationParameter paginationParameter);
         
         public Task<Station> GetStationServiceDetailById(int id);
 
@@ -23,5 +23,6 @@ namespace FTravel.Service.Services.Interface
         public Task<StationModel> CreateStationService(string stationName, int buscompanyId);
         public Task<int> UpdateStationService(UpdateStationModel updateStation, int stationId);
         public Task<bool> DeleteStationService(int stationId);
+        public Task<List<StationModel>> GetStationByBusCompanyId(int id);
     }
 }

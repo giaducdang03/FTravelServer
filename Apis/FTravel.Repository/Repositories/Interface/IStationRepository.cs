@@ -12,7 +12,7 @@ namespace FTravel.Repository.Repositories.Interface
 {
     public interface IStationRepository : IGenericRepository<Station>
     {
-        Task<Pagination<Station>> GetAllStation(PaginationParameter paginationParameter, StationFilter stationFilter);
+        Task<Pagination<Station>> GetAllStation(PaginationParameter paginationParameter);
 
 
         public Task<Station> GetStationById(int id);
@@ -21,6 +21,7 @@ namespace FTravel.Repository.Repositories.Interface
 
         public Task<Station> createStation(Station station);
         public Task<List<RouteStation>> GetRouteStationById(int id);
+        public Task<List<Station>> GetStationByBusCompanyId(int id);
 
     }
 }
