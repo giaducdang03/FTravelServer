@@ -1,11 +1,13 @@
 ﻿using AutoMapper;
 using FTravel.Repositories.Commons;
 using FTravel.Repository.Commons;
+using FTravel.Repository.Commons.Filter;
 using FTravel.Repository.EntityModels;
 using FTravel.Repository.Repositories;
 using FTravel.Repository.Repositories.Interface;
 using FTravel.Service.BusinessModels.ServiceModels;
 using FTravel.Service.Services.Interface;
+using FTravel.Service.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -34,9 +36,13 @@ namespace FTravel.Service.Services
             return serviceModel;
         }
 
-        public async Task<Pagination<ServiceModel>> GetAllAsync(PaginationParameter paginationParameter)
+        public async Task<Pagination<ServiceModel>> GetAllAsync(PaginationParameter paginationParameter, ServiceFilter filter)
         {
-            var services = await _serviceRepository.GetAll(paginationParameter);
+            if (!string.IsNullOrEmpty(filter.Search))
+            {
+                filter.Search = StringUtils.ConvertToUnSign(filter.Search);
+            }
+            var services = await _serviceRepository.GetAll(paginationParameter, filter);
             if (!services.Any())
             {
                 return null;

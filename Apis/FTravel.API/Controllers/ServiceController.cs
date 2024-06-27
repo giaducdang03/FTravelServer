@@ -1,5 +1,6 @@
 ﻿using FTravel.API.ViewModels.ResponseModels;
 using FTravel.Repository.Commons;
+using FTravel.Repository.Commons.Filter;
 using FTravel.Repository.EntityModels;
 using FTravel.Service.BusinessModels.ServiceModels;
 using FTravel.Service.Services;
@@ -99,11 +100,11 @@ namespace FTravel.API.Controllers
         }
         [HttpGet()]
         [Authorize(Roles = "ADMIN, BUSCOMPANY")]
-        public async Task<IActionResult> GetAllServices([FromQuery] PaginationParameter paginationParameter)
+        public async Task<IActionResult> GetAllServices([FromQuery] PaginationParameter paginationParameter, ServiceFilter filter)
         {
             try
             {
-                var result = await _service.GetAllAsync(paginationParameter);
+                var result = await _service.GetAllAsync(paginationParameter, filter);
                 if (result == null)
                 {
                     return NotFound(new ResponseModel
