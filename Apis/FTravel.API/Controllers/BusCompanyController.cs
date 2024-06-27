@@ -22,7 +22,7 @@ namespace FTravel.API.Controllers
             _busCompanyService = busCompanyService;
         }
         [HttpPost]
-        //[Authorize(Roles = "ADMIN")]
+        [Authorize(Roles = "ADMIN")]
         public async Task<IActionResult> CreateBusCompany(CreateBusCompanyModel model)
         {
             try
@@ -65,7 +65,7 @@ namespace FTravel.API.Controllers
 
         [HttpGet("{id}")]
         [Authorize]
-        //[Authorize(Roles = "ADMIN, BUSCOMPANY")]
+        [Authorize(Roles = "ADMIN, BUSCOMPANY")]
         public async Task<IActionResult> GetBusCompanyDetailById(int id)
         {
             try
@@ -95,7 +95,7 @@ namespace FTravel.API.Controllers
 
         [HttpGet]
         [Authorize]
-        //[Authorize(Roles = "ADMIN, BUSCOMPANY")]
+        [Authorize(Roles = "ADMIN, BUSCOMPANY")]
         public async Task<IActionResult> GetAllBusCompanies([FromQuery] PaginationParameter paginationParameter)
         {
             try
@@ -141,7 +141,7 @@ namespace FTravel.API.Controllers
         }
 
         [HttpDelete("{id}")]
-        //[Authorize(Roles = "ADMIN, BUSCOMPANY")]
+        [Authorize(Roles = "ADMIN, BUSCOMPANY")]
         public async Task<IActionResult> DeleteBusCompany(int id)
         {
             try
@@ -176,7 +176,7 @@ namespace FTravel.API.Controllers
         }
 
         [HttpPut("{id}")]
-        //[Authorize(Roles = "ADMIN, BUSCOMPANY")]
+        [Authorize(Roles = "ADMIN, BUSCOMPANY")]
         public async Task<IActionResult> UpdateBusCompany(int id, UpdateBusCompanyModel model)
         {
             try

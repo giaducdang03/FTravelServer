@@ -22,7 +22,7 @@ namespace FTravel.API.Controllers
         }
 
         [HttpGet]
-        //[Authorize(Roles = "BUSCOMPANY,ADMIN")]
+        [Authorize(Roles = "BUSCOMPANY,ADMIN")]
         public async Task<IActionResult> GetAllTicketType([FromQuery] PaginationParameter paginationParameter)
         {
             try
@@ -51,7 +51,7 @@ namespace FTravel.API.Controllers
         }
 
         [HttpGet("{id}")]
-        //[Authorize(Roles = "BUSCOMPANY,ADMIN")]
+        [Authorize(Roles = "BUSCOMPANY,ADMIN")]
         public async Task<IActionResult> GetTicketTypeDetailById(int id)
         {
             try
@@ -80,7 +80,7 @@ namespace FTravel.API.Controllers
         }
 
         [HttpPost]
-        //[Authorize(Roles = "ADMIN")]
+        [Authorize(Roles = "ADMIN")]
         public async Task<IActionResult> CreateTicketType(CreateTicketTypeModel ticketTypeModel)
         {
             try
@@ -105,7 +105,7 @@ namespace FTravel.API.Controllers
         }
 
         [HttpPut("{id}")]
-        //[Authorize(Roles = "ADMIN")]
+        [Authorize(Roles = "ADMIN")]
         public async Task<IActionResult> UpdateTicketType(int id, UpdateTicketTypeModel ticketTypeModel)
         {
             try

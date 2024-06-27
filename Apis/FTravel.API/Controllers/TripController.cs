@@ -26,7 +26,7 @@ namespace FTravel.API.Controllers
 
         [HttpGet]
         [Authorize]
-        //[Authorize(Roles = "BUSCOMPANY")]
+        [Authorize(Roles = "ADMIN, BUSCOMPANY")]
         public async Task<IActionResult> GetAllTripStatusOpening([FromQuery] PaginationParameter paginationParameter)
         {
             try
@@ -73,7 +73,7 @@ namespace FTravel.API.Controllers
 
         [HttpGet("{id}")]
         [Authorize]
-        //[Authorize(Roles = "BUSCOMPANY")]
+        [Authorize(Roles = "ADMIN, BUSCOMPANY")]
         public async Task<IActionResult> GetTripDetailByIdStatusOpening(int id)
         {
             try
