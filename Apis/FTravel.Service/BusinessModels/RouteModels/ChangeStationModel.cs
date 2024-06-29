@@ -8,6 +8,7 @@ namespace FTravel.Service.BusinessModels.RouteModels
 {
     public class ChangeStationModel
     {
+        public int RouteId { get; set; }
         public int StationId { get; set; }
         public int StationIndex { get; set; }
     }

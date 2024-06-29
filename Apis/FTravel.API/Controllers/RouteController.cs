@@ -259,7 +259,7 @@ namespace FTravel.API.Controllers
                     return NotFound(new ResponseModel()
                     {
                         HttpCode = StatusCodes.Status404NotFound,
-                        Message = "Vui lòng chọn 2 trạm khác nhau để cập nhật"
+                        Message = "Vui lòng chọn 1 tuyến đường và 2 trạm khác nhau để cập nhật"
                     });
                 }
             }

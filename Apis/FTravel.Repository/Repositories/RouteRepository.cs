@@ -145,9 +145,9 @@ namespace FTravel.Repository.Repositories
             {
                 if(listRouteStation.Count == 2) {
                     var routeStationIndexFirst = await _context.RouteStations
-                                            .FirstOrDefaultAsync(x => x.StationId == listRouteStation.First().StationId);
+                                            .FirstOrDefaultAsync(x => x.RouteId == listRouteStation.First().RouteId && x.StationId == listRouteStation.First().StationId);
                     var routeStationIndexLast = await _context.RouteStations
-                                                .FirstOrDefaultAsync(x => x.StationId == listRouteStation.Last().StationId);
+                                                .FirstOrDefaultAsync(x => x.RouteId == listRouteStation.Last().RouteId && x.StationId == listRouteStation.Last().StationId);
                     int? temp = routeStationIndexFirst.StationIndex;
                     routeStationIndexFirst.StationIndex = routeStationIndexLast.StationIndex;
                     routeStationIndexLast.StationIndex = temp;
