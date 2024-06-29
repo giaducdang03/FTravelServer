@@ -113,6 +113,14 @@ namespace FTravel.Repository.Repositories
             {
                 var checkRouteExist = await _context.Routes.FirstOrDefaultAsync(x => x.Id == routeStation.RouteId);
                 var checkStationExist = await _context.Routes.FirstOrDefaultAsync(x => x.Id == routeStation.StationId);
+
+                var checkRouteStation = await _context.RouteStations.Where(x => x.RouteId == routeStation.RouteId).ToListAsync();
+                var checkExistStation = checkRouteStation.FirstOrDefault(x => x.StationId == routeStation.StationId);
+                var checkExistIndex = checkRouteStation.FirstOrDefault(x => x.StationIndex == routeStation.StationIndex);
+                if(checkExistIndex != null || checkExistStation != null)
+                {
+                    return -1;
+                }
                 
                 if(checkRouteExist == null && checkStationExist == null) {
                     return -1;
@@ -121,7 +129,7 @@ namespace FTravel.Repository.Repositories
                 var result = await _context.SaveChangesAsync();
                 return result;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
 
                 return -1;

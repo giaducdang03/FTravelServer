@@ -2,6 +2,7 @@
 using FTravel.Repository.EntityModels;
 using FTravel.Repository.Repositories.Interface;
 using FTravel.Service.BusinessModels.OrderModels;
+using FTravel.Service.BusinessModels.RouteModels;
 using FTravel.Service.Enums;
 using FTravel.Service.Services.Interface;
 using FTravel.Service.Utils;
@@ -20,17 +21,20 @@ namespace FTravel.Service.Services
         private readonly IWalletService _walletService;
         private readonly IMapper _mapper;
         private readonly IBusCompanyRepository _busCompanyRepository;
+        private readonly ICustomerRepository _customerRepository;
 
         public OrderService(IOrderRepository orderRepository,
             ITransactionService transactionService,
             IWalletService walletService,
             IBusCompanyRepository busCompanyRepository,
+            ICustomerRepository customerRepository,
             IMapper mapper)
         {
             _orderRepository = orderRepository;
             _transactionService = transactionService;
             _walletService = walletService;
             _busCompanyRepository = busCompanyRepository;
+            _customerRepository = customerRepository;
             _mapper = mapper;
         }
 
@@ -169,5 +173,41 @@ namespace FTravel.Service.Services
             };
             return result;
         }
+        public async Task<StatisticRevenueModel> StatisticForDashBoard()
+        {
+            var listOrder = await _orderRepository.StatisticForDashBoard();
+            var totalUser = await _customerRepository.GetAllAsync();
+            var chartOrders = listOrder
+                            .GroupBy(o => o.Order.CreateDate.Year)
+                            .Select(g => new ChartOrderModel
+                            {
+                                Year = g.Key,
+                                TicketBooked = g.Count(o => !o.IsDeleted),
+                                TicketCancel = g.Count(o => o.IsDeleted)
+                            })
+                            .ToList();
+            var getTimeLine = listOrder
+                            .Select(od => new TimeLineModel
+                            {
+                                CreateDate = od.Order.CreateDate,
+                                StartPoint = od.Ticket.Trip.Route.StartPointNavigation.Name,
+                                EndPoint = od.Ticket.Trip.Route.EndPointNavigation.Name,
+                                BusCompanyName = od.Ticket.Trip.Route.BusCompany.Name,
+                                Name = od.Ticket.Trip.Route.Name
+                            })
+                            .OrderByDescending(od => od.CreateDate)
+                            .ToList();
+
+            var result = new StatisticRevenueModel()
+            {
+                TotalPrice = listOrder.Sum(x => x.Order.TotalPrice),
+                AmountOfUser = totalUser.Count,
+                AmountOfOrder = listOrder.Select(x => x.Order).Count(),
+                ChartOrders = chartOrders,
+                TimeLine = getTimeLine
+            };
+            return result;
+        }
+
     }
 }
