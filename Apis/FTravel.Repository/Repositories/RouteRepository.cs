@@ -117,9 +117,13 @@ namespace FTravel.Repository.Repositories
                 var checkRouteStation = await _context.RouteStations.Where(x => x.RouteId == routeStation.RouteId).ToListAsync();
                 var checkExistStation = checkRouteStation.FirstOrDefault(x => x.StationId == routeStation.StationId);
                 var checkExistIndex = checkRouteStation.FirstOrDefault(x => x.StationIndex == routeStation.StationIndex);
-                if(checkExistIndex != null || checkExistStation != null)
+                if(checkExistIndex != null)
                 {
-                    return -1;
+                    return -2;
+                }
+                if(checkExistStation != null)
+                {
+                    return -3;
                 }
                 
                 if(checkRouteExist == null && checkStationExist == null) {
@@ -135,6 +139,31 @@ namespace FTravel.Repository.Repositories
                 return -1;
             }
         }
+        public async Task<bool> ChangeStationIndex(List<RouteStation> listRouteStation)
+        {
+            try
+            {
+                if(listRouteStation.Count == 2) {
+                    var routeStationIndexFirst = await _context.RouteStations
+                                            .FirstOrDefaultAsync(x => x.RouteId == listRouteStation.First().RouteId && x.StationId == listRouteStation.First().StationId);
+                    var routeStationIndexLast = await _context.RouteStations
+                                                .FirstOrDefaultAsync(x => x.RouteId == listRouteStation.Last().RouteId && x.StationId == listRouteStation.Last().StationId);
+                    int? temp = routeStationIndexFirst.StationIndex;
+                    routeStationIndexFirst.StationIndex = routeStationIndexLast.StationIndex;
+                    routeStationIndexLast.StationIndex = temp;
+                    var result = _context.SaveChanges();
+                    return result > 0;
+                }
+                return false;
+                
+            }
+            catch (Exception)
+            {
+
+                return false;
+            }
+        }
+
 
 
     }
