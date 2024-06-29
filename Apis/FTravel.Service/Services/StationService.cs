@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using FTravel.Repositories.Commons;
 using FTravel.Repository.Commons;
+using FTravel.Repository.Commons.Filter;
 using FTravel.Repository.EntityModels;
 using FTravel.Repository.Repositories;
 using FTravel.Repository.Repositories.Interface;
@@ -140,5 +141,13 @@ namespace FTravel.Service.Services
                 }
             }
         }
+
+        public async Task<List<StationModel>> GetStationByBusCompanyId(int id)
+        {
+             var listStation = await _stationRepository.GetStationByBusCompanyId(id);
+             var listStationModel = _mapper.Map<List<StationModel>>(listStation); 
+            return listStationModel;
+        }
+
     }
 }

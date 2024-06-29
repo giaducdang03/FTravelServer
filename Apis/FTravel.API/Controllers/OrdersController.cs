@@ -139,5 +139,33 @@ namespace FTravel.API.Controllers
                 });
             }
         }
+
+        [HttpGet("statistic")]
+        [Authorize(Roles = "ADMIN, BUSCOMPANY")]
+        public async Task<IActionResult> StatisticForDashboard()
+        {
+            try
+            {
+                var result = await _orderService.StatisticForDashBoard();
+                if(result == null)
+                {
+                    return NotFound(new ResponseModel()
+                    {
+                        HttpCode = StatusCodes.Status404NotFound,
+                        Message = "Không có đơn hàng để thống kê"
+                    });
+                }
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+
+                return BadRequest(new ResponseModel()
+                {
+                    HttpCode = StatusCodes.Status400BadRequest,
+                    Message = ex.Message
+                });
+            }
+        }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using FTravel.Repositories.Commons;
 using FTravel.Repository.Commons;
+using FTravel.Repository.Commons.Filter;
 using FTravel.Repository.DBContext;
 using FTravel.Repository.EntityModels;
 using FTravel.Repository.Repositories.Interface;
@@ -62,5 +63,12 @@ namespace FTravel.Repository.Repositories
             var station = await _context.RouteStations.Where(x => x.StationId == id).ToListAsync();
             return station;
         }
+
+        public async Task<List<Station>> GetStationByBusCompanyId(int id)
+        {
+            var listStation = await _context.Stations.Include(x => x.BusCompany).Where(x => x.BusCompanyId == id).ToListAsync();
+            return listStation;
+        }
+
     }
 }
