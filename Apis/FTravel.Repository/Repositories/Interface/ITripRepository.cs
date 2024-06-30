@@ -1,5 +1,6 @@
 ﻿using FTravel.Repositories.Commons;
 using FTravel.Repository.Commons;
+using FTravel.Repository.Commons.Filter;
 using FTravel.Repository.EntityModels;
 using System;
 using System.Collections.Generic;
@@ -12,9 +13,9 @@ namespace FTravel.Repository.Repositories.Interface
     public interface ITripRepository : IGenericRepository<Trip>
     {
         public Task<Trip> GetTripById(int id);
-        //Task<bool> CreateTripAsync(Trip trip);
         Task<bool> UpdateTripAsync(Trip trip);
-        public Task<Pagination<Trip>> GetAllTrips(PaginationParameter paginationParameter);
+        public Task<Pagination<Trip>> GetAllTrips(PaginationParameter paginationParameter, TripFilter filter);
         public Task<Trip> GetTemplateTrip();
+        public Task<bool> HasOverlappingTrip(int driverId, DateTime? newTripStart, DateTime? newTripEnd);
     }
 }
