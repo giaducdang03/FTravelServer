@@ -68,7 +68,8 @@ namespace FTravel.API.Controllers
         }
 
         [HttpGet("{id}")]
-        [Authorize]
+        [Authorize(Roles = "ADMIN, BUSCOMPANY")]
+
         public async Task<IActionResult> GetTripDetailByIdStatusOpening(int id)
         {
             try

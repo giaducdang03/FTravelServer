@@ -2,7 +2,7 @@
 using FTravel.API.ViewModels.ResponseModels;
 using FTravel.Repository.Commons;
 using FTravel.Repository.EntityModels;
-using FTravel.Service.BusinessModels;
+using FTravel.Service.BusinessModels.RouteModels;
 using FTravel.Service.Services;
 using FTravel.Service.Services.Interface;
 using Microsoft.AspNetCore.Authorization;
@@ -189,6 +189,89 @@ namespace FTravel.API.Controllers
                 });
             }
 
+        }
+
+        [HttpPost("add-station")]
+        [Authorize(Roles = "ADMIN, BUSCOMPANY")]
+        public async Task<IActionResult> AddStationForRoute([FromBody] AddStationForRouteModel addStation)
+        {
+            try
+            {
+                var data = await _routeService.AddStationForRoute(addStation);
+                if(data > 0)
+                {
+                    return Ok(new ResponseModel
+                    {
+                        HttpCode = StatusCodes.Status200OK,
+                        Message = "Thêm trạm cho tuyến đường thành công"
+                    });
+                } else if(data == -2)
+                {
+                    return NotFound(new ResponseModel
+                    {
+                        HttpCode = StatusCodes.Status404NotFound,
+                        Message = "Đã có trạm tại vị trí này"
+                    });
+                } else if(data == -3)
+                {
+                    return NotFound(new ResponseModel
+                    {
+                        HttpCode = StatusCodes.Status404NotFound,
+                        Message = "Đã có trạm này trong tuyến đường"
+                    });
+                } else
+                {
+                    return NotFound(new ResponseModel
+                    {
+                        HttpCode = StatusCodes.Status404NotFound,
+                        Message = "Không tìm thấy trạm cho tuyến đường"
+                    });
+                }
+
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new ResponseModel
+                {
+                    HttpCode = StatusCodes.Status400BadRequest,
+                    Message = ex.Message,
+                });
+               
+            }
+        }
+
+        [HttpPut("change-station-index")]
+        [Authorize(Roles = "ADMIN, BUSCOMPANY")]
+        public async Task<IActionResult> ChangeStationIndex([FromBody] IEnumerable<ChangeStationModel> changeStation)
+        {
+            try
+            {
+                var result = await _routeService.ChangeStationIndex(changeStation);
+                if(result)
+                {
+                    return Ok(new ResponseModel()
+                    {
+                        HttpCode = StatusCodes.Status200OK,
+                        Message = "Cập nhật thứ tự trạm thành công"
+                    });
+                } else
+                {
+                    return NotFound(new ResponseModel()
+                    {
+                        HttpCode = StatusCodes.Status404NotFound,
+                        Message = "Vui lòng chọn 1 tuyến đường và 2 trạm khác nhau để cập nhật"
+                    });
+                }
+            }
+            catch (Exception ex)
+            {
+
+                return BadRequest(new ResponseModel()
+                {
+                    HttpCode = StatusCodes.Status400BadRequest,
+                    Message = ex.Message,
+                });
+            }
         }
 
     }

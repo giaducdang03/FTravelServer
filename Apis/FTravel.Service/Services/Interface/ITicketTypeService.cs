@@ -2,6 +2,7 @@
 using FTravel.Repository.Commons;
 using FTravel.Repository.EntityModels;
 using FTravel.Service.BusinessModels;
+using FTravel.Service.BusinessModels.TicketModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,5 +16,9 @@ namespace FTravel.Service.Services.Interface
         public Task<Pagination<TicketTypeModel>> GetAllTicketType(PaginationParameter paginationParameter);
 
         public Task<TicketTypeModel> GetTicketTypeById(int id);
+
+        public Task<CreateTicketTypeModel> CreateTicketTypeAsync(CreateTicketTypeModel ticketTypeModel);
+
+        public Task<bool> UpdateTicketTypeAsync(int id, UpdateTicketTypeModel ticketTypeModel);
     }
 }

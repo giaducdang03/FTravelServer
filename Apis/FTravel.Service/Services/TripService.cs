@@ -5,7 +5,7 @@ using FTravel.Repository.Commons.Filter;
 using FTravel.Repository.EntityModels;
 using FTravel.Repository.Repositories;
 using FTravel.Repository.Repositories.Interface;
-using FTravel.Service.BusinessModels;
+using FTravel.Service.BusinessModels.TicketModels;
 using FTravel.Service.BusinessModels.TripModels;
 using FTravel.Service.Enums;
 using FTravel.Service.Services.Interface;

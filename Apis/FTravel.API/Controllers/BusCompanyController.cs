@@ -1,6 +1,9 @@
 ﻿using FTravel.API.ViewModels.ResponseModels;
 using FTravel.Repository.Commons;
+using FTravel.Repository.EntityModels;
 using FTravel.Service.BusinessModels;
+using FTravel.Service.BusinessModels.BuscompanyModels;
+using FTravel.Service.Services;
 using FTravel.Service.Services.Interface;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -20,7 +23,7 @@ namespace FTravel.API.Controllers
             _busCompanyService = busCompanyService;
         }
         [HttpPost]
-        //[Authorize(Roles = "ADMIN")]
+        [Authorize(Roles = "ADMIN")]
         public async Task<IActionResult> CreateBusCompany(CreateBusCompanyModel model)
         {
             try
@@ -61,9 +64,9 @@ namespace FTravel.API.Controllers
         }
 
 
-        [HttpGet("by-bus-id/{id}")]
+        [HttpGet("{id}")]
         [Authorize]
-        //[Authorize(Roles = "ADMIN, BUSCOMPANY")]
+        [Authorize(Roles = "ADMIN, BUSCOMPANY")]
         public async Task<IActionResult> GetBusCompanyDetailById(int id)
         {
             try
@@ -93,7 +96,7 @@ namespace FTravel.API.Controllers
 
         [HttpGet]
         [Authorize]
-        //[Authorize(Roles = "ADMIN, BUSCOMPANY")]
+        [Authorize(Roles = "ADMIN, BUSCOMPANY")]
         public async Task<IActionResult> GetAllBusCompanies([FromQuery] PaginationParameter paginationParameter)
         {
             try
@@ -137,6 +140,85 @@ namespace FTravel.API.Controllers
                 });
             }
         }
+
+        [HttpDelete("{id}")]
+        [Authorize(Roles = "ADMIN, BUSCOMPANY")]
+        public async Task<IActionResult> DeleteBusCompany(int id)
+        {
+            try
+            {
+                var isDeleted = await _busCompanyService.BusCompanySoftDelete(id);
+
+                if (isDeleted > 0)
+                {
+                    return Ok(new ResponseModel
+                    {
+                        HttpCode = StatusCodes.Status200OK,
+                        Message = "Xóa nhà xe thành công!"
+                    });
+                }
+                else
+                {
+                    return BadRequest(new ResponseModel
+                    {
+                        HttpCode = StatusCodes.Status400BadRequest,
+                        Message = "Lỗi xảy ra khi xóa nhà xe!"
+                    });
+                }
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new ResponseModel
+                {
+                    HttpCode = StatusCodes.Status400BadRequest,
+                    Message = ex.Message
+                });
+            }
+        }
+
+        [HttpPut("{id}")]
+        [Authorize(Roles = "ADMIN, BUSCOMPANY")]
+        public async Task<IActionResult> UpdateBusCompany(int id, UpdateBusCompanyModel model)
+        {
+            try
+            {
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest(ModelState);
+                }
+
+                bool isUpdated = await _busCompanyService.UpdateBusCompanyAsync(id, model);
+
+                if (isUpdated)
+                {
+                    // Return a success response
+                    return Ok(new ResponseModel
+                    {
+                        HttpCode = StatusCodes.Status200OK,
+                        Message = "Cập nhật nhà xe thành công"
+                    });
+                }
+                else
+                {
+                    // Return a not found response if the service was not updated successfully
+                    return NotFound(new ResponseModel
+                    {
+                        HttpCode = StatusCodes.Status404NotFound,
+                        Message = "Cập nhật nhà xe thất bại"
+                    });
+                }
+            }
+            catch (Exception ex)
+            {
+                // Return a bad request response for any other exceptions
+                return BadRequest(new ResponseModel
+                {
+                    HttpCode = StatusCodes.Status400BadRequest,
+                    Message = ex.Message
+                });
+            }
+        }
+
 
     }
 }

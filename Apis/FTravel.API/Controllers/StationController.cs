@@ -1,8 +1,9 @@
 ﻿using FTravel.API.ViewModels.RequestModels;
 using FTravel.API.ViewModels.ResponseModels;
 using FTravel.Repository.Commons;
+using FTravel.Repository.Commons.Filter;
 using FTravel.Repository.EntityModels;
-using FTravel.Service.BusinessModels;
+using FTravel.Service.BusinessModels.StationModels;
 using FTravel.Service.Services;
 using FTravel.Service.Services.Interface;
 using Microsoft.AspNetCore.Authorization;
@@ -189,7 +190,7 @@ namespace FTravel.API.Controllers
                     return NotFound(new ResponseModel()
                     {
                         HttpCode = StatusCodes.Status404NotFound,
-                        Message = "Không tìm thấy trạm để xóa"
+                        Message = "Không tìm thấy trạm để xóa hoặc trạm còn tuyến đường sử dụng"
                     });
                 }
             }
@@ -199,6 +200,34 @@ namespace FTravel.API.Controllers
                 return BadRequest(new ResponseModel
                 {
                     HttpCode = 400,
+                    Message = ex.Message
+                });
+            }
+        }
+
+        [HttpGet("get-station-by-bus-company/{id}")]
+        [Authorize(Roles = "ADMIN, BUSCOMPANY")]
+        public async Task<IActionResult> GetStationByBusCompany([FromRoute] int id)
+        {
+            try
+            {
+                var result = await _stationService.GetStationByBusCompanyId(id);
+                if(result == null)
+                {
+                    return NotFound(new ResponseModel()
+                    {
+                        HttpCode = StatusCodes.Status404NotFound,
+                        Message = "Không tìm thấy nhà xe"
+                    });
+                }
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+
+                return BadRequest(new ResponseModel()
+                {
+                    HttpCode = StatusCodes.Status400BadRequest,
                     Message = ex.Message
                 });
             }

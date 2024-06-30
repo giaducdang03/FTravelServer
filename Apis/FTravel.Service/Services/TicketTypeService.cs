@@ -5,12 +5,18 @@ using FTravel.Repository.EntityModels;
 using FTravel.Repository.Repositories;
 using FTravel.Repository.Repositories.Interface;
 using FTravel.Service.BusinessModels;
+using FTravel.Service.BusinessModels.TicketModels;
+using FTravel.Service.Enums;
 using FTravel.Service.Services.Interface;
+using FTravel.Service.Utils;
+using Microsoft.AspNetCore.Routing;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
+using static System.Collections.Specialized.BitVector32;
 
 namespace FTravel.Service.Services
 {
@@ -25,6 +31,27 @@ namespace FTravel.Service.Services
             _ticketTypeRepository = ticketTypeRepository;
             _routeRepository = routeRepository;
             _mapper = mapper;
+        }
+
+        public async Task<CreateTicketTypeModel> CreateTicketTypeAsync(CreateTicketTypeModel ticketTypeModel)
+        {
+
+            try
+            {
+                var route = await _routeRepository.GetByIdAsync(ticketTypeModel.RouteId.Value);
+                if (route == null)
+                {
+                    throw new KeyNotFoundException("Route ID không tồn tại");
+                }
+                var map = _mapper.Map<TicketType>(ticketTypeModel);
+                var createdTicketType = await _ticketTypeRepository.CreateTicketTypeAsync(map);
+                var result = _mapper.Map<CreateTicketTypeModel>(createdTicketType);
+                return result;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
         }
 
         public async Task<Pagination<TicketTypeModel>> GetAllTicketType(PaginationParameter paginationParameter)
@@ -62,6 +89,28 @@ namespace FTravel.Service.Services
                 return ticketTypeModel;
             }
             return null;
+        }
+
+        public async Task<bool> UpdateTicketTypeAsync(int id, UpdateTicketTypeModel ticketTypeModel)
+        {
+            try
+            {
+                var existingTicketType = await _ticketTypeRepository.GetTicketTypeByIdAsync(id);
+                if (existingTicketType == null)
+                {
+                    return false;
+                }
+
+                _mapper.Map(ticketTypeModel, existingTicketType);
+                await _ticketTypeRepository.UpdateAsync(existingTicketType);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                // Log the exception
+                throw new Exception("Xảy ra lỗi khi cập nhật nhà xe");
+                return false;
+            }
         }
     }
 }

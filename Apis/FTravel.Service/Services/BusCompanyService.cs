@@ -2,10 +2,13 @@
 using FTravel.Repositories.Commons;
 using FTravel.Repository.Commons;
 using FTravel.Repository.EntityModels;
+using FTravel.Repository.Repositories;
 using FTravel.Repository.Repositories.Interface;
 using FTravel.Service.BusinessModels;
+using FTravel.Service.BusinessModels.BuscompanyModels;
 using FTravel.Service.Enums;
 using FTravel.Service.Services.Interface;
+using FTravel.Service.Utils;
 using Google.Apis.Util;
 
 namespace FTravel.Service.Services
@@ -54,6 +57,13 @@ namespace FTravel.Service.Services
                 return false;
             }
         }
+
+        public async Task<int> BusCompanySoftDelete(int busCompanyId)
+        {
+            var bcSoftDelete = await _busRepository.SoftDeleteBusCompany(busCompanyId);
+            return bcSoftDelete;
+        }
+
         public async Task<Pagination<BusCompany>> GetAllBusCompanies(PaginationParameter paginationParameter)
         {
 
@@ -63,6 +73,28 @@ namespace FTravel.Service.Services
         public async Task<BusCompany> GetBusCompanyById(int id)
         {
             return await _busRepository.GetBusCompanyDetailById(id);
+        }
+
+        public async Task<bool> UpdateBusCompanyAsync(int id, UpdateBusCompanyModel busCompany)
+        {
+            try
+            {
+                var existingBusCompany = await _busRepository.GetBusCompanyDetailById(id);
+                if (existingBusCompany == null)
+                {
+                    return false;
+                }
+
+                _mapper.Map(busCompany, existingBusCompany);
+                await _busRepository.UpdateAsync(existingBusCompany);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                // Log the exception
+                throw new Exception("Xảy ra lỗi khi cập nhật nhà xe");
+                return false;
+            }
         }
     }
 }

@@ -49,7 +49,8 @@ namespace FTravel.Repository.Repositories
                 .Include(x => x.StartPointNavigation)
                 .Include(x => x.EndPointNavigation)
                 .Include(x => x.Services)
-                .Include(x=> x.TicketTypes)
+                .Include(x => x.TicketTypes)
+                .Include(x => x.RouteStations).ThenInclude(x => x.Station)
                 .FirstOrDefaultAsync(x => x.Id == routeId);
         }
 
@@ -105,6 +106,65 @@ namespace FTravel.Repository.Repositories
                 return -1;
             }
         }
+
+        public async Task<int> AddStationForRoute(RouteStation routeStation)
+        {
+            try
+            {
+                var checkRouteExist = await _context.Routes.FirstOrDefaultAsync(x => x.Id == routeStation.RouteId);
+                var checkStationExist = await _context.Routes.FirstOrDefaultAsync(x => x.Id == routeStation.StationId);
+
+                var checkRouteStation = await _context.RouteStations.Where(x => x.RouteId == routeStation.RouteId).ToListAsync();
+                var checkExistStation = checkRouteStation.FirstOrDefault(x => x.StationId == routeStation.StationId);
+                var checkExistIndex = checkRouteStation.FirstOrDefault(x => x.StationIndex == routeStation.StationIndex);
+                if(checkExistIndex != null)
+                {
+                    return -2;
+                }
+                if(checkExistStation != null)
+                {
+                    return -3;
+                }
+                
+                if(checkRouteExist == null && checkStationExist == null) {
+                    return -1;
+                }
+                await _context.RouteStations.AddAsync(routeStation);
+                var result = await _context.SaveChangesAsync();
+                return result;
+            }
+            catch (Exception)
+            {
+
+                return -1;
+            }
+        }
+        public async Task<bool> ChangeStationIndex(List<RouteStation> listRouteStation)
+        {
+            try
+            {
+                if(listRouteStation.Count == 2) {
+                    var routeStationIndexFirst = await _context.RouteStations
+                                            .FirstOrDefaultAsync(x => x.RouteId == listRouteStation.First().RouteId && x.StationId == listRouteStation.First().StationId);
+                    var routeStationIndexLast = await _context.RouteStations
+                                                .FirstOrDefaultAsync(x => x.RouteId == listRouteStation.Last().RouteId && x.StationId == listRouteStation.Last().StationId);
+                    int? temp = routeStationIndexFirst.StationIndex;
+                    routeStationIndexFirst.StationIndex = routeStationIndexLast.StationIndex;
+                    routeStationIndexLast.StationIndex = temp;
+                    var result = _context.SaveChanges();
+                    return result > 0;
+                }
+                return false;
+                
+            }
+            catch (Exception)
+            {
+
+                return false;
+            }
+        }
+
+
 
     }
 }

@@ -1,7 +1,8 @@
 ﻿using AutoMapper;
 using FTravel.Repository.EntityModels;
 using FTravel.Repository.Repositories.Interface;
-using FTravel.Service.BusinessModels;
+using FTravel.Service.BusinessModels.OrderModels;
+using FTravel.Service.BusinessModels.RouteModels;
 using FTravel.Service.Enums;
 using FTravel.Service.Services.Interface;
 using FTravel.Service.Utils;
@@ -19,15 +20,21 @@ namespace FTravel.Service.Services
         private readonly ITransactionService _transactionService;
         private readonly IWalletService _walletService;
         private readonly IMapper _mapper;
+        private readonly IBusCompanyRepository _busCompanyRepository;
+        private readonly ICustomerRepository _customerRepository;
 
         public OrderService(IOrderRepository orderRepository,
             ITransactionService transactionService,
             IWalletService walletService,
+            IBusCompanyRepository busCompanyRepository,
+            ICustomerRepository customerRepository,
             IMapper mapper)
         {
             _orderRepository = orderRepository;
             _transactionService = transactionService;
             _walletService = walletService;
+            _busCompanyRepository = busCompanyRepository;
+            _customerRepository = customerRepository;
             _mapper = mapper;
         }
 
@@ -133,5 +140,74 @@ namespace FTravel.Service.Services
             string orderCode = now.ToString("yyyyMMddHHmmss");
             return orderCode;
         }
+        public async Task<List<OrderViewModel>> GetAllOrderAsync()
+        {
+            var orderList = await _orderRepository.GetAllOrderAsync();
+            List<OrderViewModel> listOrders = _mapper.Map<List<OrderViewModel>>(orderList);
+            if(listOrders.Count > 0)
+            {
+                return listOrders;
+            }
+            return null;
+        }
+        public async Task<OrderViewModel> GetOrderDetailByIdAsync(int orderId)
+        {
+            var findOrderDetail = await _orderRepository.GetOrderDetailByIdAsync(orderId);
+            var findOrder = await _orderRepository.GetByIdAsync(orderId);
+            if(findOrderDetail == null)
+            {
+                return null; 
+            }
+            var result = new OrderViewModel()
+            {
+                Id = findOrder.Id,
+                CreateDate = findOrder.CreateDate,
+                UpdateDate = findOrder.UpdateDate,
+                IsDeleted = findOrder.IsDeleted,
+                TotalPrice = findOrder.TotalPrice,
+                Code = findOrder.Code,
+                PaymentDate = (DateTime)findOrder.PaymentDate,
+                PaymentOrderStatus = findOrder.PaymentStatus.ToString(),
+                CustomerName = findOrder.Customer.FullName,
+                OrderDetailModel =  _mapper.Map<List<OrderDetailModel>>(findOrderDetail),
+            };
+            return result;
+        }
+        public async Task<StatisticRevenueModel> StatisticForDashBoard()
+        {
+            var listOrder = await _orderRepository.StatisticForDashBoard();
+            var totalUser = await _customerRepository.GetAllAsync();
+            var chartOrders = listOrder
+                            .GroupBy(o => o.Order.CreateDate.Year)
+                            .Select(g => new ChartOrderModel
+                            {
+                                Year = g.Key,
+                                TicketBooked = g.Count(o => !o.IsDeleted),
+                                TicketCancel = g.Count(o => o.IsDeleted)
+                            })
+                            .ToList();
+            var getTimeLine = listOrder
+                            .Select(od => new TimeLineModel
+                            {
+                                CreateDate = od.Order.CreateDate,
+                                StartPoint = od.Ticket.Trip.Route.StartPointNavigation.Name,
+                                EndPoint = od.Ticket.Trip.Route.EndPointNavigation.Name,
+                                BusCompanyName = od.Ticket.Trip.Route.BusCompany.Name,
+                                Name = od.Ticket.Trip.Route.Name
+                            })
+                            .OrderByDescending(od => od.CreateDate)
+                            .ToList();
+
+            var result = new StatisticRevenueModel()
+            {
+                TotalPrice = listOrder.Sum(x => x.Order.TotalPrice),
+                AmountOfUser = totalUser.Count,
+                AmountOfOrder = listOrder.Select(x => x.Order).Count(),
+                ChartOrders = chartOrders,
+                TimeLine = getTimeLine
+            };
+            return result;
+        }
+
     }
 }
