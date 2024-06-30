@@ -11,5 +11,9 @@ namespace FTravel.Repository.Commons.Filter
     {
         [FromQuery(Name = "trip-status")]
         public string? TripStatus { get; set; }
+        [FromQuery(Name = "trip-start-date")]
+        public DateTime? StartDate { get; set; }
+
+
     }
 }

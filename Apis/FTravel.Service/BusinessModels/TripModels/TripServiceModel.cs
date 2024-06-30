@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace FTravel.Service.BusinessModels
+namespace FTravel.Service.BusinessModels.TripModels
 {
     public class TripServiceModel
     {

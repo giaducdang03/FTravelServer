@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using FTravel.Repositories.Commons;
 using FTravel.Repository.Commons;
+using FTravel.Repository.Commons.Filter;
 using FTravel.Repository.EntityModels;
 using FTravel.Repository.Repositories;
 using FTravel.Repository.Repositories.Interface;
@@ -37,9 +38,17 @@ namespace FTravel.Service.Services
             _mapper = mapper;
         }
 
-        public async Task<Pagination<TripModel>> GetAllTripAsync(PaginationParameter paginationParameter)
+        public async Task<Pagination<TripModel>> GetAllTripAsync(PaginationParameter paginationParameter, TripFilter filter)
         {
-            var trips = await _tripRepository.GetAllTrips(paginationParameter);
+            if (!string.IsNullOrEmpty(filter.Search))
+            {
+                filter.Search = StringUtils.ConvertToUnSign(filter.Search);
+            }
+            if (!string.IsNullOrWhiteSpace(filter.TripStatus) && !Enum.TryParse(typeof(TripStatus), filter.TripStatus, true, out var _))
+            {
+                throw new ArgumentException("Invalid trip status value");
+            }
+            var trips = await _tripRepository.GetAllTrips(paginationParameter, filter);
             if (!trips.Any())
             {
                 return null;
@@ -68,18 +77,18 @@ namespace FTravel.Service.Services
         {
             try
             {
+                //check route
                 var route = await _routeRepository.GetRouteDetailByRouteIdAsync(tripModel.RouteId);
                 if (route == null)
                 {
                     throw new Exception($"Không tìm thấy tuyến xe có id: {tripModel.RouteId}");
-                    return false;
                 }
                 if (route.Status != CommonStatus.ACTIVE.ToString())
                 {
                     throw new Exception("Tuyến xe không hoạt động");
                 }
-
                 var newTrip = _mapper.Map<Trip>(tripModel);
+                //check driver
                 var driver = await _userRepository.GetByIdAsync(newTrip.DriverId.Value);
                 if (driver == null)
                 {
@@ -90,6 +99,12 @@ namespace FTravel.Service.Services
                 {
                     throw new Exception("Người dùng không phải là tài xế");
                 }
+                var hasOverlappingTrip = await _tripRepository.HasOverlappingTrip(newTrip.DriverId.Value, newTrip.EstimatedStartDate, newTrip.EstimatedEndDate);
+                if (hasOverlappingTrip)
+                {
+                    throw new Exception("Tài xế đã có chuyến đi trùng thời gian");
+                }
+                //status logic
                 if (tripModel.OpenTicketDate.Date.Hour > TimeUtils.GetTimeVietNam().Date.Hour)
                 {
                     newTrip.Status = TripStatus.PENDING.ToString();
@@ -98,6 +113,7 @@ namespace FTravel.Service.Services
                 {
                     newTrip.Status =TripStatus.OPENING.ToString();
                 }
+
                 newTrip.IsTemplate = false;
                 // Add valid newTrip services
                 foreach (var tripService in tripModel.TripServices)
