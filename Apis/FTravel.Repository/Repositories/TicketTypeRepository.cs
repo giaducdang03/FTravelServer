@@ -21,6 +21,13 @@ namespace FTravel.Repository.Repositories
             _context = context;
         }
 
+        public async Task<TicketType> CreateTicketTypeAsync(TicketType ticketType)
+        {
+            _context.Add(ticketType);
+            await _context.SaveChangesAsync();
+            return ticketType;
+        }
+
         public async Task<Pagination<TicketType>> GetAllTicketType(PaginationParameter paginationParameter)
         {
             var itemCount = await _context.TicketTypes.CountAsync();
