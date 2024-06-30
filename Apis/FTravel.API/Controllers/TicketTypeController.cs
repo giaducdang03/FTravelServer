@@ -23,11 +23,11 @@ namespace FTravel.API.Controllers
 
         [HttpGet]
         [Authorize(Roles = "BUSCOMPANY,ADMIN")]
-        public async Task<IActionResult> GetAllTicketType([FromQuery] PaginationParameter paginationParameter)
+        public async Task<IActionResult> GetAllTicketType([FromQuery] PaginationParameter paginationParameter, int? routeId)
         {
             try
             {
-                var result = await _ticketTypeService.GetAllTicketType(paginationParameter);
+                var result = await _ticketTypeService.GetAllTicketType(paginationParameter, routeId);
 
                 if (result == null)
                 {

@@ -13,7 +13,7 @@ namespace FTravel.Service.Services.Interface
 {
     public interface ITicketTypeService
     {
-        public Task<Pagination<TicketTypeModel>> GetAllTicketType(PaginationParameter paginationParameter);
+        public Task<Pagination<TicketTypeModel>> GetAllTicketType(PaginationParameter paginationParameter, int? routeId);
 
         public Task<TicketTypeModel> GetTicketTypeById(int id);
 
