@@ -49,7 +49,8 @@ namespace FTravel.Repository.Repositories
                 .Include(x => x.StartPointNavigation)
                 .Include(x => x.EndPointNavigation)
                 .Include(x => x.Services)
-                .Include(x=> x.TicketTypes)
+                .Include(x => x.TicketTypes)
+                .Include(x => x.RouteStations).ThenInclude(x => x.Station)
                 .FirstOrDefaultAsync(x => x.Id == routeId);
         }
 
@@ -105,6 +106,28 @@ namespace FTravel.Repository.Repositories
                 return -1;
             }
         }
+
+        public async Task<int> AddStationForRoute(RouteStation routeStation)
+        {
+            try
+            {
+                var checkRouteExist = await _context.Routes.FirstOrDefaultAsync(x => x.Id == routeStation.RouteId);
+                var checkStationExist = await _context.Routes.FirstOrDefaultAsync(x => x.Id == routeStation.StationId);
+                
+                if(checkRouteExist == null && checkStationExist == null) {
+                    return -1;
+                }
+                await _context.RouteStations.AddAsync(routeStation);
+                var result = await _context.SaveChangesAsync();
+                return result;
+            }
+            catch (Exception ex)
+            {
+
+                return -1;
+            }
+        }
+
 
     }
 }

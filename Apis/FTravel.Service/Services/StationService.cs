@@ -1,10 +1,12 @@
 ﻿using AutoMapper;
 using FTravel.Repositories.Commons;
 using FTravel.Repository.Commons;
+using FTravel.Repository.Commons.Filter;
 using FTravel.Repository.EntityModels;
 using FTravel.Repository.Repositories;
 using FTravel.Repository.Repositories.Interface;
-using FTravel.Service.BusinessModels;
+using FTravel.Service.BusinessModels.RouteModels;
+using FTravel.Service.BusinessModels.StationModels;
 using FTravel.Service.Enums;
 using FTravel.Service.Services.Interface;
 using FTravel.Service.Utils;
@@ -115,22 +117,37 @@ namespace FTravel.Service.Services
         public async Task<bool> DeleteStationService(int stationId)
         {
             var deleteStation = await _stationRepository.GetStationById(stationId);
+            var routeStation = await _stationRepository.GetRouteStationById(stationId);
             if(deleteStation == null)
             {
                 return false;
             }
             else
             {
-                var result = await _stationRepository.SoftDeleteAsync(deleteStation);
-                if(result > 0)
-                {
-                    return true;
-                } 
-                else
-                {
+                if(routeStation.Count > 0) {
                     return false;
+                } else
+                {
+                    deleteStation.Status = CommonStatus.INACTIVE.ToString();
+                    var result = await _stationRepository.SoftDeleteAsync(deleteStation);
+                    if (result > 0)
+                    {
+                        return true;
+                    }
+                    else
+                    {
+                        return false;
+                    }
                 }
             }
         }
+
+        public async Task<List<StationModel>> GetStationByBusCompanyId(int id)
+        {
+             var listStation = await _stationRepository.GetStationByBusCompanyId(id);
+             var listStationModel = _mapper.Map<List<StationModel>>(listStation); 
+            return listStationModel;
+        }
+
     }
 }

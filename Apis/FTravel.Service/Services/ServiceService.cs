@@ -1,11 +1,13 @@
 ﻿using AutoMapper;
 using FTravel.Repositories.Commons;
 using FTravel.Repository.Commons;
+using FTravel.Repository.Commons.Filter;
 using FTravel.Repository.EntityModels;
 using FTravel.Repository.Repositories;
 using FTravel.Repository.Repositories.Interface;
-using FTravel.Service.BusinessModels;
+using FTravel.Service.BusinessModels.ServiceModels;
 using FTravel.Service.Services.Interface;
+using FTravel.Service.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,7 +20,7 @@ namespace FTravel.Service.Services
     {
         private readonly IServiceRepository _serviceRepository;
         private readonly IMapper _mapper;
-        public ServiceService(IServiceRepository repository, IMapper mapper )
+        public ServiceService(IServiceRepository repository, IMapper mapper)
         {
             _serviceRepository = repository;
             _mapper = mapper;
@@ -26,7 +28,7 @@ namespace FTravel.Service.Services
         public async Task<ServiceModel> GetServiceByIdAsync(int id)
         {
             var service = await _serviceRepository.GetServiceById(id);
-            if (service == null) 
+            if (service == null)
             {
                 return null;
             }
@@ -34,9 +36,13 @@ namespace FTravel.Service.Services
             return serviceModel;
         }
 
-        public async Task<Pagination<ServiceModel>> GetAllAsync(PaginationParameter paginationParameter)
+        public async Task<Pagination<ServiceModel>> GetAllAsync(PaginationParameter paginationParameter, ServiceFilter filter)
         {
-            var services = await _serviceRepository.GetAll( paginationParameter);
+            if (!string.IsNullOrEmpty(filter.Search))
+            {
+                filter.Search = StringUtils.ConvertToUnSign(filter.Search);
+            }
+            var services = await _serviceRepository.GetAll(paginationParameter, filter);
             if (!services.Any())
             {
                 return null;
@@ -62,7 +68,7 @@ namespace FTravel.Service.Services
                 services.PageSize);
 
         }
-         public async Task<Pagination<ServiceModel>> GetAllServiceByStationIdAsync(int stationId, PaginationParameter paginationParameter)
+        public async Task<Pagination<ServiceModel>> GetAllServiceByStationIdAsync(int stationId, PaginationParameter paginationParameter)
         {
             var services = await _serviceRepository.GetAllServiceByStationId(stationId, paginationParameter);
             if (!services.Any())
@@ -86,9 +92,7 @@ namespace FTravel.Service.Services
             }
             catch (Exception ex)
             {
-                // Log the exception
                 throw new Exception("Xảy ra lỗi khi thêm dịch vụ");
-                return false; // Return false indicating failure
             }
         }
 
@@ -108,9 +112,7 @@ namespace FTravel.Service.Services
             }
             catch (Exception ex)
             {
-                // Log the exception
                 throw new Exception("Xảy ra lỗi khi cập nhật dịch vụ");
-                return false;
             }
         }
         public async Task<bool> DeleteServiceAsync(int id)
@@ -128,10 +130,9 @@ namespace FTravel.Service.Services
             }
             catch (Exception ex)
             {
-                // Log the exception
                 throw new Exception("Xảy ra lỗi khi xóa dịch vụ");
-                return false;
             }
         }
+
     }
 }

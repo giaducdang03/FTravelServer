@@ -114,7 +114,7 @@ else
 }
 
 builder.Services.AddDbContext<FtravelContext>(options =>
-  options.UseSqlServer(connection));
+ options.UseSqlServer(connection));
 
 // ==================== NO EDIT OR REMOVE COMMENT =======================
 

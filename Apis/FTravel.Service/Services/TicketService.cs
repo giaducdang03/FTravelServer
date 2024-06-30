@@ -4,10 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using FTravel.Service.BusinessModels;
-
-
-
-
+using FTravel.Service.BusinessModels.TicketModels;
 using FTravel.Service.Services.Interface;
 using FTravel.Repository.Repositories.Interface;
 using AutoMapper;

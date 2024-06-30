@@ -85,23 +85,23 @@ namespace FTravel.API.Controllers
         {
             try
             {
-                var data = await _ticketTypeService.CreateTicketTypeAsync(ticketTypeModel);
                 if (ticketTypeModel == null)
                 {
                     return BadRequest("Xảy ra lỗi khi tạo loại vé mới");
                 }
+
+                var data = await _ticketTypeService.CreateTicketTypeAsync(ticketTypeModel);
+
                 return Ok("Tạo loại vé mới thành công");
             }
             catch (Exception ex)
             {
-
                 return BadRequest(new ResponseModel
                 {
                     HttpCode = 400,
                     Message = ex.Message
                 });
             }
-
         }
 
         [HttpPut("{id}")]

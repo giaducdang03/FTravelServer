@@ -2,7 +2,7 @@
 using FTravel.API.ViewModels.ResponseModels;
 using FTravel.Repository.Commons;
 using FTravel.Repository.EntityModels;
-using FTravel.Service.BusinessModels;
+using FTravel.Service.BusinessModels.AccountModels;
 using FTravel.Service.Services;
 using FTravel.Service.Services.Interface;
 using Microsoft.AspNetCore.Authorization;
@@ -191,7 +191,7 @@ namespace FTravel.API.Controllers
                 if (ModelState.IsValid)
                 {
                     var email = _claimsService.GetCurrentUserEmail;
-                    if (email == updateFcmTokenModel.Email) 
+                    if (email == updateFcmTokenModel.Email)
                     {
                         var result = await _accountService.UpdateFcmTokenAsync(email, updateFcmTokenModel.FcmToken);
                         if (result)
@@ -225,6 +225,51 @@ namespace FTravel.API.Controllers
                     Message = ex.Message.ToString()
                 };
                 return BadRequest(resp);
+            }
+        }
+        [HttpPut("{id}")]
+        [Authorize]
+        public async Task<IActionResult> UpdateService(int id, UpdateAccountModel accountModel)
+        {
+            try
+            {
+                if (ModelState.IsValid)
+                {
+                    if (id == accountModel.AccountId)
+                    {
+                        bool isUpdated = await _accountService.UpdateAccount(accountModel);
+
+                        if (isUpdated)
+                        {
+                            return Ok(new ResponseModel
+                            {
+                                HttpCode = StatusCodes.Status200OK,
+                                Message = "Cập nhật thông tin tài khoản thành công."
+                            });
+                        }
+                        return NotFound(new ResponseModel
+                        {
+                            HttpCode = StatusCodes.Status404NotFound,
+                            Message = "Có lỗi trong quá trình cập nhật thông tin tài khoản."
+                        });
+                    }
+                    return BadRequest(new ResponseModel
+                    {
+                        HttpCode = StatusCodes.Status400BadRequest,
+                        Message = "Id tài khoản không hợp lệ."
+                    });
+
+                }
+                return ValidationProblem(ModelState);
+
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new ResponseModel
+                {
+                    HttpCode = StatusCodes.Status400BadRequest,
+                    Message = ex.Message
+                });
             }
         }
     }

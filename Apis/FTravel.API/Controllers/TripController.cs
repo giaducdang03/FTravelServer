@@ -1,7 +1,7 @@
 ﻿using FTravel.API.ViewModels.ResponseModels;
 using FTravel.Repository.Commons;
 using FTravel.Repository.EntityModels;
-using FTravel.Service.BusinessModels;
+using FTravel.Service.BusinessModels.TripModels;
 using FTravel.Service.Enums;
 using FTravel.Service.Services.Interface;
 using Microsoft.AspNetCore.Authorization;
@@ -109,7 +109,12 @@ namespace FTravel.API.Controllers
                 var result = await _tripService.CreateTripAsync(tripModel);
                 if (result)
                 {
-                    return Ok("Tạo chuyến xe mới thành công!");
+                    return Ok(
+                        new ResponseModel
+                        {
+                            HttpCode = StatusCodes.Status200OK,
+                            Message = "Tạo chuyến xe mới thành công!"
+                        });
                 }
                 else
                 {

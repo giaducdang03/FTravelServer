@@ -1,7 +1,8 @@
 ﻿using FTravel.API.ViewModels.ResponseModels;
 using FTravel.Repository.Commons;
+using FTravel.Repository.Commons.Filter;
 using FTravel.Repository.EntityModels;
-using FTravel.Service.BusinessModels;
+using FTravel.Service.BusinessModels.ServiceModels;
 using FTravel.Service.Services;
 using FTravel.Service.Services.Interface;
 using Microsoft.AspNetCore.Authorization;
@@ -59,7 +60,7 @@ namespace FTravel.API.Controllers
             }
         }
 
-        [HttpGet("by-station-id{stationId}")]
+        [HttpGet("by-station-id/{stationId}")]
         [Authorize(Roles = "ADMIN, BUSCOMPANY")]
         public async Task<IActionResult> GetServicesByStationId(int stationId, [FromQuery] PaginationParameter paginationParameter)
         {
@@ -99,11 +100,11 @@ namespace FTravel.API.Controllers
         }
         [HttpGet()]
         [Authorize(Roles = "ADMIN, BUSCOMPANY")]
-        public async Task<IActionResult> GetAllServices([FromQuery] PaginationParameter paginationParameter)
+        public async Task<IActionResult> GetAllServices([FromQuery] PaginationParameter paginationParameter, ServiceFilter filter)
         {
             try
             {
-                var result = await _service.GetAllAsync(paginationParameter);
+                var result = await _service.GetAllAsync(paginationParameter, filter);
                 if (result == null)
                 {
                     return NotFound(new ResponseModel
@@ -184,22 +185,20 @@ namespace FTravel.API.Controllers
                     return Ok(new ResponseModel
                     {
                         HttpCode = StatusCodes.Status200OK,
-                        Message = "Service added successfully"
+                        Message = "Thêm dịch vụ thành công."
                     });
                 }
                 else
                 {
-                    // Return a not found response if the service was not added successfully
                     return NotFound(new ResponseModel
                     {
                         HttpCode = StatusCodes.Status404NotFound,
-                        Message = "Failed to add the service"
+                        Message = "Không thể thêm dịch vụ này."
                     });
                 }
             }
             catch (Exception ex)
             {
-                // Return a bad request response for any other exceptions
                 return BadRequest(new ResponseModel
                 {
                     HttpCode = StatusCodes.Status400BadRequest,
@@ -222,26 +221,23 @@ namespace FTravel.API.Controllers
 
                 if (isUpdated)
                 {
-                    // Return a success response
                     return Ok(new ResponseModel
                     {
                         HttpCode = StatusCodes.Status200OK,
-                        Message = "Service updated successfully"
+                        Message = "Cập nhật dịch vụ thành công."
                     });
                 }
                 else
                 {
-                    // Return a not found response if the service was not updated successfully
                     return NotFound(new ResponseModel
                     {
                         HttpCode = StatusCodes.Status404NotFound,
-                        Message = "Failed to update the service"
+                        Message = "Không thể cập nhật dịch vụ này."
                     });
                 }
             }
             catch (Exception ex)
             {
-                // Return a bad request response for any other exceptions
                 return BadRequest(new ResponseModel
                 {
                     HttpCode = StatusCodes.Status400BadRequest,

@@ -41,19 +41,19 @@ namespace FTravel.Repository.Repositories
                 .Include(x => x.Route)
                 .FirstOrDefaultAsync(x => x.Id == id);
         }
-        public async Task<bool> CreateTripAsync(Trip trip)
-        {
-            try
-            {
-                _context.Trips.Add(trip);
-                await _context.SaveChangesAsync();
-                return true;
-            }
-            catch
-            {
-                return false;
-            }
-        }
+        //public async Task<bool> CreateTripAsync(Trip trip)
+        //{
+        //    try
+        //    {
+        //        _context.Trips.Add(trip);
+        //        await _context.SaveChangesAsync();
+        //        return true;
+        //    }
+        //    catch
+        //    {
+        //        return false;
+        //    }
+        //}
 
         public async Task<bool> UpdateTripAsync(Trip trip)
         {

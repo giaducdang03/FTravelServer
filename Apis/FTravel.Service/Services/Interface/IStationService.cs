@@ -1,7 +1,9 @@
 ﻿using FTravel.Repositories.Commons;
 using FTravel.Repository.Commons;
+using FTravel.Repository.Commons.Filter;
 using FTravel.Repository.EntityModels;
-using FTravel.Service.BusinessModels;
+using FTravel.Service.BusinessModels.RouteModels;
+using FTravel.Service.BusinessModels.StationModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -21,5 +23,6 @@ namespace FTravel.Service.Services.Interface
         public Task<StationModel> CreateStationService(string stationName, int buscompanyId);
         public Task<int> UpdateStationService(UpdateStationModel updateStation, int stationId);
         public Task<bool> DeleteStationService(int stationId);
+        public Task<List<StationModel>> GetStationByBusCompanyId(int id);
     }
 }
