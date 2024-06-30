@@ -13,6 +13,7 @@ namespace FTravel.Repository.Repositories
     public class TicketRepository : GenericRepository<Ticket>, ITicketRepository
     {
         private readonly FtravelContext _context;
+
         public TicketRepository(FtravelContext context) : base(context)
         {
             _context = context;
@@ -31,5 +32,14 @@ namespace FTravel.Repository.Repositories
                                 .Where(x => x.TripId == tripId)
                                 .ToListAsync();
         }
+
+        public async Task<Ticket> GetTripDetailById(int id)
+        {
+            return await _context.Tickets
+                                .Include(x => x.TicketType)
+                                .FirstOrDefaultAsync(x => x.Id == id);
+        }
+
+        
     }
 }

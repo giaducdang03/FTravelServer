@@ -44,6 +44,26 @@ namespace FTravel.Repository.Repositories
             return _context.BusCompanies.FirstOrDefaultAsync(x => x.Id == id);
         }
 
+        public async Task<int> SoftDeleteBusCompany(int busCompanyId)
+        {
+            try
+            {
+                var bcSoftDelete = await _context.BusCompanies.FirstOrDefaultAsync(x => x.Id == busCompanyId);
+                if (bcSoftDelete != null)
+                {
+                    bcSoftDelete.IsDeleted = true;
+                    var result = await _context.SaveChangesAsync();
+                    return result;
+                }
+                return -1;
+            }
+            catch (Exception ex)
+            {
 
+                return -1;
+            }
+        }
+
+        
     }
 }
