@@ -26,7 +26,7 @@ namespace FTravel.API.Controllers
         }
 
         [HttpGet]
-        //[Authorize]
+        [Authorize]
         public async Task<IActionResult> GetAllTripStatusOpening([FromQuery] PaginationParameter paginationParameter, TripFilter filter)
         {
             try
