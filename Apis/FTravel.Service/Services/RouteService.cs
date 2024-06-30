@@ -132,5 +132,31 @@ namespace FTravel.Service.Services
             return result;
         }
 
+        public async Task<bool> ChangeStationIndex(IEnumerable<ChangeStationModel> changeStation)
+        {
+            if (changeStation.Count() == 2 && changeStation.First().RouteId == changeStation.Last().RouteId)
+            {
+                var listRouteStation = new List<RouteStation>();
+                var routeStationFirst = new RouteStation()
+                {
+                    RouteId = changeStation.First().RouteId,
+                    StationId = changeStation.First().StationId,
+                    StationIndex = changeStation.First().StationIndex,
+                };
+                listRouteStation.Add(routeStationFirst);
+                var routeStationLast = new RouteStation()
+                {
+                    RouteId = changeStation.Last().RouteId,
+                    StationId = changeStation.Last().StationId,
+                    StationIndex = changeStation.Last().StationIndex
+                };
+                listRouteStation.Add(routeStationLast);
+                var result = await _routeRepository.ChangeStationIndex(listRouteStation);
+                return result;
+            }
+            return false;
+        }
+
+
     }
 }

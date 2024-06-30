@@ -23,6 +23,7 @@ namespace FTravel.Repository.Repositories.Interface
         public Task<Route> CreateRoute(Route route);
 
         public Task<int> AddStationForRoute(RouteStation routeStation);
+        public Task<bool> ChangeStationIndex(List<RouteStation> listRouteStation);
 
     }
 }

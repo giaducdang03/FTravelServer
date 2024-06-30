@@ -21,6 +21,7 @@ namespace FTravel.Service.Services.Interface
         public Task<CreateRouteModel> CreateRoute(CreateRouteModel route);
 
         public Task<int> AddStationForRoute(AddStationForRouteModel addStation);
+        public Task<bool> ChangeStationIndex(IEnumerable<ChangeStationModel> changeStation);
 
     }
 }
