@@ -23,6 +23,6 @@ namespace FTravel.Service.BusinessModels.TripModels
         public List<int> TicketTypeIds { get; set; }
 
 
-        public List<TripServiceModel> TripServices { get; set; }
+        public List<CreateTripServiceModel> TripServices { get; set; }
     }
 }

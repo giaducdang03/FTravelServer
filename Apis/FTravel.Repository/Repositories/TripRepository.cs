@@ -22,6 +22,8 @@ namespace FTravel.Repository.Repositories
             var query = _context.Trips.Where(x => x.IsDeleted == false)
                                       .Include(x => x.Route)
                                       .ThenInclude(r => r.BusCompany)
+                                      .Include(x  => x.Route.StartPointNavigation)
+                                      .Include(x => x.Route.EndPointNavigation)
                                       .AsQueryable();
 
             // Apply filtering
@@ -43,6 +45,7 @@ namespace FTravel.Repository.Repositories
             return await _context.Trips
                 .Include(x => x.Tickets)
                 .Include(x => x.Route)
+                .ThenInclude(r => r.BusCompany)
                 .FirstOrDefaultAsync(x => x.Id == id);
         }
 
@@ -103,7 +106,15 @@ namespace FTravel.Repository.Repositories
             {
                 query = query.Where(t => t.EstimatedStartDate == filter.StartDate.Value);
             }
+            if (!string.IsNullOrWhiteSpace(filter.StartPoint))
+            {
+                query = query.Where(t => t.Route.StartPointNavigation.UnsignName.Contains(filter.StartPoint));
+            }
 
+            if (!string.IsNullOrWhiteSpace(filter.EndPoint))
+            {
+                query = query.Where(t => t.Route.EndPointNavigation.UnsignName.Contains(filter.EndPoint));
+            }
             if (!string.IsNullOrWhiteSpace(filter.SortBy))
             {
                 switch (filter.SortBy.ToLower())
@@ -125,5 +136,13 @@ namespace FTravel.Repository.Repositories
 
             return query;
         }
+        public async Task<List<TripService>> GetServiceByTripId(int tripId)
+        {
+            var tripServices = await _context.TripServices
+                                     .Include(ts => ts.Service)
+                                     .Where(ts => ts.TripId == tripId)
+                                     .ToListAsync();
+            return tripServices;
+        } 
     }
 }
