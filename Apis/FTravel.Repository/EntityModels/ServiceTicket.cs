@@ -11,6 +11,8 @@ public partial class ServiceTicket : BaseEntity
 
     public int? Price { get; set; }
 
+    public int? Quantity { get; set; }
+
     public virtual Service? Service { get; set; }
 
     public virtual Ticket? Ticket { get; set; }
