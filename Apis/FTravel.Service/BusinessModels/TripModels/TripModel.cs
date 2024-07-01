@@ -25,5 +25,6 @@ namespace FTravel.Service.BusinessModels.TripModels
         public bool? IsTemplate { get; set; }
         public int? DriverId { get; set; }
         public List<TicketModel> Tickets { get; set; }
+        public List<TripServiceModel> Services { get; set; }
     }
 }
