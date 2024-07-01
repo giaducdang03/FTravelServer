@@ -28,13 +28,24 @@ namespace FTravel.Repository.Repositories
             return ticketType;
         }
 
-        public async Task<Pagination<TicketType>> GetAllTicketType(PaginationParameter paginationParameter)
+        public async Task<Pagination<TicketType>> GetAllTicketType(PaginationParameter paginationParameter, int? routeId)
         {
             var itemCount = await _context.TicketTypes.CountAsync();
-            var items = await _context.TicketTypes.OrderBy(x => x.Name).Skip((paginationParameter.PageIndex - 1) * paginationParameter.PageSize)
-                                    .Take(paginationParameter.PageSize)
-                                    .AsNoTracking()
-                                    .ToListAsync();
+            var items = new List<TicketType>();
+            if (routeId != null)
+            {
+                items = await _context.TicketTypes.Skip((paginationParameter.PageIndex - 1) * paginationParameter.PageSize)
+                    .Take(paginationParameter.PageSize).Where(x => x.RouteId == routeId)
+                    .AsNoTracking()
+                    .ToListAsync();
+            }
+            else
+            {
+                items = await _context.TicketTypes.Skip((paginationParameter.PageIndex - 1) * paginationParameter.PageSize)
+                    .Take(paginationParameter.PageSize)
+                    .AsNoTracking()
+                    .ToListAsync();
+            }
             var result = new Pagination<TicketType>(items, itemCount, paginationParameter.PageIndex, paginationParameter.PageSize);
 
             return result;

@@ -54,9 +54,10 @@ namespace FTravel.Service.Services
             }
         }
 
-        public async Task<Pagination<TicketTypeModel>> GetAllTicketType(PaginationParameter paginationParameter)
+        public async Task<Pagination<TicketTypeModel>> GetAllTicketType(PaginationParameter paginationParameter, int? routeId)
         {
-            var ticketTypes = await _ticketTypeRepository.ToPagination(paginationParameter);
+            //var ticketTypes = await _ticketTypeRepository.ToPagination(paginationParameter);
+            var ticketTypes = await _ticketTypeRepository.GetAllTicketType(paginationParameter, routeId);
             var routeIds = ticketTypes.Select(w => w.RouteId).Where(id => id.HasValue).Select(id => id.Value).ToList();
 
             var routes = await _routeRepository.GetRoutesByIdsAsync(routeIds);
@@ -68,6 +69,7 @@ namespace FTravel.Service.Services
                 if (route != null)
                 {
                     ticketTypeModel.RouteName = route.Name;
+                    ticketTypeModel.RouteId = route.Id;
                 }
                 return ticketTypeModel;
             }).ToList();
