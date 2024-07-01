@@ -106,7 +106,13 @@ namespace FTravel.Repository.Repositories
 
         private DateTime GetCurrentTime() 
         { 
-            return DateTime.UtcNow.AddHours(7); 
+            DateTime utcNow = DateTime.UtcNow;
+
+            TimeZoneInfo vietnamTimeZone = TimeZoneInfo.FindSystemTimeZoneById("SE Asia Standard Time");
+
+            DateTime vietnamTime = TimeZoneInfo.ConvertTimeFromUtc(utcNow, vietnamTimeZone);
+
+            return vietnamTime;
         }
 
         public async Task<IDbContextTransaction> BeginTransactionAsync()

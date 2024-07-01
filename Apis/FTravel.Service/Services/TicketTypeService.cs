@@ -38,13 +38,14 @@ namespace FTravel.Service.Services
 
             try
             {
-                var route = await _routeRepository.GetByIdAsync(ticketTypeModel.RouteId.Value);
+                var route = await _routeRepository.GetByIdAsync(ticketTypeModel.RouteId);
                 if (route == null)
                 {
                     throw new KeyNotFoundException("Route ID không tồn tại");
                 }
                 var map = _mapper.Map<TicketType>(ticketTypeModel);
-                var createdTicketType = await _ticketTypeRepository.CreateTicketTypeAsync(map);
+                //var createdTicketType = await _ticketTypeRepository.CreateTicketTypeAsync(map);
+                var createdTicketType = await _ticketTypeRepository.AddAsync(map);
                 var result = _mapper.Map<CreateTicketTypeModel>(createdTicketType);
                 return result;
             }
@@ -107,11 +108,9 @@ namespace FTravel.Service.Services
                 await _ticketTypeRepository.UpdateAsync(existingTicketType);
                 return true;
             }
-            catch (Exception ex)
+            catch
             {
-                // Log the exception
-                throw new Exception("Xảy ra lỗi khi cập nhật nhà xe");
-                return false;
+                throw new Exception("Xảy ra lỗi khi cập nhật loại vé");
             }
         }
     }
