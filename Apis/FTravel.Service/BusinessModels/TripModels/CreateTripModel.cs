@@ -26,7 +26,7 @@ namespace FTravel.Service.BusinessModels.TripModels
         [Required]
         [MinLength(1, ErrorMessage = "At least one TicketTypeId is required.")]
         public List<int> TicketTypeIds { get; set; }
-        public List<TripServiceModel> TripServices { get; set; }
+        public List<CreateTripServiceModel> TripServices { get; set; }
         public List<CreateTicketTripModel> TripTickets { get; set; }
     }
 }

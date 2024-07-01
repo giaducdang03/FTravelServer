@@ -70,13 +70,20 @@ namespace FTravel.Service.Mapper
 
             CreateMap<Trip, TripModel>()
             .ForMember(dest => dest.RouteName, opt => opt.MapFrom(src => src.Route != null ? src.Route.Name : string.Empty))
-            .ForMember(dest => dest.BusCompanyId, opt => opt.MapFrom(src => src.Route.BusCompany != null ? src.Route.BusCompany.Id: 0))
-            .ForMember(dest => dest.BusCompanyName, opt => opt.MapFrom(src => src.Route.BusCompany != null ? src.Route.BusCompany.Name: string.Empty))
-            .ForMember(dest => dest.Tickets, opt => opt.Ignore());
+            .ForMember(dest => dest.BusCompanyId, opt => opt.MapFrom(src => src.Route.BusCompany != null ? src.Route.BusCompany.Id : 0))
+            .ForMember(dest => dest.BusCompanyName, opt => opt.MapFrom(src => src.Route.BusCompany != null ? src.Route.BusCompany.Name : string.Empty))
+            .ForMember(dest => dest.Tickets, opt => opt.Ignore())
+            .ForMember(dest => dest.Services, opt => opt.Ignore());
 
             CreateMap<Ticket, TicketModel>()
             .ForMember(dest => dest.TicketTypeName, opt => opt.MapFrom(src => src.TicketType.Name))
             .ReverseMap();
+
+            CreateMap<TripService, TripServiceModel>()
+           .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.ServiceId))
+           .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Service.Name))
+           .ForMember(dest => dest.Description, opt => opt.MapFrom(src => src.Service.ShortDescription))
+           .ForMember(dest => dest.ServicePrice, opt => opt.MapFrom(src => src.ServicePrice));
 
             CreateMap<Ticket, CreateTicketTripModel>()
             .ReverseMap();

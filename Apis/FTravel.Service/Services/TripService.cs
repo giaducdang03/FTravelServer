@@ -44,9 +44,17 @@ namespace FTravel.Service.Services
             {
                 filter.Search = StringUtils.ConvertToUnSign(filter.Search);
             }
+            if (!string.IsNullOrEmpty(filter.StartPoint))
+            {
+                filter.StartPoint = StringUtils.ConvertToUnSign(filter.StartPoint);
+            }
+            if (!string.IsNullOrEmpty(filter.EndPoint))
+            {
+                filter.EndPoint = StringUtils.ConvertToUnSign(filter.EndPoint);
+            }
             if (!string.IsNullOrWhiteSpace(filter.TripStatus) && !Enum.TryParse(typeof(TripStatus), filter.TripStatus, true, out var _))
             {
-                throw new ArgumentException("Invalid trip status value");
+                throw new ArgumentException("Trạng thái không hợp lệ");
             }
             var trips = await _tripRepository.GetAllTrips(paginationParameter, filter);
             if (!trips.Any())
@@ -65,12 +73,14 @@ namespace FTravel.Service.Services
         {
             var trip = await _tripRepository.GetTripById(id);
             var tickets = await _ticketRepository.GetAllByTripId(id);
+            var services = await _tripRepository.GetServiceByTripId(id);
             if (trip == null)
             {
                 return null;
             }
             var tripModel = _mapper.Map<TripModel>(trip);
             tripModel.Tickets = _mapper.Map<List<TicketModel>>(tickets);
+            tripModel.Services = _mapper.Map<List<TripServiceModel>>(services);
             return tripModel;
         }
         public async Task<bool> CreateTripAsync(CreateTripModel tripModel)
