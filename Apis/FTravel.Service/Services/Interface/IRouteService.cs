@@ -12,7 +12,7 @@ namespace FTravel.Service.Services.Interface
 {
     public interface IRouteService
     {
-        public Task<Pagination<RouteModel>> GetListRouteAsync(PaginationParameter paginationParameter);
+        public Task<Pagination<RouteModel>> GetListRouteAsync(PaginationParameter paginationParameter, int? routeId);
         public Task<RouteModel?> GetRouteDetailByRouteIdAsync(int routeId);
 
         public Task<int> UpdateRouteAsync(UpdateRouteModel routeUpdate, int id);
