@@ -21,9 +21,9 @@ namespace FTravel.Repository.Repositories
         {
             var query = _context.Trips.Where(x => x.IsDeleted == false)
                                       .Include(x => x.Route)
-                                      .ThenInclude(r => r.BusCompany)
-                                      .Include(x  => x.Route.StartPointNavigation)
+                                      .Include(x => x.Route.StartPointNavigation)
                                       .Include(x => x.Route.EndPointNavigation)
+                                      .Include(r => r.Route.BusCompany)
                                       .AsQueryable();
 
             // Apply filtering
@@ -106,14 +106,14 @@ namespace FTravel.Repository.Repositories
             {
                 query = query.Where(t => t.EstimatedStartDate == filter.StartDate.Value);
             }
-            if (!string.IsNullOrWhiteSpace(filter.StartPoint))
+            if (filter.StartPoint.HasValue)
             {
-                query = query.Where(t => t.Route.StartPointNavigation.UnsignName.Contains(filter.StartPoint));
+                query = query.Where(t => t.Route.StartPointNavigation.Id == filter.StartPoint);
             }
 
-            if (!string.IsNullOrWhiteSpace(filter.EndPoint))
+            if (filter.EndPoint.HasValue)
             {
-                query = query.Where(t => t.Route.EndPointNavigation.UnsignName.Contains(filter.EndPoint));
+                query = query.Where(t => t.Route.EndPointNavigation.Id == filter.EndPoint);
             }
             if (!string.IsNullOrWhiteSpace(filter.SortBy))
             {

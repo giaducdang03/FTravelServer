@@ -44,14 +44,6 @@ namespace FTravel.Service.Services
             {
                 filter.Search = StringUtils.ConvertToUnSign(filter.Search);
             }
-            if (!string.IsNullOrEmpty(filter.StartPoint))
-            {
-                filter.StartPoint = StringUtils.ConvertToUnSign(filter.StartPoint);
-            }
-            if (!string.IsNullOrEmpty(filter.EndPoint))
-            {
-                filter.EndPoint = StringUtils.ConvertToUnSign(filter.EndPoint);
-            }
             if (!string.IsNullOrWhiteSpace(filter.TripStatus) && !Enum.TryParse(typeof(TripStatus), filter.TripStatus, true, out var _))
             {
                 throw new ArgumentException("Trạng thái không hợp lệ");
