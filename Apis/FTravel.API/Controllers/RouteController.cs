@@ -29,11 +29,11 @@ namespace FTravel.API.Controllers
 
         [HttpGet]
         [Authorize(Roles = "ADMIN, BUSCOMPANY")]
-        public async Task<IActionResult> GetListRoute([FromQuery] PaginationParameter paginationParameter)
+        public async Task<IActionResult> GetListRoute([FromQuery] PaginationParameter paginationParameter, [FromQuery(Name = "buscompany-id")] int? buscompanyId)
         {
             try
             {
-                var result = await _routeService.GetListRouteAsync(paginationParameter);
+                var result = await _routeService.GetListRouteAsync(paginationParameter, buscompanyId);
                 if(result == null)
                 {
                     return NotFound(new ResponseModel()

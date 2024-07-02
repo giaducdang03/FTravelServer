@@ -29,13 +29,9 @@ namespace FTravel.Service.Services
             _routeRepository = routeRepository;
             _mapper = mapper;
         }
-        public async Task<Pagination<RouteModel>> GetListRouteAsync(PaginationParameter paginationParameter)
+        public async Task<Pagination<RouteModel>> GetListRouteAsync(PaginationParameter paginationParameter, int? buscompanyId)
         {
-            var routes = await _routeRepository.GetListRoutesAsync(paginationParameter);
-            if(!routes.Any())
-            {
-                return null;
-            }
+            var routes = await _routeRepository.GetListRoutesAsync(paginationParameter, buscompanyId);
 
             var routeModels = routes.Select(x => new RouteModel
             {

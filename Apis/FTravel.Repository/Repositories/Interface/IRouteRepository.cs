@@ -11,7 +11,7 @@ namespace FTravel.Repository.Repositories.Interface
 {
     public interface IRouteRepository : IGenericRepository<Route>
     {
-        public Task<Pagination<Route>> GetListRoutesAsync(PaginationParameter paginationParameter);
+        public Task<Pagination<Route>> GetListRoutesAsync(PaginationParameter paginationParameter, int? buscompanyId);
 
         public Task<Route?> GetRouteDetailByRouteIdAsync(int routeId);
 

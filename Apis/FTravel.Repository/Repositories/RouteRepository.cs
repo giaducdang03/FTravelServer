@@ -28,16 +28,33 @@ namespace FTravel.Repository.Repositories
             return route;
         }
 
-        public async Task<Pagination<Route>> GetListRoutesAsync(PaginationParameter paginationParameter)
+        public async Task<Pagination<Route>> GetListRoutesAsync(PaginationParameter paginationParameter, int? buscompanyId)
         {
             var itemCount = await _context.Routes.CountAsync();
-            var items = await _context.Routes.Include(x => x.BusCompany)
-                                            .Include(x => x.StartPointNavigation)
-                                            .Include(x => x.EndPointNavigation)
-                                            .Skip((paginationParameter.PageIndex - 1) * paginationParameter.PageSize)
-                                            .Take(paginationParameter.PageSize)
-                                            .AsNoTracking()
-                                            .ToListAsync();
+            var items = new List<Route>();
+            if (buscompanyId != null) 
+            {
+                items = await _context.Routes.Include(x => x.BusCompany).Where(x => x.BusCompanyId == buscompanyId)
+                                                .Include(x => x.StartPointNavigation)
+                                                .Include(x => x.EndPointNavigation)
+                                                .Skip((paginationParameter.PageIndex - 1) * paginationParameter.PageSize)
+                                                .Take(paginationParameter.PageSize)
+                                                .AsNoTracking()
+                                                .ToListAsync();
+            }
+            else
+            {
+                items = await _context.Routes.Include(x => x.BusCompany)
+                                                .Include(x => x.StartPointNavigation)
+                                                .Include(x => x.EndPointNavigation)
+                                                .Skip((paginationParameter.PageIndex - 1) * paginationParameter.PageSize)
+                                                .Take(paginationParameter.PageSize)
+                                                .AsNoTracking()
+                                                .ToListAsync();
+            }
+
+            
+
             var result = new Pagination<Route>(items, itemCount, paginationParameter.PageIndex, paginationParameter.PageSize);
             return result;
         }
