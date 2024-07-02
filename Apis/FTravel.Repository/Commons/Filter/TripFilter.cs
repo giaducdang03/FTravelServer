@@ -14,9 +14,9 @@ namespace FTravel.Repository.Commons.Filter
         [FromQuery(Name = "trip-start-date")]
         public DateTime? StartDate { get; set; }
         [FromQuery(Name = "trip-start-point")]
-        public string StartPoint { get; set; }
+        public int? StartPoint { get; set; }
         [FromQuery(Name = "trip-end-point")]
-        public string EndPoint {  get; set; }
+        public int? EndPoint {  get; set; }
 
     }
 }
