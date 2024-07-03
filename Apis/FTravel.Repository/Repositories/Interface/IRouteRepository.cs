@@ -1,5 +1,6 @@
 ﻿using FTravel.Repositories.Commons;
 using FTravel.Repository.Commons;
+using FTravel.Repository.Commons.Filter;
 using FTravel.Repository.EntityModels;
 using System;
 using System.Collections.Generic;
@@ -11,7 +12,7 @@ namespace FTravel.Repository.Repositories.Interface
 {
     public interface IRouteRepository : IGenericRepository<Route>
     {
-        public Task<Pagination<Route>> GetListRoutesAsync(PaginationParameter paginationParameter, int? buscompanyId);
+        public Task<Pagination<Route>> GetListRoutesAsync(PaginationParameter paginationParameter, int? buscompanyId, RouteFilter routeFilter);
 
         public Task<Route?> GetRouteDetailByRouteIdAsync(int routeId);
 
