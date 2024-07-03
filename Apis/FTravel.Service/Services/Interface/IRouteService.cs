@@ -1,5 +1,6 @@
 ﻿using FTravel.Repositories.Commons;
 using FTravel.Repository.Commons;
+using FTravel.Repository.Commons.Filter;
 using FTravel.Repository.EntityModels;
 using FTravel.Service.BusinessModels.RouteModels;
 using System;
@@ -12,7 +13,7 @@ namespace FTravel.Service.Services.Interface
 {
     public interface IRouteService
     {
-        public Task<Pagination<RouteModel>> GetListRouteAsync(PaginationParameter paginationParameter, int? routeId);
+        public Task<Pagination<RouteModel>> GetListRouteAsync(PaginationParameter paginationParameter, int? routeId, RouteFilter routeFilter );
         public Task<RouteModel?> GetRouteDetailByRouteIdAsync(int routeId);
 
         public Task<int> UpdateRouteAsync(UpdateRouteModel routeUpdate, int id);
