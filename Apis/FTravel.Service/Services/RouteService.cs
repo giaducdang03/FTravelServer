@@ -45,6 +45,7 @@ namespace FTravel.Service.Services
                 EndPoint = x.EndPointNavigation.Name,
                 Status = x.Status,
                 BusCompanyName = x.BusCompany.Name,
+                BusCompanyImg = x.BusCompany.ImgUrl,
                 IsDeleted = x.IsDeleted,
             }).ToList();
             return new Pagination<RouteModel>(routeModels, 
