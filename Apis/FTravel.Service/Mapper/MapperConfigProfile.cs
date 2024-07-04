@@ -10,6 +10,7 @@ using FTravel.Service.BusinessModels.ServiceModels;
 using FTravel.Service.BusinessModels.StationModels;
 using FTravel.Service.BusinessModels.TicketModels;
 using FTravel.Service.BusinessModels.TripModels;
+using FTravel.Service.Services;
 using FTravel.Service.Utils;
 using System;
 using System.Collections.Generic;
@@ -25,6 +26,10 @@ namespace FTravel.Service.Mapper
         {
             // add mapper model
             CreateMap<BusCompany, BuscompanyModel>().ReverseMap();
+
+            CreateMap<TicketServiceModel, ServiceTicket>().ReverseMap();
+
+            CreateMap<CreateTicketModel, Ticket>().ReverseMap();
 
             CreateMap<CreateRouteModel, Route>().ReverseMap();
 

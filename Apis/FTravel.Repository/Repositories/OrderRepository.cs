@@ -52,5 +52,24 @@ namespace FTravel.Repository.Repositories
             return result;
                                             
         }
+
+        public async Task<bool> CheckServiceInTrip(int tripId, int serviceId)
+        {
+            var trip = _context.Trips.Include(x => x.TripServices)
+                                                          .Where(x => x.Id == tripId)
+                                                          .FirstOrDefault();
+                                                          
+
+            foreach (var item in trip.TripServices)
+            {
+                if(item.ServiceId == serviceId)
+                {
+                    return true;
+                }
+
+               
+            }
+            return false;
+        }
     }
 }
