@@ -104,6 +104,15 @@ namespace FTravel.Repository.Repositories
             return await _dbContext.SaveChangesAsync();
         }
 
+        public async Task<int> PermanentDeletedListAsync(List<TEntity> entities)
+        {
+            foreach (var entity in entities)
+            {
+                _dbSet.Remove(entity);
+            }
+            return await _dbContext.SaveChangesAsync();
+        }
+
         private DateTime GetCurrentTime() 
         { 
             DateTime utcNow = DateTime.UtcNow;
