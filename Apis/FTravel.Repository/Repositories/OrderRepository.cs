@@ -3,12 +3,6 @@ using FTravel.Repository.EntityModels;
 using FTravel.Repository.Repositories.Interface;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace FTravel.Repository.Repositories
 {
@@ -19,11 +13,6 @@ namespace FTravel.Repository.Repositories
         public OrderRepository(FtravelContext context) : base(context)
         {
             _context = context;
-        }
-
-        public async Task<IDbContextTransaction> BeginTransactionAsync()
-        {
-            return await _context.Database.BeginTransactionAsync();
         }
 
         public async Task<Order> GetOrderByIdAsync(int id)
@@ -53,24 +42,6 @@ namespace FTravel.Repository.Repositories
                                             
         }
 
-        public async Task<bool> CheckServiceInTrip(int tripId, int serviceId)
-        {
-            var trip = _context.Trips.Include(x => x.TripServices)
-                                                          .Where(x => x.Id == tripId)
-                                                          .FirstOrDefault();
-                                                          
-
-            foreach (var item in trip.TripServices)
-            {
-                if(item.ServiceId == serviceId)
-                {
-                    return true;
-                }
-
-               
-            }
-            return false;
-        }
 
         public async Task<List<OrderDetail>> StatisticForDashBoard()
         {

@@ -14,6 +14,6 @@ namespace FTravel.Repository.Repositories.Interface
         public Task<Ticket> GetTripDetailById(int id);
         public Task<Ticket> CreateTicket(Ticket ticket);
         
-        
+        public Task<Ticket> GetTicketByIdAsync(int ticketId);
     }
 }

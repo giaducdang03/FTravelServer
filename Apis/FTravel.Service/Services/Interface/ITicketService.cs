@@ -14,7 +14,7 @@ namespace FTravel.Service.Services.Interface
         
         public Task<TicketModel> GetTicketByIdAsync(int id);
 
-        public Task<OrderModel> BuyTicket(BuyTicketModel model);
+        //public Task<OrderModel> BuyTicketAsync(BuyTicketModel model);
 
 
         

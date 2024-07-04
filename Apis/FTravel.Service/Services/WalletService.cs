@@ -277,67 +277,67 @@ namespace FTravel.Service.Services
 
         public async Task<int> ExecutePaymentAsync(int walletId, TransactionType transactionType, int amount, int transactionId)
         {
-            using (var dbTransaction = await _walletRepository.BeginTransactionAsync())
+            //using (var dbTransaction = await _walletRepository.BeginTransactionAsync())
+            //{
+            //    try
+            //    {
+            if (amount <= 0)
             {
-                try
+                throw new Exception("Amount must > 0.");
+            }
+            // get wallet
+            var wallet = await _walletRepository.GetWalletByIdAsync(walletId);
+            if (wallet != null)
+            {
+                if (transactionType.ToString() == TransactionType.OUT.ToString())
                 {
-                    if (amount <= 0)
+                    // check account balance
+                    var currentAccountBalance = wallet.AccountBalance;
+                    if (currentAccountBalance >= amount)
                     {
-                        throw new Exception("Amount must > 0.");
-                    }
-                    // get wallet
-                    var wallet = await _walletRepository.GetWalletByIdAsync(walletId);
-                    if (wallet != null)
-                    {
-                        if (transactionType.ToString() == TransactionType.OUT.ToString())
+                        // update new account balance
+
+                        currentAccountBalance -= amount;
+                        wallet.AccountBalance = currentAccountBalance;
+                        await _walletRepository.UpdateAsync(wallet);
+
+                        // update transaction
+                        var currentTransaction = await _transactionRepository.GetByIdAsync(transactionId);
+                        if (currentTransaction != null)
                         {
-                            // check account balance
-                            var currentAccountBalance = wallet.AccountBalance;
-                            if (currentAccountBalance >= amount)
-                            {
-                                // update new account balance
+                            currentTransaction.TransactionDate = TimeUtils.GetTimeVietNam();
+                            currentTransaction.Status = TransactionStatus.SUCCESS.ToString();
 
-                                currentAccountBalance -= amount;
-                                wallet.AccountBalance = currentAccountBalance;
-                                await _walletRepository.UpdateAsync(wallet);
+                            await _transactionRepository.UpdateAsync(currentTransaction);
 
-                                // update transaction
-                                var currentTransaction = await _transactionRepository.GetByIdAsync(transactionId);
-                                if (currentTransaction != null)
-                                {
-                                    currentTransaction.TransactionDate = TimeUtils.GetTimeVietNam();
-                                    currentTransaction.Status = TransactionStatus.SUCCESS.ToString();
-
-                                    await _transactionRepository.UpdateAsync(currentTransaction);
-
-                                    await dbTransaction.CommitAsync();
-                                    return walletId;
-                                }
-                            }
-                            else
-                            {
-                                var currentTransaction = await _transactionRepository.GetByIdAsync(transactionId);
-                                if (currentTransaction != null)
-                                {
-                                    currentTransaction.TransactionDate = TimeUtils.GetTimeVietNam();
-                                    currentTransaction.Status = TransactionStatus.FAILED.ToString();
-
-                                    await _transactionRepository.UpdateAsync(currentTransaction);
-
-                                    await dbTransaction.CommitAsync();
-                                    return walletId;
-                                }
-                            }
+                            //await dbTransaction.CommitAsync();
+                            return walletId;
                         }
                     }
-                    return 0;
-                }
-                catch
-                {
-                    await dbTransaction.RollbackAsync();
-                    throw;
+                    else
+                    {
+                        var currentTransaction = await _transactionRepository.GetByIdAsync(transactionId);
+                        if (currentTransaction != null)
+                        {
+                            currentTransaction.TransactionDate = TimeUtils.GetTimeVietNam();
+                            currentTransaction.Status = TransactionStatus.FAILED.ToString();
+
+                            await _transactionRepository.UpdateAsync(currentTransaction);
+
+                            //await dbTransaction.CommitAsync();
+                            return walletId;
+                        }
+                    }
                 }
             }
+            return 0;
+            //    }
+            //    catch
+            //    {
+            //        await dbTransaction.RollbackAsync();
+            //        throw;
+            //    }
+            //}
         }
 
         public async Task<bool> CheckWalletPaymentAysnc(int walletId, int amount)

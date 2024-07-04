@@ -12,7 +12,7 @@ namespace FTravel.Service.BusinessModels.OrderModels
 
         public int? Quantity { get; set; }
 
-        public int? Price { get; set; }
+        //public int? Price { get; set; }
 
 
     }

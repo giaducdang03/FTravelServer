@@ -29,7 +29,7 @@ namespace FTravel.API.Controllers
 
 
         [HttpGet]
-        [Authorize(Roles = "ADMIN, BUSCOMPANY")]
+        [Authorize]
         public async Task<IActionResult> GetListRoute([FromQuery] PaginationParameter paginationParameter, [FromQuery(Name = "buscompany-id")] int? buscompanyId, [FromQuery] RouteFilter routeFilter)
         {
             try
@@ -70,7 +70,7 @@ namespace FTravel.API.Controllers
         }
 
         [HttpGet("{id}")]
-        [Authorize(Roles = "ADMIN, BUSCOMPANY")]
+        [Authorize]
         public async Task<IActionResult> GetRouteDetails(int id)
         {
             try
