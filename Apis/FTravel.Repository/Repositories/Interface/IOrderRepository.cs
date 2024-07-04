@@ -15,7 +15,8 @@ namespace FTravel.Repository.Repositories.Interface
         public Task<List<Order>> GetAllOrderAsync();
         public Task<List<OrderDetail>> GetOrderDetailByIdAsync(int id);
         public Task<bool> CheckServiceInTrip(int tripId, int serviceId);
-       
+        public Task<List<OrderDetail>> StatisticForDashBoard();
+
 
     }
 }

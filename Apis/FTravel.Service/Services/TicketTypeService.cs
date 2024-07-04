@@ -38,13 +38,14 @@ namespace FTravel.Service.Services
 
             try
             {
-                var route = await _routeRepository.GetByIdAsync(ticketTypeModel.RouteId.Value);
+                var route = await _routeRepository.GetByIdAsync(ticketTypeModel.RouteId);
                 if (route == null)
                 {
                     throw new KeyNotFoundException("Route ID không tồn tại");
                 }
                 var map = _mapper.Map<TicketType>(ticketTypeModel);
-                var createdTicketType = await _ticketTypeRepository.CreateTicketTypeAsync(map);
+                //var createdTicketType = await _ticketTypeRepository.CreateTicketTypeAsync(map);
+                var createdTicketType = await _ticketTypeRepository.AddAsync(map);
                 var result = _mapper.Map<CreateTicketTypeModel>(createdTicketType);
                 return result;
             }
@@ -54,9 +55,10 @@ namespace FTravel.Service.Services
             }
         }
 
-        public async Task<Pagination<TicketTypeModel>> GetAllTicketType(PaginationParameter paginationParameter)
+        public async Task<Pagination<TicketTypeModel>> GetAllTicketType(PaginationParameter paginationParameter, int? routeId)
         {
-            var ticketTypes = await _ticketTypeRepository.ToPagination(paginationParameter);
+            //var ticketTypes = await _ticketTypeRepository.ToPagination(paginationParameter);
+            var ticketTypes = await _ticketTypeRepository.GetAllTicketType(paginationParameter, routeId);
             var routeIds = ticketTypes.Select(w => w.RouteId).Where(id => id.HasValue).Select(id => id.Value).ToList();
 
             var routes = await _routeRepository.GetRoutesByIdsAsync(routeIds);
@@ -68,6 +70,7 @@ namespace FTravel.Service.Services
                 if (route != null)
                 {
                     ticketTypeModel.RouteName = route.Name;
+                    ticketTypeModel.RouteId = route.Id;
                 }
                 return ticketTypeModel;
             }).ToList();
@@ -105,11 +108,9 @@ namespace FTravel.Service.Services
                 await _ticketTypeRepository.UpdateAsync(existingTicketType);
                 return true;
             }
-            catch (Exception ex)
+            catch
             {
-                // Log the exception
-                throw new Exception("Xảy ra lỗi khi cập nhật nhà xe");
-                return false;
+                throw new Exception("Xảy ra lỗi khi cập nhật loại vé");
             }
         }
     }

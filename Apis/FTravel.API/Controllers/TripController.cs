@@ -1,5 +1,6 @@
 ﻿using FTravel.API.ViewModels.ResponseModels;
 using FTravel.Repository.Commons;
+using FTravel.Repository.Commons.Filter;
 using FTravel.Repository.EntityModels;
 using FTravel.Service.BusinessModels.TripModels;
 using FTravel.Service.Enums;
@@ -25,13 +26,12 @@ namespace FTravel.API.Controllers
         }
 
         [HttpGet]
-        [Authorize(Roles = "ADMIN, BUSCOMPANY")]
-
-        public async Task<IActionResult> GetAllTripStatusOpening([FromQuery] PaginationParameter paginationParameter)
+        [Authorize]
+        public async Task<IActionResult> GetAllTripStatusOpening([FromQuery] PaginationParameter paginationParameter, TripFilter filter)
         {
             try
             {
-                var result = await _tripService.GetAllTripAsync(paginationParameter);
+                var result = await _tripService.GetAllTripAsync(paginationParameter, filter);
 
                 if (result == null)
                 {
@@ -68,7 +68,7 @@ namespace FTravel.API.Controllers
         }
 
         [HttpGet("{id}")]
-        [Authorize(Roles = "ADMIN, BUSCOMPANY")]
+        [Authorize]
 
         public async Task<IActionResult> GetTripDetailByIdStatusOpening(int id)
         {

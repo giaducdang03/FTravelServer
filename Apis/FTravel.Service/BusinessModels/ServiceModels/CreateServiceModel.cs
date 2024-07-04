@@ -4,24 +4,24 @@ namespace FTravel.Service.BusinessModels.ServiceModels
 {
     public class CreateServiceModel
     {
-        [Required(ErrorMessage = "RouteId is required")]
+        [Required(ErrorMessage = "Thiếu id của tuyến đường")]
         public int RouteId { get; set; }
 
-        [Required(ErrorMessage = "StationId is required")]
+        [Required(ErrorMessage = "Thiếu id của trạm")]
         public int StationId { get; set; }
 
-        [Required(ErrorMessage = "Name is required")]
+        [Required(ErrorMessage = "Thiếu tên của dịch vụ")]
         public string Name { get; set; }
 
-        [Range(0, int.MaxValue, ErrorMessage = "Price must be a positive number")]
+        [Range(0, 999, ErrorMessage = "Giá dịch vụ không được quá 999 token(999000 vnđ)")]
         public decimal DefaultPrice { get; set; }
 
         public string? ImgUrl { get; set; }
 
-        [StringLength(100, ErrorMessage = "ShortDescription cannot exceed 100 characters")]
+        [StringLength(100, ErrorMessage = "mô tả ngắn không được quá 100 ký tự")]
         public string? ShortDescription { get; set; }
 
-        [StringLength(500, ErrorMessage = "FullDescription cannot exceed 500 characters")]
+        [StringLength(500, ErrorMessage = "mô tả dài không được quá 500 ký tự")]
         public string? FullDescription { get; set; }
     }
 }

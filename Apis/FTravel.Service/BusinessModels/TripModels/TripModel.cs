@@ -12,8 +12,10 @@ namespace FTravel.Service.BusinessModels.TripModels
         public int Id { get; set; }
         public string? UnsignName { get; set; }
         public string Name { get; set; }
-        public int? RouteId { get; set; }   
-        public string? RouteName { get; set; } 
+        public int RouteId {  get; set; }
+        public string? RouteName { get; set; }
+        public int BusCompanyId { get; set; }
+        public string BusCompanyName { get; set; }
         public DateTime? OpenTicketDate { get; set; }
         public DateTime? EstimatedStartDate { get; set; }
         public DateTime? EstimatedEndDate { get; set; }
@@ -23,5 +25,6 @@ namespace FTravel.Service.BusinessModels.TripModels
         public bool? IsTemplate { get; set; }
         public int? DriverId { get; set; }
         public List<TicketModel> Tickets { get; set; }
+        public List<TripServiceModel> Services { get; set; }
     }
 }

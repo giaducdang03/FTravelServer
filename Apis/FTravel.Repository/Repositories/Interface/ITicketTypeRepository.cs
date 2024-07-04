@@ -11,7 +11,7 @@ namespace FTravel.Repository.Repositories.Interface
 {
     public interface ITicketTypeRepository : IGenericRepository<TicketType>
     {
-        public Task<Pagination<TicketType>> GetAllTicketType(PaginationParameter paginationParameter);
+        public Task<Pagination<TicketType>> GetAllTicketType(PaginationParameter paginationParameter, int? routeId);
 
         public Task<TicketType> GetTicketTypeByIdAsync(int id);
 

@@ -1,10 +1,12 @@
 ﻿using AutoMapper;
 using FTravel.Repositories.Commons;
 using FTravel.Repository.Commons;
+using FTravel.Repository.Commons.Filter;
 using FTravel.Repository.EntityModels;
 using FTravel.Repository.Repositories;
 using FTravel.Repository.Repositories.Interface;
 using FTravel.Service.BusinessModels.RouteModels;
+using FTravel.Service.BusinessModels.ServiceModels;
 using FTravel.Service.Enums;
 using FTravel.Service.Services.Interface;
 using FTravel.Service.Utils;
@@ -28,13 +30,9 @@ namespace FTravel.Service.Services
             _routeRepository = routeRepository;
             _mapper = mapper;
         }
-        public async Task<Pagination<RouteModel>> GetListRouteAsync(PaginationParameter paginationParameter)
+        public async Task<Pagination<RouteModel>> GetListRouteAsync(PaginationParameter paginationParameter, int? buscompanyId, RouteFilter routeFilter)
         {
-            var routes = await _routeRepository.GetListRoutesAsync(paginationParameter);
-            if(!routes.Any())
-            {
-                return null;
-            }
+            var routes = await _routeRepository.GetListRoutesAsync(paginationParameter, buscompanyId, routeFilter);
 
             var routeModels = routes.Select(x => new RouteModel
             {
@@ -85,6 +83,7 @@ namespace FTravel.Service.Services
             routeModel.EndPoint = route.EndPointNavigation.Name;
             routeModel.BusCompanyName = route.BusCompany.Name;
             routeModel.RouteStations = _mapper.Map<List<RouteStationModel>>(route.RouteStations);
+            routeModel.Services = _mapper.Map<List<ServiceModel>>(route.Services);
             return routeModel;
 
         }
@@ -129,6 +128,32 @@ namespace FTravel.Service.Services
             var result = _routeRepository.AddStationForRoute(addRouteStation);
             return result;
         }
+
+        public async Task<bool> ChangeStationIndex(IEnumerable<ChangeStationModel> changeStation)
+        {
+            if (changeStation.Count() == 2 && changeStation.First().RouteId == changeStation.Last().RouteId)
+            {
+                var listRouteStation = new List<RouteStation>();
+                var routeStationFirst = new RouteStation()
+                {
+                    RouteId = changeStation.First().RouteId,
+                    StationId = changeStation.First().StationId,
+                    StationIndex = changeStation.First().StationIndex,
+                };
+                listRouteStation.Add(routeStationFirst);
+                var routeStationLast = new RouteStation()
+                {
+                    RouteId = changeStation.Last().RouteId,
+                    StationId = changeStation.Last().StationId,
+                    StationIndex = changeStation.Last().StationIndex
+                };
+                listRouteStation.Add(routeStationLast);
+                var result = await _routeRepository.ChangeStationIndex(listRouteStation);
+                return result;
+            }
+            return false;
+        }
+
 
     }
 }

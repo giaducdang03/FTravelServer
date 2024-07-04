@@ -71,5 +71,21 @@ namespace FTravel.Repository.Repositories
             }
             return false;
         }
+
+        public async Task<List<OrderDetail>> StatisticForDashBoard()
+        {
+            var result = await _context.OrderDetails.Include(x => x.Ticket)
+                                            .Include(x => x.Ticket.Trip)
+                                            .Include(x => x.Ticket.Trip.Route)
+                                            .Include(x => x.Ticket.Trip.Route.BusCompany)
+                                            .Include(x => x.Ticket.Trip.Route.StartPointNavigation)
+                                            .Include(x => x.Ticket.Trip.Route.EndPointNavigation)
+                                            .Include(x => x.Order)
+                                            .Include(x => x.Order.Customer)
+                                            .ToListAsync();
+            return result;
+        }
+
+
     }
 }
