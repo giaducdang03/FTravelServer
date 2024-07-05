@@ -13,6 +13,7 @@ namespace FTravel.Service.BusinessModels.TicketModels
         public int Id { get; set; }
         public int? TripId { get; set; }
         public string? SeatCode { get; set; }
+        public int? Price { get; set; }
         public string? Status { get; set; }
         public int? TicketTypeId { get; set; }
         public string? TicketTypeName { get; set; }
