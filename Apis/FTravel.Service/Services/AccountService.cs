@@ -177,7 +177,7 @@ namespace FTravel.Service.Services
                             throw;
                         }
                     }
-                        
+
                 }
             }
             throw new Exception("Tài khoản không tồn tại.");
@@ -211,7 +211,7 @@ namespace FTravel.Service.Services
             var user = await _userRepository.GetUserByEmailAsync(email);
             if (user != null && !fcmToken.IsNullOrEmpty())
             {
-                if (user.Fcmtoken != fcmToken) 
+                if (user.Fcmtoken != fcmToken)
                 {
                     user.Fcmtoken = fcmToken;
                     var result = await _userRepository.UpdateAsync(user);
@@ -225,12 +225,12 @@ namespace FTravel.Service.Services
         {
             var existAccount = await _accountRepo.GetByIdAsync(accountModel.AccountId);
 
-            if (existAccount != null) 
+            if (existAccount != null)
             {
                 var newUnsignName = StringUtils.ConvertToUnSign(accountModel.FullName);
                 var accountRole = await _roleRepository.GetByIdAsync(existAccount.RoleId.Value);
-                if (accountRole != null) 
-                { 
+                if (accountRole != null)
+                {
                     // update account
                     existAccount.FullName = accountModel.FullName;
                     existAccount.UnsignFullName = newUnsignName;
@@ -238,7 +238,11 @@ namespace FTravel.Service.Services
                     existAccount.Dob = accountModel.Dob;
                     existAccount.Address = accountModel.Address;
                     existAccount.Gender = accountModel.Gender;
-                    
+                    if (!accountModel.AvatarUrl.IsNullOrEmpty())
+                    {
+                        existAccount.AvatarUrl = accountModel.AvatarUrl;
+                    }
+
 
                     if (accountRole.Name == RoleEnums.CUSTOMER.ToString())
                     {
@@ -247,7 +251,7 @@ namespace FTravel.Service.Services
                             try
                             {
                                 var existCustomer = await _customerRepository.GetCustomerByEmailAsync(existAccount.Email);
-                                if (existCustomer != null) 
+                                if (existCustomer != null)
                                 {
                                     // update customer
                                     existCustomer.FullName = accountModel.FullName;
@@ -270,7 +274,7 @@ namespace FTravel.Service.Services
                                 throw;
                             }
                         }
-                    } 
+                    }
                     else
                     {
                         await _accountRepo.UpdateAsync(existAccount);
@@ -278,7 +282,7 @@ namespace FTravel.Service.Services
                     }
                 }
                 return false;
-            } 
+            }
             else
             {
                 throw new Exception("Tài khoản không tồn tại.");

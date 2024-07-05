@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using FTravel.Repositories.Commons;
 using FTravel.Repository.Commons;
+using FTravel.Repository.Commons.Filter;
 using FTravel.Repository.EntityModels;
 using FTravel.Repository.Repositories;
 using FTravel.Repository.Repositories.Interface;
@@ -30,13 +31,9 @@ namespace FTravel.Service.Services
             _routeRepository = routeRepository;
             _mapper = mapper;
         }
-        public async Task<Pagination<RouteModel>> GetListRouteAsync(PaginationParameter paginationParameter)
+        public async Task<Pagination<RouteModel>> GetListRouteAsync(PaginationParameter paginationParameter, int? buscompanyId, RouteFilter routeFilter)
         {
-            var routes = await _routeRepository.GetListRoutesAsync(paginationParameter);
-            if(!routes.Any())
-            {
-                return null;
-            }
+            var routes = await _routeRepository.GetListRoutesAsync(paginationParameter, buscompanyId, routeFilter);
 
             var routeModels = routes.Select(x => new RouteModel
             {
@@ -49,6 +46,7 @@ namespace FTravel.Service.Services
                 EndPoint = x.EndPointNavigation.Name,
                 Status = x.Status,
                 BusCompanyName = x.BusCompany.Name,
+                BusCompanyImg = x.BusCompany.ImgUrl,
                 IsDeleted = x.IsDeleted,
             }).ToList();
             return new Pagination<RouteModel>(routeModels, 

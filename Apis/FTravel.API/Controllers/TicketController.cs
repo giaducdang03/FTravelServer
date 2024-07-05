@@ -1,4 +1,6 @@
 ﻿using FTravel.API.ViewModels.ResponseModels;
+using FTravel.Service.BusinessModels.OrderModels;
+using FTravel.Service.BusinessModels.TicketModels;
 using FTravel.Service.Services.Interface;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -10,6 +12,8 @@ namespace FTravel.API.Controllers
     public class TicketController : ControllerBase
     {
         private readonly ITicketService _ticketService;
+        private readonly IOrderService orderService;
+
 
         public TicketController(ITicketService ticketService)
         {
@@ -17,7 +21,7 @@ namespace FTravel.API.Controllers
         }
 
         [HttpGet("{id}")]
-        
+
         public async Task<IActionResult> GetTicketById(int id)
         {
             try
@@ -44,5 +48,6 @@ namespace FTravel.API.Controllers
                 });
             }
         }
+
     }
 }

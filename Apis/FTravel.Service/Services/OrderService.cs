@@ -22,19 +22,28 @@ namespace FTravel.Service.Services
         private readonly IMapper _mapper;
         private readonly IBusCompanyRepository _busCompanyRepository;
         private readonly ICustomerRepository _customerRepository;
+        private readonly ITicketRepository _ticketRepository;
+        private readonly ITripRepository _tripRepository;
+        private readonly IServiceTicketRepository _serviceTicketRepository;
 
         public OrderService(IOrderRepository orderRepository,
             ITransactionService transactionService,
             IWalletService walletService,
             IBusCompanyRepository busCompanyRepository,
             ICustomerRepository customerRepository,
-            IMapper mapper)
+            IMapper mapper,
+            ITicketRepository ticketRepository,
+            ITripRepository tripRepository,
+            IServiceTicketRepository serviceTicketRepository)
         {
             _orderRepository = orderRepository;
             _transactionService = transactionService;
             _walletService = walletService;
             _busCompanyRepository = busCompanyRepository;
             _customerRepository = customerRepository;
+            _ticketRepository = ticketRepository;
+            _tripRepository = tripRepository;
+            _serviceTicketRepository = serviceTicketRepository;
             _mapper = mapper;
         }
 
@@ -119,12 +128,12 @@ namespace FTravel.Service.Services
                             order.PaymentStatus = currentTransaction.Status;
 
                             await _orderRepository.UpdateAsync(order);
-                            
+
                             if (currentTransaction.Status == TransactionStatus.SUCCESS.ToString())
                             {
                                 return PaymentOrderStatus.SUCCESS;
                             }
-                            
+
                             // wallet not enough account balance
                             return PaymentOrderStatus.NOTPAYMENT;
                         }
@@ -144,7 +153,7 @@ namespace FTravel.Service.Services
         {
             var orderList = await _orderRepository.GetAllOrderAsync();
             List<OrderViewModel> listOrders = _mapper.Map<List<OrderViewModel>>(orderList);
-            if(listOrders.Count > 0)
+            if (listOrders.Count > 0)
             {
                 return listOrders;
             }
@@ -154,9 +163,9 @@ namespace FTravel.Service.Services
         {
             var findOrderDetail = await _orderRepository.GetOrderDetailByIdAsync(orderId);
             var findOrder = await _orderRepository.GetByIdAsync(orderId);
-            if(findOrderDetail == null)
+            if (findOrderDetail == null)
             {
-                return null; 
+                return null;
             }
             var result = new OrderViewModel()
             {
@@ -169,7 +178,7 @@ namespace FTravel.Service.Services
                 PaymentDate = (DateTime)findOrder.PaymentDate,
                 PaymentOrderStatus = findOrder.PaymentStatus.ToString(),
                 CustomerName = findOrder.Customer.FullName,
-                OrderDetailModel =  _mapper.Map<List<OrderDetailModel>>(findOrderDetail),
+                OrderDetailModel = _mapper.Map<List<OrderDetailModel>>(findOrderDetail),
             };
             return result;
         }
@@ -209,5 +218,155 @@ namespace FTravel.Service.Services
             return result;
         }
 
+        public async Task<ResponseOrderModel> BuyTicketAsync(BuyTicketModel buyTicketModel)
+        {
+            var ticketBuy = await _ticketRepository.GetTicketByIdAsync(buyTicketModel.TicketId);
+
+            if (ticketBuy != null)
+            {
+                if (ticketBuy.Status == TicketStatus.SOLD.ToString()) 
+                {
+                    throw new Exception("Vé này đã được bán.");
+                }
+
+                var customer = await _customerRepository.GetByIdAsync(buyTicketModel.CustomerId);
+
+                if (customer == null)
+                {
+                    throw new Exception("Người dùng không tồn tại.");
+                }
+
+                using (var orderTransaction = await _orderRepository.BeginTransactionAsync())
+                {
+                    try
+                    {
+                        var trip = await _tripRepository.GetTripById(ticketBuy.TripId.Value);
+
+                        if (trip != null)
+                        {
+                            var listServiceOnTrip = await _tripRepository.GetServiceByTripId(trip.Id);
+                            if (listServiceOnTrip.Any())
+                            {
+                                int totalPrice = 0;
+
+                                if (buyTicketModel.Services.Any())
+                                {
+                                    bool checkServices = listServiceOnTrip.Any(item1 => buyTicketModel.Services.Any(item2 => item1.ServiceId == item2.Id));
+                                    if (checkServices)
+                                    {
+                                        var buyServices = listServiceOnTrip.Where(item1 => buyTicketModel.Services.Any(item2 => item1.ServiceId == item2.Id)).ToList();
+
+                                        var serviceTickets = new List<ServiceTicket>();
+
+                                        foreach (var serviceItem in buyServices)
+                                        {
+                                            //var quantityService = buyTicketModel.Services.First(x => x.Id == serviceItem.Id).Quantity;
+                                            var quantityService = buyTicketModel.Services.First(x => x.Id == serviceItem.ServiceId)?.Quantity ?? 0;
+                                            totalPrice += (serviceItem.ServicePrice ?? 0) * quantityService;
+                                            var newSerivceTicket = new ServiceTicket
+                                            {
+                                                ServiceId = serviceItem.ServiceId,
+                                                TicketId = ticketBuy.Id,
+                                                Price = serviceItem.ServicePrice,
+                                                Quantity = quantityService
+                                            };
+                                            serviceTickets.Add(newSerivceTicket);
+                                        }
+
+                                        await _serviceTicketRepository.AddRangeAsync(serviceTickets);
+                                    }
+
+                                    var orderDetails = new List<OrderDetail>();
+
+                                    var newOrderDetail = new OrderDetail
+                                    {
+                                        TicketId = ticketBuy.Id,
+                                        Type = "Ticket",
+                                        UnitPrice = totalPrice + ticketBuy.TicketType.Price,
+                                        Quantity = 1
+                                    };
+                                    orderDetails.Add(newOrderDetail);
+
+                                    //var newOrder = new OrderModel
+                                    //{
+                                    //    TotalPrice = totalPrice,
+                                    //    PaymentStatus = TransactionStatus.PENDING,
+                                    //    CustomerId = customer.Id,
+                                    //    OrderDetails = orderDetails
+                                    //};
+
+                                    // create new order
+                                    var orderCode = GenerateOrderCode();
+                                    var newOrder = new Order()
+                                    {
+                                        Code = orderCode,
+                                        TotalPrice = totalPrice + ticketBuy.TicketType.Price,
+                                        CustomerId = customer.Id,
+                                        PaymentStatus = TransactionStatus.PENDING.ToString(),
+                                        OrderDetails = orderDetails,
+                                    };
+
+                                    var addedOrder = await _orderRepository.AddAsync(newOrder);
+
+                                    if (addedOrder != null)
+                                    {
+                                        // create new transaction
+
+                                        Transaction newTransaction = new Transaction()
+                                        {
+                                            OrderId = addedOrder.Id,
+                                            Description = $"Thanh toan cho don hang {orderCode}",
+                                            TransactionType = TransactionType.OUT.ToString(),
+                                            Amount = addedOrder.TotalPrice.Value,
+                                        };
+
+                                        var addedTransaction = await _transactionService.CreateTransactionAsync(newTransaction, addedOrder.CustomerId.Value);
+
+                                        if (addedTransaction != null)
+                                        {
+                                            // payment
+                                            PaymentOrderStatus checkPayment = await PaymentOrderAsync(addedOrder.Id);
+                                            if (checkPayment == PaymentOrderStatus.SUCCESS)
+                                            {
+                                                // update ticket
+                                                ticketBuy.Status = TicketStatus.SOLD.ToString();
+                                                await _ticketRepository.UpdateAsync(ticketBuy);
+                                            }
+                                            else
+                                            {
+                                                var insertServiceTickets = await _serviceTicketRepository.GetServiceTicketByTicketId(ticketBuy.Id);
+                                                if (insertServiceTickets.Any())
+                                                {
+                                                    await _serviceTicketRepository.PermanentDeletedListAsync(insertServiceTickets);
+                                                }
+                                            }
+
+                                            await orderTransaction.CommitAsync();
+                                            return _mapper.Map<ResponseOrderModel>(newOrder);
+                                        }
+                                    }
+                                    
+                                }
+                                else
+                                {
+                                    throw new Exception("Danh sách dịch vụ không hợp lệ.");
+                                }
+                            }
+                            else
+                            {
+                                throw new Exception("Chuyến đi không có dịch vụ.");
+                            }
+                        }
+                    }
+                    catch
+                    {
+                        await orderTransaction.RollbackAsync();
+                        throw;
+                    }
+                }
+
+            }
+            throw new Exception("Vé không hợp lệ.");
+        }
     }
 }
