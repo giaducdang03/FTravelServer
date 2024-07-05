@@ -14,7 +14,7 @@ namespace FTravel.Repository.Repositories.Interface
     {
         public Task<bool> CheckRouteExists(int startPoint, int endPoint);
 
-        public Task<Pagination<Route>> GetListRoutesAsync(PaginationParameter paginationParameter);
+        public Task<Pagination<Route>> GetListRoutesAsync(PaginationParameter paginationParameter, int? buscompanyId, RouteFilter routeFilter);
 
         public Task<Route?> GetRouteDetailByRouteIdAsync(int routeId);
 
