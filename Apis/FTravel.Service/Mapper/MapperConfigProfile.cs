@@ -77,11 +77,14 @@ namespace FTravel.Service.Mapper
             .ForMember(dest => dest.RouteName, opt => opt.MapFrom(src => src.Route != null ? src.Route.Name : string.Empty))
             .ForMember(dest => dest.BusCompanyId, opt => opt.MapFrom(src => src.Route.BusCompany != null ? src.Route.BusCompany.Id : 0))
             .ForMember(dest => dest.BusCompanyName, opt => opt.MapFrom(src => src.Route.BusCompany != null ? src.Route.BusCompany.Name : string.Empty))
+            .ForMember(dest => dest.BusCompanyImg, opt => opt.MapFrom(src => src.Route.BusCompany != null ? src.Route.BusCompany.ImgUrl : string.Empty))
+            .ForMember(dest => dest.LowestPrice, opt => opt.Ignore())
             .ForMember(dest => dest.Tickets, opt => opt.Ignore())
             .ForMember(dest => dest.Services, opt => opt.Ignore());
 
             CreateMap<Ticket, TicketModel>()
             .ForMember(dest => dest.TicketTypeName, opt => opt.MapFrom(src => src.TicketType.Name))
+            .ForMember(dest => dest.Price, opt => opt.MapFrom(src => src.TicketType.Price))
             .ReverseMap();
 
             CreateMap<Repository.EntityModels.TripService, TripServiceModel>()

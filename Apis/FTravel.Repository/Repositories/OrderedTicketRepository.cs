@@ -36,7 +36,7 @@ namespace FTravel.Repository.Repositories
         .Include(o => o.Ticket.Trip)
         .ThenInclude(t => t.Route)
         .ThenInclude(r => r.BusCompany)
-        .Where(o => o.Order.CustomerId == customer)
+        .Where(o => o.Order.CustomerId == customer && o.Ticket.Trip.Status.Equals("COMPLETED"))
 
         .ToListAsync();
 

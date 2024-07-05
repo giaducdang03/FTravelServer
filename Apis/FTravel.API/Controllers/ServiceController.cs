@@ -100,6 +100,7 @@ namespace FTravel.API.Controllers
         }
         [HttpGet()]
         [Authorize]
+        //[Authorize(Roles = "ADMIN, BUSCOMPANY")]
         public async Task<IActionResult> GetAllServices([FromQuery] PaginationParameter paginationParameter, ServiceFilter filter)
         {
             try
