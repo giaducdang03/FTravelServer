@@ -73,7 +73,7 @@ namespace FTravel.Repository.Repositories
             return result;
         }
         public IQueryable<Service> ApplyFiltering(IQueryable<Service> query, ServiceFilter filter)
-        {
+        {   
             if (!string.IsNullOrWhiteSpace(filter.Search))
             {
                 query = query.Where(s => s.Route.UnsignName.Contains(filter.Search) ||
