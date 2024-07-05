@@ -53,8 +53,20 @@ namespace FTravel.Service.Services
             {
                 return null;
             }
+            
             var tripModels = _mapper.Map<List<TripModel>>(trips);
-
+            foreach (var trip in tripModels)
+            {
+                var tickets = await _ticketRepository.GetAllByTripId(trip.Id);
+                if (tickets.Any())
+                {
+                    trip.LowestPrice = tickets.Min(t => t.TicketType.Price.Value);
+                }
+                else
+                {
+                    trip.LowestPrice = 0;
+                }
+            }
             return new Pagination<TripModel>(tripModels,
                 trips.TotalCount,
                 trips.CurrentPage,
