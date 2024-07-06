@@ -280,6 +280,10 @@ namespace FTravel.Service.Services
 
                                         await _serviceTicketRepository.AddRangeAsync(serviceTickets);
                                     }
+                                    else
+                                    {
+                                        throw new Exception("Danh sách dịch vụ không hợp lệ.");
+                                    }
 
                                     var orderDetails = new List<OrderDetail>();
 
@@ -350,12 +354,8 @@ namespace FTravel.Service.Services
                                             return _mapper.Map<ResponseOrderModel>(newOrder);
                                         }
                                     }
-                                    
                                 }
-                                else
-                                {
-                                    throw new Exception("Danh sách dịch vụ không hợp lệ.");
-                                }
+                                
                             }
                             else
                             {
