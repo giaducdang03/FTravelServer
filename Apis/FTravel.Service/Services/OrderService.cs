@@ -244,6 +244,11 @@ namespace FTravel.Service.Services
 
                         if (trip != null)
                         {
+                            if (trip.IsDeleted)
+                            {
+                                throw new Exception("Chuyến không tồn tại hoặc đã bị xóa.");
+                            }
+
                             var listServiceOnTrip = await _tripRepository.GetServiceByTripId(trip.Id);
                             if (listServiceOnTrip.Any())
                             {

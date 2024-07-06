@@ -147,7 +147,7 @@ namespace FTravel.API.Controllers
         //}
 
         [HttpGet]
-        [Authorize(Roles = "ADMIN")]
+        [Authorize]
         public async Task<IActionResult> GetAllOrder()
         {
             try
@@ -177,7 +177,7 @@ namespace FTravel.API.Controllers
         }
 
         [HttpGet("{id}")]
-        [Authorize(Roles = "ADMIN, BUSCOMPANY")]
+        [Authorize]
         public async Task<IActionResult> GetOrderDetailsById([FromRoute] int id)
         {
             try

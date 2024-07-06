@@ -26,18 +26,24 @@ namespace FTravel.Service.Services
         private readonly ICustomerRepository _customerRepository;
         private readonly ITransactionRepository _transactionRepository;
         private readonly ISettingService _settingService;
+        private readonly INotificationService _notificationService;
+        private readonly IUserService _userService;
         private readonly IMapper _mapper;
 
         public WalletService(IWalletRepository walletRepository,
             ICustomerRepository customerRepository,
             ITransactionRepository transactionRepository,
             ISettingService settingService,
+            INotificationService notificationService,
+            IUserService userService,
             IMapper mapper)
         {
             _walletRepository = walletRepository;
             _customerRepository = customerRepository;
             _transactionRepository = transactionRepository;
             _settingService = settingService;
+            _notificationService = notificationService;
+            _userService = userService;
             _mapper = mapper;
         }
         //public async Task<List<WalletModel>> GetAllWalletsAsync()
@@ -231,6 +237,8 @@ namespace FTravel.Service.Services
 
                                     await _transactionRepository.UpdateAsync(updateTransaction);
 
+                                    await SendNotificationToUser(updateWallet.Id, updateTransaction.Amount);
+
                                     await dbTransaction.CommitAsync();
                                     return true;
                                 }
@@ -348,6 +356,36 @@ namespace FTravel.Service.Services
                 if (amount > 0 && wallet.AccountBalance >= amount)
                 {
                     return true;
+                }
+            }
+            return false;
+        }
+
+        private async Task<bool> SendNotificationToUser(int walletId, int amount)
+        {
+            var wallet = await _walletRepository.GetWalletByIdAsync(walletId);
+            if (wallet != null)
+            {
+                var customer = await _customerRepository.GetByIdAsync(wallet.CustomerId.Value);
+                if (customer != null) 
+                { 
+                    var user = await _userService.GetUserByEmailAsync(customer.Email);
+                    if (user != null) 
+                    {
+                        var newNoti = new Notification
+                        {
+                            EntityId = walletId,
+                            Type = "Wallet",
+                            Title = "Nạp tiền vào ví thành công",
+                            Message = $"Bạn vừa nạp thành công {amount} ftokens vào ví từ VNPAY"
+                        };
+                        await _notificationService.AddNotificationByUserId(user.Id, newNoti);
+                        if (user.Fcmtoken != null) 
+                        {
+                            await _notificationService.PushMessageFirebase(newNoti.Title, newNoti.Message, user.Id);
+                        }
+                        return true;
+                    }
                 }
             }
             return false;
