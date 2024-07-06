@@ -104,7 +104,7 @@ namespace FTravel.Repository.Repositories
 
             if (filter.StartDate.HasValue)
             {
-                query = query.Where(t => t.EstimatedStartDate == filter.StartDate.Value);
+                query = query.Where(t => t.EstimatedStartDate.Value.Date == filter.StartDate.Value.Date);
             }
             if (filter.StartPoint.HasValue)
             {
