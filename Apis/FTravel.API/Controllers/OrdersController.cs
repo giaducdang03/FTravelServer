@@ -16,11 +16,13 @@ namespace FTravel.API.Controllers
     {
         private readonly IOrderService _orderService;
         private readonly ITicketService _ticketService;
+        private readonly IClaimsService _claimsService;
 
-        public OrdersController(IOrderService orderService, ITicketService ticketService)
+        public OrdersController(IOrderService orderService, ITicketService ticketService, IClaimsService claimsService)
         {
             _orderService = orderService;
             _ticketService = ticketService;
+            _claimsService = claimsService;
         }
 
 
@@ -66,7 +68,8 @@ namespace FTravel.API.Controllers
         {
             try
             {
-                var result = await _orderService.BuyTicketAsync(model);
+                var email = _claimsService.GetCurrentUserEmail;
+                var result = await _orderService.BuyTicketAsync(model, email);
                 if (result == null)
                 {
                     return NotFound(new ResponseModel

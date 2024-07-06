@@ -10,7 +10,7 @@ namespace FTravel.Service.BusinessModels.OrderModels
     {
         public int TicketId { get; set; }
 
-        public int CustomerId { get; set; }
+        //public int CustomerId { get; set; }
 
         //public int TripId { get; set; }
 

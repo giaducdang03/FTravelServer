@@ -218,7 +218,7 @@ namespace FTravel.Service.Services
             return result;
         }
 
-        public async Task<ResponseOrderModel> BuyTicketAsync(BuyTicketModel buyTicketModel)
+        public async Task<ResponseOrderModel> BuyTicketAsync(BuyTicketModel buyTicketModel, string email)
         {
             var ticketBuy = await _ticketRepository.GetTicketByIdAsync(buyTicketModel.TicketId);
 
@@ -229,7 +229,7 @@ namespace FTravel.Service.Services
                     throw new Exception("Vé này đã được bán.");
                 }
 
-                var customer = await _customerRepository.GetByIdAsync(buyTicketModel.CustomerId);
+                var customer = await _customerRepository.GetCustomerByEmailAsync(email);
 
                 if (customer == null)
                 {
