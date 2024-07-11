@@ -94,8 +94,8 @@ namespace FTravel.Service.Mapper
            .ForMember(dest => dest.ServicePrice, opt => opt.MapFrom(src => src.ServicePrice))
            .ForMember(dest => dest.ImgUrl, opt => opt.MapFrom(src => src.Service.ImgUrl));
 
-            CreateMap<Ticket, CreateTicketTripModel>()
-            .ReverseMap();
+            CreateMap<CreateTicketTripModel, Ticket>()
+            .ForMember(dest => dest.TripId, opt => opt.Ignore());
 
             CreateMap<CreateTripModel, Trip>()
             .ForMember(dest => dest.UnsignName, opt => opt.MapFrom(src => StringUtils.ConvertToUnSign(src.Name)))
