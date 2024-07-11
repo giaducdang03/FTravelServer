@@ -141,6 +141,10 @@ namespace FTravel.Service.Services
                             ServicePrice = tripService.Price
                         });
                     }
+                    else
+                    {
+                        throw new Exception($"không tìm thấy dịch vụ {tripService.ServiceId} trong tuyến xe {route.Name}");
+                    }
                 }
 
                 foreach (var ticketTypeId in tripModel.TicketTypeIds)
@@ -149,6 +153,9 @@ namespace FTravel.Service.Services
                     if (ticketType != null)
                     {
                         newTrip.TripTicketTypes.Add(new TripTicketType { TicketType = ticketType, TicketTypeId = ticketType.Id});
+                    } else
+                    {
+                        throw new Exception($"không tìm thấy loại vé {ticketTypeId} trong tuyến xe {route.Name}");
                     }
                 }
 
@@ -168,7 +175,7 @@ namespace FTravel.Service.Services
             }
             catch (Exception ex)
             {
-                throw new Exception("Xảy ra lỗi khi tạo chuyến xe mới!");
+                throw new Exception(ex.Message);
             }
         }
 
