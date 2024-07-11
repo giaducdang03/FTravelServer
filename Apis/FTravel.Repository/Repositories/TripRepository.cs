@@ -104,7 +104,7 @@ namespace FTravel.Repository.Repositories
 
             if (filter.StartDate.HasValue)
             {
-                query = query.Where(t => t.EstimatedStartDate == filter.StartDate.Value);
+                query = query.Where(t => t.EstimatedStartDate.Value.Date == filter.StartDate.Value.Date);
             }
             if (filter.StartPoint.HasValue)
             {
@@ -143,6 +143,21 @@ namespace FTravel.Repository.Repositories
                                      .Where(ts => ts.TripId == tripId)
                                      .ToListAsync();
             return tripServices;
-        } 
+        }
+
+        public async Task<bool> CheckServiceInTrip(int tripId, int serviceId)
+        {
+            var trip = _context.Trips.Include(x => x.TripServices)
+                                                          .Where(x => x.Id == tripId)
+                                                          .FirstOrDefault();
+            foreach (var item in trip.TripServices)
+            {
+                if (item.ServiceId == serviceId)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
     }
 }

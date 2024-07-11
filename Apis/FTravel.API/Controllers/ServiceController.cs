@@ -22,7 +22,7 @@ namespace FTravel.API.Controllers
             _service = service;
         }
         [HttpGet("by-route-id/{routeId}")]
-        [Authorize(Roles = "ADMIN, BUSCOMPANY")]
+        [Authorize]
         public async Task<IActionResult> GetServicesByRouteId(int routeId, [FromQuery] PaginationParameter paginationParameter)
         {
             try
@@ -61,7 +61,7 @@ namespace FTravel.API.Controllers
         }
 
         [HttpGet("by-station-id/{stationId}")]
-        [Authorize(Roles = "ADMIN, BUSCOMPANY")]
+        [Authorize]
         public async Task<IActionResult> GetServicesByStationId(int stationId, [FromQuery] PaginationParameter paginationParameter)
         {
             try
@@ -99,7 +99,8 @@ namespace FTravel.API.Controllers
             }
         }
         [HttpGet()]
-        [Authorize(Roles = "ADMIN, BUSCOMPANY")]
+        [Authorize]
+        //[Authorize(Roles = "ADMIN, BUSCOMPANY")]
         public async Task<IActionResult> GetAllServices([FromQuery] PaginationParameter paginationParameter, ServiceFilter filter)
         {
             try
@@ -139,7 +140,7 @@ namespace FTravel.API.Controllers
         }
 
         [HttpGet("{serviceId}")]
-        [Authorize(Roles = "ADMIN, BUSCOMPANY")]
+        [Authorize]
         public async Task<IActionResult> GetServiceById(int serviceId)
         {
             try

@@ -21,7 +21,7 @@ namespace FTravel.API.Controllers
         }
 
         [HttpGet]
-        [Authorize(Roles = "ADMIN")]
+        [Authorize]
         public async Task<IActionResult> GetListCity([FromQuery] PaginationParameter paginationParameter)
         {
             try

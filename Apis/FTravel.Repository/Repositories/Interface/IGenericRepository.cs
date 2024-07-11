@@ -22,6 +22,8 @@ namespace FTravel.Repository.Repositories.Interface
         Task<int> SoftDeleteRangeAsync(List<TEntity> entities);
         Task<int> PermanentDeletedAsync(TEntity entity);
 
+        Task<int> PermanentDeletedListAsync(List<TEntity> entities);
+
         Task<Pagination<TEntity>> ToPagination(PaginationParameter paginationParameter);
 
         Task<IDbContextTransaction> BeginTransactionAsync();

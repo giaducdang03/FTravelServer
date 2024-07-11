@@ -9,12 +9,10 @@ namespace FTravel.Service.BusinessModels
 {
     public class CreateTicketTypeModel
     {
-        public int? RouteId { get; set; }
+        public int RouteId { get; set; }
 
         public string Name { get; set; } = null!;
 
-        public int? Price { get; set; }
-
-        public DateTime CreateDate { get; set; }
+        public int Price { get; set; }
     }
 }

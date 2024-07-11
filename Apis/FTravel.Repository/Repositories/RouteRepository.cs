@@ -1,5 +1,6 @@
 ﻿using FTravel.Repositories.Commons;
 using FTravel.Repository.Commons;
+using FTravel.Repository.Commons.Filter;
 using FTravel.Repository.DBContext;
 using FTravel.Repository.EntityModels;
 using FTravel.Repository.Repositories.Interface;
@@ -9,6 +10,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace FTravel.Repository.Repositories
 {
@@ -28,16 +30,83 @@ namespace FTravel.Repository.Repositories
             return route;
         }
 
-        public async Task<Pagination<Route>> GetListRoutesAsync(PaginationParameter paginationParameter)
+        public async Task<Pagination<Route>> GetListRoutesAsync(PaginationParameter paginationParameter, int? buscompanyId, RouteFilter routeFilter)
         {
             var itemCount = await _context.Routes.CountAsync();
-            var items = await _context.Routes.Include(x => x.BusCompany)
-                                            .Include(x => x.StartPointNavigation)
-                                            .Include(x => x.EndPointNavigation)
-                                            .Skip((paginationParameter.PageIndex - 1) * paginationParameter.PageSize)
-                                            .Take(paginationParameter.PageSize)
-                                            .AsNoTracking()
-                                            .ToListAsync();
+            var items = new List<Route>();
+            if (buscompanyId != null) 
+            {
+                items = await _context.Routes.Include(x => x.BusCompany).Where(x => x.BusCompanyId == buscompanyId)
+                                                .Include(x => x.StartPointNavigation)
+                                                .Include(x => x.EndPointNavigation)
+                                                .Skip((paginationParameter.PageIndex - 1) * paginationParameter.PageSize)
+                                                .Take(paginationParameter.PageSize)
+                                                .AsNoTracking()
+                                                .ToListAsync();
+            }
+            else if(routeFilter.RouteName != null)
+            {
+                items = await _context.Routes.Include(x => x.BusCompany).Where(x => x.UnsignName.ToLower().Contains(routeFilter.RouteName.ToLower()))
+                                                .Include(x => x.StartPointNavigation)
+                                                .Include(x => x.EndPointNavigation)
+                                                .Skip((paginationParameter.PageIndex - 1) * paginationParameter.PageSize)
+                                                .Take(paginationParameter.PageSize)
+                                                .AsNoTracking()
+                                                .ToListAsync();
+            }
+            else if (routeFilter.StartPoint != null)
+            {
+                items = await _context.Routes.Include(x => x.BusCompany).Where(x => x.StartPoint == routeFilter.StartPoint)
+                                                .Include(x => x.StartPointNavigation)
+                                                .Include(x => x.EndPointNavigation)
+                                                .Skip((paginationParameter.PageIndex - 1) * paginationParameter.PageSize)
+                                                .Take(paginationParameter.PageSize)
+                                                .AsNoTracking()
+                                                .ToListAsync();
+            }
+            else if (routeFilter.EndPoint != null)
+            {
+                items = await _context.Routes.Include(x => x.BusCompany).Where(x => x.EndPoint == routeFilter.EndPoint)
+                                                .Include(x => x.StartPointNavigation)
+                                                .Include(x => x.EndPointNavigation)
+                                                .Skip((paginationParameter.PageIndex - 1) * paginationParameter.PageSize)
+                                                .Take(paginationParameter.PageSize)
+                                                .AsNoTracking()
+                                                .ToListAsync();
+            }
+            else
+            {
+                items = await _context.Routes.Include(x => x.BusCompany)
+                                                .Include(x => x.StartPointNavigation)
+                                                .Include(x => x.EndPointNavigation)
+                                                .Skip((paginationParameter.PageIndex - 1) * paginationParameter.PageSize)
+                                                .Take(paginationParameter.PageSize)
+                                                .AsNoTracking()
+                                                .ToListAsync();
+            }
+
+            if (!string.IsNullOrWhiteSpace(routeFilter.SortBy))
+            {
+                switch (routeFilter.SortBy.ToLower())
+                {
+                    case "routename":
+                        items = routeFilter.Dir?.ToLower() == "desc" ? items.OrderByDescending(s => s.UnsignName).ToList() : items.OrderBy(s => s.UnsignName).ToList();
+                        break;
+                    case "startpoint":
+                        items = routeFilter.Dir?.ToLower() == "desc" ? items.OrderByDescending(s => s.StartPoint).ToList() : items.OrderBy(s => s.StartPoint).ToList();
+                        break;
+                    case "endpoint":
+                        items = routeFilter.Dir?.ToLower() == "desc" ? items.OrderByDescending(s => s.EndPoint).ToList() : items.OrderBy(s => s.EndPoint).ToList();
+                        break;
+                    case "buscompanyname":
+                        items = routeFilter.Dir?.ToLower() == "desc" ? items.OrderByDescending(s => s.BusCompany.UnsignName).ToList() : items.OrderBy(s => s.BusCompany.UnsignName).ToList();
+                        break;
+                    default:
+                        items = items.OrderBy(s => s.Id).ToList(); // Default sort by Id
+                        break;
+                }
+            }
+
             var result = new Pagination<Route>(items, itemCount, paginationParameter.PageIndex, paginationParameter.PageSize);
             return result;
         }
@@ -164,7 +233,11 @@ namespace FTravel.Repository.Repositories
             }
         }
 
-
-
+        public  Task<bool> CheckRouteExists(int startPoint, int endPoint)
+        {
+            var exists = _context.Routes.Any(r => r.StartPoint == startPoint && r.EndPoint == endPoint);
+            return Task.FromResult(exists);
+        }
     }
+    
 }

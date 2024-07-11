@@ -104,9 +104,24 @@ namespace FTravel.Repository.Repositories
             return await _dbContext.SaveChangesAsync();
         }
 
+        public async Task<int> PermanentDeletedListAsync(List<TEntity> entities)
+        {
+            foreach (var entity in entities)
+            {
+                _dbSet.Remove(entity);
+            }
+            return await _dbContext.SaveChangesAsync();
+        }
+
         private DateTime GetCurrentTime() 
         { 
-            return DateTime.UtcNow.AddHours(7); 
+            DateTime utcNow = DateTime.UtcNow;
+
+            TimeZoneInfo vietnamTimeZone = TimeZoneInfo.FindSystemTimeZoneById("SE Asia Standard Time");
+
+            DateTime vietnamTime = TimeZoneInfo.ConvertTimeFromUtc(utcNow, vietnamTimeZone);
+
+            return vietnamTime;
         }
 
         public async Task<IDbContextTransaction> BeginTransactionAsync()

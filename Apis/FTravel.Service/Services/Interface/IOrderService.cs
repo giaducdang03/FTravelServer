@@ -18,7 +18,7 @@ namespace FTravel.Service.Services.Interface
         public Task<OrderViewModel> GetOrderDetailByIdAsync(int orderId);
         public Task<StatisticRevenueModel> StatisticForDashBoard();
 
-
+        public Task<ResponseOrderModel> BuyTicketAsync(BuyTicketModel buyTicket, string email);
 
     }
 }
