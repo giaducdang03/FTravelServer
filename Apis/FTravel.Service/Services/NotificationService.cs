@@ -194,7 +194,8 @@ namespace FTravel.Service.Services
                 {
                     if (notificationModel != null)
                     {
-                        await PushMessageFirebase(notificationModel.Title, notificationModel.Message, customer.Id);
+                        notificationModel.UserId = user.Id;
+                        await PushMessageFirebase(notificationModel.Title, notificationModel.Message, user.Id);
                         return await _notificationRepository.AddAsync(notificationModel);
                     }
                 }
