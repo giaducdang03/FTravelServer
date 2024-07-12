@@ -37,12 +37,26 @@ namespace FTravel.Service.Services
 
             var routeModels = data.Select(x => new OrderedTicketModel
             {
-                Id = x.Id,
+                OrderId = x.Order.Id,
+                TickerId = x.Ticket.Id,
+                CustomerId = x.Order.CustomerId,
+                TripId = x.Ticket.Trip.Id,
+                TotalPrice = x.Order.TotalPrice,
                 ActualEndDate = x.Ticket.Trip.ActualEndDate,
                 ActualStartDate = x.Ticket.Trip.ActualStartDate,
                 BuscompanyName = x.Ticket.Trip.Route.BusCompany.Name,
                 StartPointName = x.Ticket.Trip.Route.EndPointNavigation.Name,
                 EndPointName = x.Ticket.Trip.Route.StartPointNavigation.Name,
+                UnsignNameTrip = x.Ticket.Trip.UnsignName,
+                NameTrip = x.Ticket.Trip.Name,
+                RouteId = x.Ticket.Trip.RouteId,
+                OpenTicketDate = x.Ticket.Trip.OpenTicketDate,
+                EstimatedStartDate = x.Ticket.Trip.OpenTicketDate,
+                EstimatedEndDate = x.Ticket.Trip.OpenTicketDate,
+                Status = x.Ticket.Trip.Status,
+                IsTemplate = x.Ticket.Trip.IsTemplate,
+                DriverId = x.Ticket.Trip.DriverId,
+                ImgUrl = x.Ticket.Trip.Route.BusCompany.ImgUrl
 
             }).ToList();
 
