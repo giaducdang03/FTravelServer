@@ -350,10 +350,10 @@ namespace FTravel.Service.Services
                                                     EntityId = addedOrder.Id,
                                                     Type = "Order",
                                                     Title = "Mua vé thành công",
-                                                    Message = $"Bạn đã mua vé thành công cho chuyến ${trip.Name}."
+                                                    Message = $"Bạn đã mua vé thành công cho chuyến {trip.Name}."
                                                 };
 
-                                                await _notificationService.AddNotificationByCustomerId(customer.Id, newNoti);
+                                                await _notificationService.AddNotificationByCustomerId(addedOrder.CustomerId.Value, newNoti);
 
                                             }
                                             else
