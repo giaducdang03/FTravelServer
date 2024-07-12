@@ -20,12 +20,15 @@ namespace FTravel.Service.Services
     {
         private readonly INotificationRepository _notificationRepository;
         private readonly IUserService _userService;
+        private readonly ICustomerRepository _customerRepository;
 
         public NotificationService(INotificationRepository notificationRepository,
-            IUserService userService)
+            IUserService userService,
+            ICustomerRepository customerRepository)
         {
             _notificationRepository = notificationRepository;
             _userService = userService;
+            _customerRepository = customerRepository;
         }
 
         public async Task<Notification> AddNotificationByListUser(List<int> userIds, Notification notificationModel)
@@ -179,6 +182,24 @@ namespace FTravel.Service.Services
                 return true;
             }
             return false;
+        }
+
+        public async Task<Notification> AddNotificationByCustomerId(int customerId, Notification notificationModel)
+        {
+            var customer = await _customerRepository.GetByIdAsync(customerId);
+            if (customer != null)
+            {
+                var user = await _userService.GetUserByEmailAsync(customer.Email);
+                if (user != null)
+                {
+                    if (notificationModel != null)
+                    {
+                        await PushMessageFirebase(notificationModel.Title, notificationModel.Message, customer.Id);
+                        return await _notificationRepository.AddAsync(notificationModel);
+                    }
+                }
+            }
+            return null;
         }
     }
 }

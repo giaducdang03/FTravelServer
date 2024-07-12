@@ -173,9 +173,9 @@ namespace FTravel.Service.Services
                await _tripRepository.AddAsync(newTrip);
                 return true;
             }
-            catch (Exception ex)
+            catch
             {
-                throw new Exception(ex.Message);
+                throw;
             }
         }
 

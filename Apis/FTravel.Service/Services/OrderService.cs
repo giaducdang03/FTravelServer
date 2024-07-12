@@ -25,6 +25,7 @@ namespace FTravel.Service.Services
         private readonly ITicketRepository _ticketRepository;
         private readonly ITripRepository _tripRepository;
         private readonly IServiceTicketRepository _serviceTicketRepository;
+        private readonly INotificationService _notificationService;
 
         public OrderService(IOrderRepository orderRepository,
             ITransactionService transactionService,
@@ -34,7 +35,8 @@ namespace FTravel.Service.Services
             IMapper mapper,
             ITicketRepository ticketRepository,
             ITripRepository tripRepository,
-            IServiceTicketRepository serviceTicketRepository)
+            IServiceTicketRepository serviceTicketRepository,
+            INotificationService notificationService)
         {
             _orderRepository = orderRepository;
             _transactionService = transactionService;
@@ -44,6 +46,7 @@ namespace FTravel.Service.Services
             _ticketRepository = ticketRepository;
             _tripRepository = tripRepository;
             _serviceTicketRepository = serviceTicketRepository;
+            _notificationService = notificationService;
             _mapper = mapper;
         }
 
@@ -340,6 +343,18 @@ namespace FTravel.Service.Services
                                                 // update ticket
                                                 ticketBuy.Status = TicketStatus.SOLD.ToString();
                                                 await _ticketRepository.UpdateAsync(ticketBuy);
+
+                                                // send noti
+                                                var newNoti = new Notification
+                                                {
+                                                    EntityId = addedOrder.Id,
+                                                    Type = "Order",
+                                                    Title = "Mua vé thành công",
+                                                    Message = $"Bạn đã mua vé thành công cho chuyến ${trip.Name}."
+                                                };
+
+                                                await _notificationService.AddNotificationByCustomerId(customer.Id, newNoti);
+
                                             }
                                             else
                                             {
