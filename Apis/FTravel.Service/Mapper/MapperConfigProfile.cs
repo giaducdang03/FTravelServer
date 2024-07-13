@@ -160,6 +160,12 @@ namespace FTravel.Service.Mapper
                 .ForMember(dest => dest.TotalPrice, opt => opt.MapFrom(src => src.Order.TotalPrice))
                 .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.Order.Customer.Email))
                 .ForMember(dest => dest.BusCompanyName, opt => opt.MapFrom(src => src.Ticket.Trip.Route.BusCompany.Name));
+
+            // my ticket
+            CreateMap<ServiceTicket, ServiceTicketModel>()
+                .ForMember(dest => dest.ServiceName, opt => opt.MapFrom(src => src.Service.Name))
+                .ForMember(dest => dest.StationId, opt => opt.MapFrom(src => src.Service.StationId))
+                .ForMember(dest => dest.StationName, opt => opt.MapFrom(src => src.Service.Station.Name));
         }
     }
 }

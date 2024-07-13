@@ -71,17 +71,21 @@ namespace FTravel.API.Controllers
         {
             try
             {
-                var email = _claimsService.GetCurrentUserEmail;
-                var result = await _orderService.BuyTicketAsync(model, email);
-                if (result == null)
+                if (ModelState.IsValid)
                 {
-                    return NotFound(new ResponseModel
+                    var email = _claimsService.GetCurrentUserEmail;
+                    var result = await _orderService.BuyTicketAsync(model, email);
+                    if (result == null)
                     {
-                        HttpCode = StatusCodes.Status404NotFound,
-                        Message = "Lỗi khi mua vé"
-                    });
+                        return BadRequest(new ResponseModel
+                        {
+                            HttpCode = StatusCodes.Status400BadRequest,
+                            Message = "Lỗi khi mua vé"
+                        });
+                    }
+                    return Ok(result);
                 }
-                return Ok(result);
+                return ValidationProblem(ModelState);
             }
             catch (Exception ex)
             {

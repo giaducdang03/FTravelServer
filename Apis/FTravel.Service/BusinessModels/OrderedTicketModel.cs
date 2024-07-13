@@ -33,7 +33,7 @@ namespace FTravel.Service.BusinessModels
         public DateTime? EstimatedEndDate { get; set; }
 
         public string? Status { get; set; }
-        public bool? IsTemplate { get; set; }
+        //public bool? IsTemplate { get; set; }
         public int? DriverId { get; set; }
     }
 }
