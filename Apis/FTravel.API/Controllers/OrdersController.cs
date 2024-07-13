@@ -153,8 +153,8 @@ namespace FTravel.API.Controllers
         //}
 
         [HttpGet]
-        [Authorize]
-        public async Task<IActionResult> GetAllOrder()
+        //[Authorize]
+        public async Task<IActionResult> GetAllOrder([FromRoute] PaginationParameter paginationParameter, [FromRoute] OrderFilter orderFilter)
         {
             try
             {
