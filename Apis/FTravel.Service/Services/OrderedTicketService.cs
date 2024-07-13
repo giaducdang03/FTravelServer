@@ -130,6 +130,8 @@ namespace FTravel.Service.Services
                     SeatCode = ticket.SeatCode,
                     TicketTypeId = ticket.TicketTypeId,
                     TicketTypeName = ticket.TicketType.Name,
+                    BuscompanyName = ticket.Trip.Route.BusCompany.Name,
+                    BuscompanyImg = ticket.Trip.Route.BusCompany.ImgUrl,
                     ServiceTickets = _mapper.Map<List<ServiceTicketModel>>(ticket.ServiceTickets)
                 };
 
