@@ -63,5 +63,10 @@ namespace FTravel.Service.Services
                 transactions.CurrentPage,
                 transactions.PageSize);
         }
+        public async Task<Transaction> GetTransactionByOrderIdAsync(int orderId)
+        {
+            return await _transactionRepository.GetTransactionsByOrderId(orderId);
+        }
+
     }
 }

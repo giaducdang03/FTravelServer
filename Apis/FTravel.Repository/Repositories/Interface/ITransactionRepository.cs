@@ -12,5 +12,6 @@ namespace FTravel.Repository.Repositories.Interface
     public interface ITransactionRepository : IGenericRepository<Transaction>
     {
         public Task<Pagination<Transaction>> GetTransactionsByWalletId(int walletId, PaginationParameter paginationParameter);
+        public Task<Transaction> GetTransactionsByOrderId(int orderId);
     }
 }

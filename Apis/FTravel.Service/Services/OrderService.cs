@@ -1,8 +1,13 @@
 ﻿using AutoMapper;
+using FTravel.Repository.Commons.Filter;
+using FTravel.Repository.Commons;
 using FTravel.Repository.EntityModels;
 using FTravel.Repository.Repositories.Interface;
+using FTravel.Service.BusinessModels;
 using FTravel.Service.BusinessModels.OrderModels;
+using FTravel.Service.BusinessModels.PaymentModels;
 using FTravel.Service.BusinessModels.RouteModels;
+using FTravel.Service.BusinessModels.ServiceModels;
 using FTravel.Service.Enums;
 using FTravel.Service.Services.Interface;
 using FTravel.Service.Utils;
@@ -11,6 +16,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using FTravel.Repositories.Commons;
 
 namespace FTravel.Service.Services
 {
@@ -140,38 +146,49 @@ namespace FTravel.Service.Services
             string orderCode = now.ToString("yyyyMMddHHmmss");
             return orderCode;
         }
-        public async Task<List<OrderViewModel>> GetAllOrderAsync()
+        public async Task<Pagination<GetAllOrderModel>> GetAllOrderAsync(PaginationParameter paginationParameter, OrderFilter orderFilter)
         {
-            var orderList = await _orderRepository.GetAllOrderAsync();
-            List<OrderViewModel> listOrders = _mapper.Map<List<OrderViewModel>>(orderList);
-            if(listOrders.Count > 0)
-            {
-                return listOrders;
-            }
-            return null;
+            var orderList = await _orderRepository.GetAllOrderAsync(paginationParameter, orderFilter);
+            List<GetAllOrderModel> listOrders = _mapper.Map<List<GetAllOrderModel>>(orderList);
+            return new Pagination<GetAllOrderModel>(listOrders,
+               orderList.TotalCount,
+               orderList.CurrentPage,
+               orderList.PageSize);
         }
         public async Task<OrderViewModel> GetOrderDetailByIdAsync(int orderId)
         {
-            var findOrderDetail = await _orderRepository.GetOrderDetailByIdAsync(orderId);
-            var findOrder = await _orderRepository.GetByIdAsync(orderId);
-            if(findOrderDetail == null)
+            try
             {
-                return null; 
+                var findOrderDetail = await _orderRepository.GetOrderDetailByIdAsync(orderId);
+                var findOrder = await _orderRepository.GetByIdAsync(orderId);
+                var transaction = await _transactionService.GetTransactionByOrderIdAsync(orderId);
+                if (findOrderDetail == null)
+                {
+                    return null;
+                }
+                var result = new OrderViewModel()
+                {
+                    Id = findOrder.Id,
+                    CreateDate = findOrder.CreateDate,
+                    UpdateDate = findOrder.UpdateDate,
+                    IsDeleted = findOrder.IsDeleted,
+                    TotalPrice = findOrder.TotalPrice,
+                    Code = findOrder.Code,
+                    Phone = findOrder.Customer.PhoneNumber,
+                    Email = findOrder.Customer.Email,
+                    PaymentDate = (DateTime)findOrder.PaymentDate,
+                    PaymentOrderStatus = findOrder.PaymentStatus.ToString(),
+                    CustomerName = findOrder.Customer.FullName,
+                    Transaction = _mapper.Map<OrderTransactionModel>(transaction),
+                    OrderDetail = _mapper.Map<List<OrderDetailModel>>(findOrderDetail),
+                };
+                return result;
             }
-            var result = new OrderViewModel()
+            catch (Exception)
             {
-                Id = findOrder.Id,
-                CreateDate = findOrder.CreateDate,
-                UpdateDate = findOrder.UpdateDate,
-                IsDeleted = findOrder.IsDeleted,
-                TotalPrice = findOrder.TotalPrice,
-                Code = findOrder.Code,
-                PaymentDate = (DateTime)findOrder.PaymentDate,
-                PaymentOrderStatus = findOrder.PaymentStatus.ToString(),
-                CustomerName = findOrder.Customer.FullName,
-                OrderDetailModel =  _mapper.Map<List<OrderDetailModel>>(findOrderDetail),
-            };
-            return result;
+
+                throw new ArgumentException("không tồn tại đơn hàng này");
+            }
         }
         public async Task<StatisticRevenueModel> StatisticForDashBoard()
         {

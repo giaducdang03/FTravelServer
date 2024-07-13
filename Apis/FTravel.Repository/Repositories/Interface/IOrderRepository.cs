@@ -1,4 +1,7 @@
-﻿using FTravel.Repository.EntityModels;
+﻿using FTravel.Repositories.Commons;
+using FTravel.Repository.Commons;
+using FTravel.Repository.Commons.Filter;
+using FTravel.Repository.EntityModels;
 using Microsoft.EntityFrameworkCore.Storage;
 using System;
 using System.Collections.Generic;
@@ -12,7 +15,7 @@ namespace FTravel.Repository.Repositories.Interface
     {
         public Task<Order> GetOrderByIdAsync(int id);
         public Task<IDbContextTransaction> BeginTransactionAsync();
-        public Task<List<Order>> GetAllOrderAsync();
+        public Task<Pagination<OrderDetail>> GetAllOrderAsync(PaginationParameter paginationParameter, OrderFilter orderFilter);
         public Task<List<OrderDetail>> GetOrderDetailByIdAsync(int id);
         public Task<List<OrderDetail>> StatisticForDashBoard();
 
