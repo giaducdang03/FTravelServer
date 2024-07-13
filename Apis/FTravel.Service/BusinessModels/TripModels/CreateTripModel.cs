@@ -11,7 +11,7 @@ namespace FTravel.Service.BusinessModels.TripModels
     public class CreateTripModel
     {
         [Required]
-        public string Name { get; set; }
+        public string Name { get; set; } = "";
         [Required]
         public int RouteId { get; set; }
         [Required]
@@ -25,8 +25,10 @@ namespace FTravel.Service.BusinessModels.TripModels
 
         [Required]
         [MinLength(1, ErrorMessage = "At least one TicketTypeId is required.")]
-        public List<int> TicketTypeIds { get; set; }
-        public List<CreateTripServiceModel> TripServices { get; set; }
-        public List<CreateTicketTripModel> TripTickets { get; set; }
+        public List<int> TicketTypeIds { get; set; } = new List<int>();
+        [Required]
+        public List<CreateTripServiceModel> TripServices { get; set; } = new List<CreateTripServiceModel>();
+        [Required]
+        public List<CreateTicketTripModel> TripTickets { get; set; } = new List<CreateTicketTripModel>();
     }
 }

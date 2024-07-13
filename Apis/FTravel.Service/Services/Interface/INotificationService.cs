@@ -13,7 +13,9 @@ namespace FTravel.Service.Services.Interface
 {
     public interface INotificationService
     {
-        public Task<Notification> AddNotificationByUserId(int userId, Notification notificationModel); 
+        public Task<Notification> AddNotificationByUserId(int userId, Notification notificationModel);
+
+        public Task<Notification> AddNotificationByCustomerId(int customerId, Notification notificationModel);
 
         public Task<Notification> AddNotificationByRoleAsync(RoleEnums roleEnums, Notification notificationModel);
 
