@@ -54,6 +54,17 @@ namespace FTravel.Repository.Repositories
                                 .FirstOrDefaultAsync(x => x.Id == id);
         }
 
-        
+        public async Task<Ticket> GetTicketByIdAsync2(int id)
+        {
+            return await _context.Tickets
+                                .Include(x => x.TicketType)
+                                .Include(x => x.Trip).ThenInclude(t => t.Route.BusCompany)
+                                .Include(x => x.Trip).ThenInclude(t => t.Route.StartPointNavigation)
+                                .Include(x => x.Trip).ThenInclude(t => t.Route.EndPointNavigation)
+                                .Include(x => x.ServiceTickets).ThenInclude(x => x.Service).ThenInclude(x => x.Station)
+                                .FirstOrDefaultAsync(x => x.Id == id);
+        }
+
+
     }
 }
