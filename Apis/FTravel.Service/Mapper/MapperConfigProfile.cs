@@ -10,6 +10,7 @@ using FTravel.Service.BusinessModels.ServiceModels;
 using FTravel.Service.BusinessModels.StationModels;
 using FTravel.Service.BusinessModels.TicketModels;
 using FTravel.Service.BusinessModels.TripModels;
+using FTravel.Service.Services;
 using FTravel.Service.Utils;
 using System;
 using System.Collections.Generic;
@@ -25,6 +26,10 @@ namespace FTravel.Service.Mapper
         {
             // add mapper model
             CreateMap<BusCompany, BuscompanyModel>().ReverseMap();
+
+            CreateMap<TicketServiceModel, ServiceTicket>().ReverseMap();
+
+            CreateMap<CreateTicketModel, Ticket>().ReverseMap();
 
             CreateMap<CreateRouteModel, Route>().ReverseMap();
 
@@ -72,21 +77,25 @@ namespace FTravel.Service.Mapper
             .ForMember(dest => dest.RouteName, opt => opt.MapFrom(src => src.Route != null ? src.Route.Name : string.Empty))
             .ForMember(dest => dest.BusCompanyId, opt => opt.MapFrom(src => src.Route.BusCompany != null ? src.Route.BusCompany.Id : 0))
             .ForMember(dest => dest.BusCompanyName, opt => opt.MapFrom(src => src.Route.BusCompany != null ? src.Route.BusCompany.Name : string.Empty))
+            .ForMember(dest => dest.BusCompanyImg, opt => opt.MapFrom(src => src.Route.BusCompany != null ? src.Route.BusCompany.ImgUrl : string.Empty))
+            .ForMember(dest => dest.LowestPrice, opt => opt.Ignore())
             .ForMember(dest => dest.Tickets, opt => opt.Ignore())
             .ForMember(dest => dest.Services, opt => opt.Ignore());
 
             CreateMap<Ticket, TicketModel>()
             .ForMember(dest => dest.TicketTypeName, opt => opt.MapFrom(src => src.TicketType.Name))
+            .ForMember(dest => dest.Price, opt => opt.MapFrom(src => src.TicketType.Price))
             .ReverseMap();
 
-            CreateMap<TripService, TripServiceModel>()
+            CreateMap<Repository.EntityModels.TripService, TripServiceModel>()
            .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.ServiceId))
            .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Service.Name))
            .ForMember(dest => dest.Description, opt => opt.MapFrom(src => src.Service.ShortDescription))
-           .ForMember(dest => dest.ServicePrice, opt => opt.MapFrom(src => src.ServicePrice));
+           .ForMember(dest => dest.ServicePrice, opt => opt.MapFrom(src => src.ServicePrice))
+           .ForMember(dest => dest.ImgUrl, opt => opt.MapFrom(src => src.Service.ImgUrl));
 
-            CreateMap<Ticket, CreateTicketTripModel>()
-            .ReverseMap();
+            CreateMap<CreateTicketTripModel, Ticket>()
+            .ForMember(dest => dest.TripId, opt => opt.Ignore());
 
             CreateMap<CreateTripModel, Trip>()
             .ForMember(dest => dest.UnsignName, opt => opt.MapFrom(src => StringUtils.ConvertToUnSign(src.Name)))
@@ -104,7 +113,8 @@ namespace FTravel.Service.Mapper
             CreateMap<CreateAccountModel, User>()
             .ForMember(dest => dest.Role, opt => opt.Ignore());
 
-            CreateMap<OrderModel, Order>();
+            CreateMap<OrderModel, Order>().ReverseMap();
+            CreateMap<Order, ResponseOrderModel>();
             CreateMap<Route, UpdateRouteModel>().ForMember(dest => dest.Status, opt => opt.Ignore()).ReverseMap();
             CreateMap<OrderDetail, OrderViewModel>()
                 .ForMember(dest => dest.CustomerName, opt => opt.MapFrom(src => src.Order.Customer.FullName)).ReverseMap();
@@ -128,6 +138,7 @@ namespace FTravel.Service.Mapper
                 .ForMember(dest => dest.StartPoint, opt => opt.MapFrom(src => src.StartPointNavigation.Name))
                 .ForMember(dest => dest.EndPoint, opt => opt.MapFrom(src => src.EndPointNavigation.Name))
                 .ForMember(dest => dest.BusCompanyName, opt => opt.MapFrom(src => src.BusCompany.Name))
+                .ForMember(dest => dest.BusCompanyImg, opt => opt.MapFrom(src => src.BusCompany.ImgUrl))
                 .ForPath(dest => dest.BusCompany.Id, opt => opt.MapFrom(src => src.BusCompany.Id))
                 .ForPath(dest => dest.BusCompany.Name, opt => opt.MapFrom(src => src.BusCompany.Name))
                 .ForPath(dest => dest.BusCompany.ImgUrl, opt => opt.MapFrom(src => src.BusCompany.ImgUrl));

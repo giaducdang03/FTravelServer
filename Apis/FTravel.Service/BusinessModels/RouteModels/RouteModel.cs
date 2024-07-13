@@ -23,6 +23,8 @@ namespace FTravel.Service.BusinessModels.RouteModels
 
         public string? BusCompanyName { get; set; }
 
+        public string? BusCompanyImg {  get; set; }
+
         public virtual BuscompanyModel? BusCompany { get; set; }
 
         public virtual ICollection<RouteStationModel> RouteStations { get; set; } = new List<RouteStationModel>();

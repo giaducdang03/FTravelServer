@@ -18,59 +18,70 @@ namespace FTravel.API.Controllers
     public class OrdersController : ControllerBase
     {
         private readonly IOrderService _orderService;
+        private readonly ITicketService _ticketService;
+        private readonly IClaimsService _claimsService;
 
-        public OrdersController(IOrderService orderService)
+        public OrdersController(IOrderService orderService, ITicketService ticketService, IClaimsService claimsService)
         {
             _orderService = orderService;
+            _ticketService = ticketService;
+            _claimsService = claimsService;
         }
 
-        [HttpPost("create-order")]
-        [Authorize(Roles = "ADMIN")]
-        public async Task<IActionResult> CreateNewOrder(OrderModel orderModel)
+
+        //[HttpPost]
+        //public async Task<IActionResult> BuyTicket(BuyTicketModel model)
+        //{
+        //    try
+        //    {
+        //        var result = await _ticketService.BuyTicketAsync(model);
+        //        if (result == null)
+        //        {
+        //            return NotFound(new ResponseModel
+        //            {
+        //                HttpCode = StatusCodes.Status404NotFound,
+        //                Message = "Lỗi khi mua vé"
+        //            });
+        //        }
+
+        //        var result2 = await _orderService.CreateOrderAsync(result);
+        //        if (result2 != null)
+        //        {
+        //            return Ok(result2);
+        //        }
+        //        return BadRequest(new ResponseModel
+        //        {
+        //            HttpCode = StatusCodes.Status400BadRequest,
+        //            Message = "Lỗi khi tạo đơn"
+        //        });
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return BadRequest(new ResponseModel
+        //        {
+        //            HttpCode = 400,
+        //            Message = ex.Message
+        //        });
+        //    }
+        //}
+
+        [HttpPost]
+        [Authorize]
+        public async Task<IActionResult> BuyTicket(BuyTicketModel model)
         {
             try
             {
-                var result = await _orderService.CreateOrderAsync(orderModel);
-                if (result != null)
+                var email = _claimsService.GetCurrentUserEmail;
+                var result = await _orderService.BuyTicketAsync(model, email);
+                if (result == null)
                 {
-                    return Ok(result);
-                }
-                return BadRequest(new ResponseModel
-                {
-                    HttpCode = StatusCodes.Status400BadRequest,
-                    Message = "Can not create order"
-                });
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(new ResponseModel
-                {
-                    HttpCode = 400,
-                    Message = ex.Message
-                });
-            }
-        }
-
-        [HttpPost("payment-order")]
-        [Authorize(Roles = "ADMIN")]
-        public async Task<IActionResult> PaymentOrder(int orderId)
-        {
-            try
-            {
-                var result = await _orderService.PaymentOrderAsync(orderId);
-                if (result == PaymentOrderStatus.SUCCESS)
-                {
-                    return Ok(new ResponseModel
+                    return NotFound(new ResponseModel
                     {
-                        HttpCode = StatusCodes.Status200OK,
-                        Message = "Payment order successfully"
+                        HttpCode = StatusCodes.Status404NotFound,
+                        Message = "Lỗi khi mua vé"
                     });
                 }
-                return BadRequest(new ResponseModel
-                {
-                    HttpCode = StatusCodes.Status400BadRequest,
-                    Message = "Can not payment order"
-                });
+                return Ok(result);
             }
             catch (Exception ex)
             {
@@ -82,9 +93,68 @@ namespace FTravel.API.Controllers
             }
         }
 
+
+        //[HttpPost("create-order")]
+        ////[Authorize(Roles = "ADMIN")]
+        //public async Task<IActionResult> CreateNewOrder(OrderModel orderModel)
+        //{
+        //    try
+        //    {
+        //        var result = await _orderService.CreateOrderAsync(orderModel);
+        //        if (result != null)
+        //        {
+        //            return Ok(result);
+        //        }
+        //        return BadRequest(new ResponseModel
+        //        {
+        //            HttpCode = StatusCodes.Status400BadRequest,
+        //            Message = "Can not create order"
+        //        });
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return BadRequest(new ResponseModel
+        //        {
+        //            HttpCode = 400,
+        //            Message = ex.Message
+        //        });
+        //    }
+        //}
+
+        //[HttpPost("payment-order")]
+        //[Authorize(Roles = "ADMIN")]
+        //public async Task<IActionResult> PaymentOrder(int orderId)
+        //{
+        //    try
+        //    {
+        //        var result = await _orderService.PaymentOrderAsync(orderId);
+        //        if (result == PaymentOrderStatus.SUCCESS)
+        //        {
+        //            return Ok(new ResponseModel
+        //            {
+        //                HttpCode = StatusCodes.Status200OK,
+        //                Message = "Payment order successfully"
+        //            });
+        //        }
+        //        return BadRequest(new ResponseModel
+        //        {
+        //            HttpCode = StatusCodes.Status400BadRequest,
+        //            Message = "Can not payment order"
+        //        });
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return BadRequest(new ResponseModel
+        //        {
+        //            HttpCode = 400,
+        //            Message = ex.Message
+        //        });
+        //    }
+        //}
+
         [HttpGet]
-        [Authorize(Roles = "ADMIN")]
-        public async Task<IActionResult> GetAllOrder([FromQuery] PaginationParameter paginationParameter, [FromQuery] OrderFilter orderFilter)
+        [Authorize]
+        public async Task<IActionResult> GetAllOrder()
         {
             try
             {
@@ -124,7 +194,7 @@ namespace FTravel.API.Controllers
         }
 
         [HttpGet("{id}")]
-        [Authorize(Roles = "ADMIN, BUSCOMPANY")]
+        [Authorize]
         public async Task<IActionResult> GetOrderDetailsById([FromRoute] int id)
         {
             try

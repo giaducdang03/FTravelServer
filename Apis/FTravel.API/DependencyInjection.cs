@@ -71,6 +71,8 @@ namespace FTravel.API
 
             services.AddScoped<INotificationRepository, NotificationRepository>();
             services.AddScoped<INotificationService, NotificationService>();
+
+            services.AddScoped<IServiceTicketRepository, ServiceTicketRepository>();
             
             services.AddHealthChecks();
             services.AddSingleton<GlobalExceptionMiddleware>();

@@ -12,6 +12,8 @@ namespace FTravel.Repository.Repositories.Interface
 {
     public interface IRouteRepository : IGenericRepository<Route>
     {
+        public Task<bool> CheckRouteExists(int startPoint, int endPoint);
+
         public Task<Pagination<Route>> GetListRoutesAsync(PaginationParameter paginationParameter, int? buscompanyId, RouteFilter routeFilter);
 
         public Task<Route?> GetRouteDetailByRouteIdAsync(int routeId);

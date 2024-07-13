@@ -53,8 +53,20 @@ namespace FTravel.Service.Services
             {
                 return null;
             }
+            
             var tripModels = _mapper.Map<List<TripModel>>(trips);
-
+            foreach (var trip in tripModels)
+            {
+                var tickets = await _ticketRepository.GetAllByTripId(trip.Id);
+                if (tickets.Any())
+                {
+                    trip.LowestPrice = tickets.Min(t => t.TicketType.Price.Value);
+                }
+                else
+                {
+                    trip.LowestPrice = 0;
+                }
+            }
             return new Pagination<TripModel>(tripModels,
                 trips.TotalCount,
                 trips.CurrentPage,
@@ -129,6 +141,10 @@ namespace FTravel.Service.Services
                             ServicePrice = tripService.Price
                         });
                     }
+                    else
+                    {
+                        throw new Exception($"không tìm thấy dịch vụ {tripService.ServiceId} trong tuyến xe {route.Name}");
+                    }
                 }
 
                 foreach (var ticketTypeId in tripModel.TicketTypeIds)
@@ -137,6 +153,9 @@ namespace FTravel.Service.Services
                     if (ticketType != null)
                     {
                         newTrip.TripTicketTypes.Add(new TripTicketType { TicketType = ticketType, TicketTypeId = ticketType.Id});
+                    } else
+                    {
+                        throw new Exception($"không tìm thấy loại vé {ticketTypeId} trong tuyến xe {route.Name}");
                     }
                 }
 
@@ -154,9 +173,9 @@ namespace FTravel.Service.Services
                await _tripRepository.AddAsync(newTrip);
                 return true;
             }
-            catch (Exception ex)
+            catch
             {
-                throw new Exception("Xảy ra lỗi khi tạo chuyến xe mới!");
+                throw;
             }
         }
 

@@ -227,36 +227,28 @@ namespace FTravel.API.Controllers
                 return BadRequest(resp);
             }
         }
-        [HttpPut("{id}")]
+        [HttpPut]
         [Authorize]
-        public async Task<IActionResult> UpdateService(int id, UpdateAccountModel accountModel)
+        public async Task<IActionResult> UpdateService(UpdateAccountModel accountModel)
         {
             try
             {
                 if (ModelState.IsValid)
                 {
-                    if (id == accountModel.AccountId)
-                    {
-                        bool isUpdated = await _accountService.UpdateAccount(accountModel);
+                    bool isUpdated = await _accountService.UpdateAccount(accountModel);
 
-                        if (isUpdated)
+                    if (isUpdated)
+                    {
+                        return Ok(new ResponseModel
                         {
-                            return Ok(new ResponseModel
-                            {
-                                HttpCode = StatusCodes.Status200OK,
-                                Message = "Cập nhật thông tin tài khoản thành công."
-                            });
-                        }
-                        return NotFound(new ResponseModel
-                        {
-                            HttpCode = StatusCodes.Status404NotFound,
-                            Message = "Có lỗi trong quá trình cập nhật thông tin tài khoản."
+                            HttpCode = StatusCodes.Status200OK,
+                            Message = "Cập nhật thông tin tài khoản thành công."
                         });
                     }
-                    return BadRequest(new ResponseModel
+                    return NotFound(new ResponseModel
                     {
-                        HttpCode = StatusCodes.Status400BadRequest,
-                        Message = "Id tài khoản không hợp lệ."
+                        HttpCode = StatusCodes.Status404NotFound,
+                        Message = "Có lỗi trong quá trình cập nhật thông tin tài khoản."
                     });
 
                 }

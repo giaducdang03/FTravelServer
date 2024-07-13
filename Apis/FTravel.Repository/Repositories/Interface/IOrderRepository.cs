@@ -17,7 +17,9 @@ namespace FTravel.Repository.Repositories.Interface
         public Task<IDbContextTransaction> BeginTransactionAsync();
         public Task<Pagination<OrderDetail>> GetAllOrderAsync(PaginationParameter paginationParameter, OrderFilter orderFilter);
         public Task<List<OrderDetail>> GetOrderDetailByIdAsync(int id);
+        public Task<List<OrderDetail>> GetOrderDetailByIdAsync(int id);
         public Task<List<OrderDetail>> StatisticForDashBoard();
+
 
     }
 }

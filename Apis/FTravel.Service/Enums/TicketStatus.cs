@@ -6,11 +6,9 @@ using System.Threading.Tasks;
 
 namespace FTravel.Service.Enums
 {
-    public enum NotificationType
+    public enum TicketStatus
     {
-        SYSTEM,
-        WALLET,
-        ORDER,
-        ADMIN
+        AVAILABLE,
+        SOLD
     }
 }

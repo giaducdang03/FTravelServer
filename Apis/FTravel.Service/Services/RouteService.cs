@@ -11,6 +11,7 @@ using FTravel.Service.Enums;
 using FTravel.Service.Services.Interface;
 using FTravel.Service.Utils;
 using Microsoft.AspNetCore.Mvc.Abstractions;
+using Microsoft.EntityFrameworkCore;
 using MimeKit.Cryptography;
 using System;
 using System.Collections.Generic;
@@ -45,6 +46,7 @@ namespace FTravel.Service.Services
                 EndPoint = x.EndPointNavigation.Name,
                 Status = x.Status,
                 BusCompanyName = x.BusCompany.Name,
+                BusCompanyImg = x.BusCompany.ImgUrl,
                 IsDeleted = x.IsDeleted,
             }).ToList();
             return new Pagination<RouteModel>(routeModels, 
@@ -52,11 +54,21 @@ namespace FTravel.Service.Services
                 routes.CurrentPage, 
                 routes.PageSize);
         }
+        
 
         public async Task<CreateRouteModel> CreateRoute(CreateRouteModel route)
         {
             try
             {
+                var startPoint = route.StartPoint;
+                var endPoint = route.EndPoint;
+                //check
+                var routeExists = await _routeRepository.CheckRouteExists(startPoint, endPoint);
+                if (routeExists)
+                {
+                    throw new Exception("Tuyến đường đã tồn tại.");
+                }
+
                 var map = _mapper.Map<Route>(route);
                 map.Status = CommonStatus.ACTIVE.ToString();
                 map.UnsignName = StringUtils.ConvertToUnSign(map.Name);

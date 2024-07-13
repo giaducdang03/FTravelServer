@@ -24,11 +24,6 @@ namespace FTravel.Repository.Repositories
             _context = context;
         }
 
-        public async Task<IDbContextTransaction> BeginTransactionAsync()
-        {
-            return await _context.Database.BeginTransactionAsync();
-        }
-
         public async Task<Order> GetOrderByIdAsync(int id)
         {
             return await _context.Orders
@@ -106,6 +101,8 @@ namespace FTravel.Repository.Repositories
             return result;
                                             
         }
+
+
         public async Task<List<OrderDetail>> StatisticForDashBoard()
         {
             var result = await _context.OrderDetails.Include(x => x.Ticket)
@@ -119,6 +116,7 @@ namespace FTravel.Repository.Repositories
                                             .ToListAsync();
             return result;
         }
+
 
     }
 }

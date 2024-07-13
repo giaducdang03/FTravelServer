@@ -233,7 +233,11 @@ namespace FTravel.Repository.Repositories
             }
         }
 
-
-
+        public  Task<bool> CheckRouteExists(int startPoint, int endPoint)
+        {
+            var exists = _context.Routes.Any(r => r.StartPoint == startPoint && r.EndPoint == endPoint);
+            return Task.FromResult(exists);
+        }
     }
+    
 }
