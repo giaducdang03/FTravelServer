@@ -1,4 +1,6 @@
-﻿using FTravel.Repository.EntityModels;
+﻿using FTravel.Repositories.Commons;
+using FTravel.Repository.Commons;
+using FTravel.Repository.EntityModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,6 +16,8 @@ namespace FTravel.Repository.Repositories.Interface
 
         public Task<List<OrderDetail>> GetHistoryOfTripsTakenByCustomerId(int customer);
         // public Task<Pagination<Route>> GetHistoryOfTripsTakenByCustomerId(PaginationParameter paginationParameter, int customer);
+
+        public Task<Pagination<OrderDetail>> GetOrderedTicketsByCustomer(int customerId, PaginationParameter paginationParameter);
 
     }
 }

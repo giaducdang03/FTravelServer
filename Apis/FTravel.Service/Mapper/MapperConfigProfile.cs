@@ -142,6 +142,12 @@ namespace FTravel.Service.Mapper
                 .ForPath(dest => dest.BusCompany.ImgUrl, opt => opt.MapFrom(src => src.BusCompany.ImgUrl));
 
             CreateMap<RouteStation, RouteStationModel>();
+
+            // my ticket
+            CreateMap<ServiceTicket, ServiceTicketModel>()
+                .ForMember(dest => dest.ServiceName, opt => opt.MapFrom(src => src.Service.Name))
+                .ForMember(dest => dest.StationId, opt => opt.MapFrom(src => src.Service.StationId))
+                .ForMember(dest => dest.StationName, opt => opt.MapFrom(src => src.Service.Station.Name));
         }
     }
 }
