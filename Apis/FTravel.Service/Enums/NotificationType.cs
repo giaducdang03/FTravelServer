@@ -10,6 +10,7 @@ namespace FTravel.Service.Enums
     {
         SYSTEM,
         WALLET,
-        ORDER
+        ORDER,
+        ADMIN
     }
 }

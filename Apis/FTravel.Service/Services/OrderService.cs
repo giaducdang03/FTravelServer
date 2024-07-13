@@ -299,14 +299,6 @@ namespace FTravel.Service.Services
                                     };
                                     orderDetails.Add(newOrderDetail);
 
-                                    //var newOrder = new OrderModel
-                                    //{
-                                    //    TotalPrice = totalPrice,
-                                    //    PaymentStatus = TransactionStatus.PENDING,
-                                    //    CustomerId = customer.Id,
-                                    //    OrderDetails = orderDetails
-                                    //};
-
                                     // create new order
                                     var orderCode = GenerateOrderCode();
                                     var newOrder = new Order()
@@ -348,7 +340,7 @@ namespace FTravel.Service.Services
                                                 var newNoti = new Notification
                                                 {
                                                     EntityId = addedOrder.Id,
-                                                    Type = "Order",
+                                                    Type = NotificationType.ORDER.ToString(),
                                                     Title = "Mua vé thành công",
                                                     Message = $"Bạn đã mua vé thành công cho chuyến {trip.Name}."
                                                 };

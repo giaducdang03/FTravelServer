@@ -375,7 +375,7 @@ namespace FTravel.Service.Services
                         var newNoti = new Notification
                         {
                             EntityId = walletId,
-                            Type = "Wallet",
+                            Type = NotificationType.WALLET.ToString(),
                             Title = "Nạp tiền vào ví thành công",
                             Message = $"Bạn vừa nạp thành công {amount} ftokens vào ví từ VNPAY"
                         };
