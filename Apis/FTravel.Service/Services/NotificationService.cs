@@ -42,7 +42,7 @@ namespace FTravel.Service.Services
                     var newNoti = new Notification
                     {
                         UserId = userId,
-                        Type = NotificationType.SYSTEM.ToString(),
+                        Type = NotificationType.ADMIN.ToString(),
                         Title = notificationModel.Title,
                         Message = notificationModel.Message,
                     };
@@ -71,7 +71,7 @@ namespace FTravel.Service.Services
                     var newNoti = new Notification
                     {
                         UserId = userId,
-                        Type = NotificationType.SYSTEM.ToString(),
+                        Type = NotificationType.ADMIN.ToString(),
                         Title = notificationModel.Title,
                         Message = notificationModel.Message,
                     };
