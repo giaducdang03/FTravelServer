@@ -1,4 +1,6 @@
 ﻿using FTravel.API.ViewModels.ResponseModels;
+using FTravel.Repository.Commons;
+using FTravel.Repository.Commons.Filter;
 using FTravel.Service.BusinessModels.OrderModels;
 using FTravel.Service.Enums;
 using FTravel.Service.Services;
@@ -6,6 +8,7 @@ using FTravel.Service.Services.Interface;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 using System.ComponentModel;
 
 namespace FTravel.API.Controllers
@@ -155,13 +158,24 @@ namespace FTravel.API.Controllers
 
         [HttpGet]
         [Authorize]
-        public async Task<IActionResult> GetAllOrder()
+        public async Task<IActionResult> GetAllOrder([FromRoute] PaginationParameter paginationParameter, [FromRoute] OrderFilter orderFilter)
         {
             try
             {
-                var result = await _orderService.GetAllOrderAsync();
+                var result = await _orderService.GetAllOrderAsync(paginationParameter, orderFilter);
                 if(result != null)
                 {
+                    var metadata = new
+                    {
+                        result.TotalCount,
+                        result.PageSize,
+                        result.CurrentPage,
+                        result.TotalPages,
+                        result.HasNext,
+                        result.HasPrevious
+                    };
+
+                    Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
                     return Ok(result);
                 } else
                 {

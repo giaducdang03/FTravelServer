@@ -113,7 +113,7 @@ namespace FTravel.API.Controllers
                     });
 
                 }
-                else
+                else if(updateResult == -1)
                 {
                     return NotFound(new ResponseModel() 
                     { 
@@ -121,6 +121,13 @@ namespace FTravel.API.Controllers
                         Message = "Tuyến đường không tồn tại" 
                     });
 
+                } else
+                {
+                    return BadRequest(new ResponseModel()
+                    {
+                        HttpCode = StatusCodes.Status400BadRequest,
+                        Message = "Điểm đầu và điểm cuối không được trùng nhau"
+                    });
                 }
             }
             catch (Exception ex)

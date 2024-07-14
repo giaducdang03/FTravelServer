@@ -17,5 +17,6 @@ namespace FTravel.Service.Services.Interface
         public Task<Transaction> CreateTransactionAsync(Transaction transaction, int customerId);
 
         public Task<Transaction> GetTransactionByIdAsync(int transactionId);
+        public Task<Transaction> GetTransactionByOrderIdAsync(int orderId);
     }
 }

@@ -113,7 +113,12 @@ namespace FTravel.Service.Services
             if(findRouteUpdate == null)
             {
                 return -1;
-            } else
+            }
+            else if(routeUpdate.StartPoint == routeUpdate.EndPoint)
+            {
+                return -2;
+            }
+            else
             {
                 findRouteUpdate.Name = routeUpdate.Name;
                 findRouteUpdate.StartPoint = routeUpdate.StartPoint;

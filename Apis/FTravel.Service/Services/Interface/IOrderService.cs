@@ -1,4 +1,7 @@
-﻿using FTravel.Repository.EntityModels;
+﻿using FTravel.Repositories.Commons;
+using FTravel.Repository.Commons;
+using FTravel.Repository.Commons.Filter;
+using FTravel.Repository.EntityModels;
 using FTravel.Service.BusinessModels.OrderModels;
 using FTravel.Service.Enums;
 using System;
@@ -14,7 +17,7 @@ namespace FTravel.Service.Services.Interface
         public Task<Order> CreateOrderAsync(OrderModel orderModel);
 
         public Task<PaymentOrderStatus> PaymentOrderAsync(int orderId);
-        public Task<List<OrderViewModel>> GetAllOrderAsync();
+        public Task<Pagination<GetAllOrderModel>> GetAllOrderAsync(PaginationParameter paginationParameter, OrderFilter orderFilter);
         public Task<OrderViewModel> GetOrderDetailByIdAsync(int orderId);
         public Task<StatisticRevenueModel> StatisticForDashBoard();
 
