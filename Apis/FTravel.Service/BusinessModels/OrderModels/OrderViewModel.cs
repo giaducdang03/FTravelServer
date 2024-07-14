@@ -16,9 +16,12 @@ namespace FTravel.Service.BusinessModels.OrderModels
         public string PaymentOrderStatus { get; set; }
 
         public string CustomerName { get; set; }
+        public string Phone { get; set; }
         public int? TotalPrice { get; set; }
+        public string Email {  get; set; }
 
-        public virtual List<OrderDetailModel> OrderDetailModel { get; set; } = new List<OrderDetailModel>();
+        public virtual List<OrderDetailModel> OrderDetail { get; set; } = new List<OrderDetailModel>();
+        public virtual OrderTransactionModel? Transaction { get; set; }
 
     }
 }

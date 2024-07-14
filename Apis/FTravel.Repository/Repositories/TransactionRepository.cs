@@ -32,5 +32,12 @@ namespace FTravel.Repository.Repositories
 
             return result;
         }
+
+        public async Task<Transaction> GetTransactionsByOrderId(int orderId)
+        {
+            var result = await _context.Transactions.FirstOrDefaultAsync(x => x.OrderId == orderId);
+            return result;
+        }
+
     }
 }
