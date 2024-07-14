@@ -32,7 +32,7 @@ namespace FTravel.Repository.Repositories
         }
         public async Task<Pagination<OrderDetail>> GetAllOrderAsync(PaginationParameter paginationParameter, OrderFilter orderFilter)
         {
-            var itemCount = await _context.Routes.CountAsync();
+            var itemCount = await _context.OrderDetails.CountAsync();
             var items = new List<OrderDetail>();
             if (orderFilter.BusCompanyName != null)
             {
