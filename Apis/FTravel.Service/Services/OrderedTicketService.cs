@@ -144,7 +144,7 @@ namespace FTravel.Service.Services
                     TicketTypeName = ticket.TicketType.Name,
                     BuscompanyName = ticket.Trip.Route.BusCompany.Name,
                     BuscompanyImg = ticket.Trip.Route.BusCompany.ImgUrl,
-                    CustomerTicketModel = customerModel,
+                    Customer = customerModel,
                     ServiceTickets = _mapper.Map<List<ServiceTicketModel>>(ticket.ServiceTickets)
                 };
 
