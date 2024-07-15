@@ -244,7 +244,7 @@ namespace FTravel.Service.Services
 
             if (ticketBuy != null)
             {
-                if (ticketBuy.Status == TicketStatus.SOLD.ToString()) 
+                if (ticketBuy.Status == TicketStatus.SOLD.ToString())
                 {
                     throw new Exception("Vé này đã được bán.");
                 }
@@ -304,82 +304,81 @@ namespace FTravel.Service.Services
                                     {
                                         throw new Exception("Danh sách dịch vụ không hợp lệ.");
                                     }
+                                }
 
-                                    var orderDetails = new List<OrderDetail>();
+                                var orderDetails = new List<OrderDetail>();
 
-                                    var newOrderDetail = new OrderDetail
+                                var newOrderDetail = new OrderDetail
+                                {
+                                    TicketId = ticketBuy.Id,
+                                    Type = "Ticket",
+                                    UnitPrice = totalPrice + ticketBuy.TicketType.Price,
+                                    Quantity = 1
+                                };
+                                orderDetails.Add(newOrderDetail);
+
+                                // create new order
+                                var orderCode = GenerateOrderCode();
+                                var newOrder = new Order()
+                                {
+                                    Code = orderCode,
+                                    TotalPrice = totalPrice + ticketBuy.TicketType.Price,
+                                    CustomerId = customer.Id,
+                                    PaymentStatus = TransactionStatus.PENDING.ToString(),
+                                    OrderDetails = orderDetails,
+                                };
+
+                                var addedOrder = await _orderRepository.AddAsync(newOrder);
+
+                                if (addedOrder != null)
+                                {
+                                    // create new transaction
+
+                                    Transaction newTransaction = new Transaction()
                                     {
-                                        TicketId = ticketBuy.Id,
-                                        Type = "Ticket",
-                                        UnitPrice = totalPrice + ticketBuy.TicketType.Price,
-                                        Quantity = 1
+                                        OrderId = addedOrder.Id,
+                                        Description = $"Thanh toán cho đơn hàng {orderCode}",
+                                        TransactionType = TransactionType.OUT.ToString(),
+                                        Amount = addedOrder.TotalPrice.Value,
                                     };
-                                    orderDetails.Add(newOrderDetail);
 
-                                    // create new order
-                                    var orderCode = GenerateOrderCode();
-                                    var newOrder = new Order()
+                                    var addedTransaction = await _transactionService.CreateTransactionAsync(newTransaction, addedOrder.CustomerId.Value);
+
+                                    if (addedTransaction != null)
                                     {
-                                        Code = orderCode,
-                                        TotalPrice = totalPrice + ticketBuy.TicketType.Price,
-                                        CustomerId = customer.Id,
-                                        PaymentStatus = TransactionStatus.PENDING.ToString(),
-                                        OrderDetails = orderDetails,
-                                    };
-
-                                    var addedOrder = await _orderRepository.AddAsync(newOrder);
-
-                                    if (addedOrder != null)
-                                    {
-                                        // create new transaction
-
-                                        Transaction newTransaction = new Transaction()
+                                        // payment
+                                        PaymentOrderStatus checkPayment = await PaymentOrderAsync(addedOrder.Id);
+                                        if (checkPayment == PaymentOrderStatus.SUCCESS)
                                         {
-                                            OrderId = addedOrder.Id,
-                                            Description = $"Thanh toan cho don hang {orderCode}",
-                                            TransactionType = TransactionType.OUT.ToString(),
-                                            Amount = addedOrder.TotalPrice.Value,
-                                        };
+                                            // update ticket
+                                            ticketBuy.Status = TicketStatus.SOLD.ToString();
+                                            await _ticketRepository.UpdateAsync(ticketBuy);
 
-                                        var addedTransaction = await _transactionService.CreateTransactionAsync(newTransaction, addedOrder.CustomerId.Value);
-
-                                        if (addedTransaction != null)
-                                        {
-                                            // payment
-                                            PaymentOrderStatus checkPayment = await PaymentOrderAsync(addedOrder.Id);
-                                            if (checkPayment == PaymentOrderStatus.SUCCESS)
+                                            // send noti
+                                            var newNoti = new Notification
                                             {
-                                                // update ticket
-                                                ticketBuy.Status = TicketStatus.SOLD.ToString();
-                                                await _ticketRepository.UpdateAsync(ticketBuy);
+                                                EntityId = addedOrder.Id,
+                                                Type = NotificationType.ORDER.ToString(),
+                                                Title = "Mua vé thành công",
+                                                Message = $"Bạn đã mua vé thành công cho chuyến {trip.Name}."
+                                            };
 
-                                                // send noti
-                                                var newNoti = new Notification
-                                                {
-                                                    EntityId = addedOrder.Id,
-                                                    Type = NotificationType.ORDER.ToString(),
-                                                    Title = "Mua vé thành công",
-                                                    Message = $"Bạn đã mua vé thành công cho chuyến {trip.Name}."
-                                                };
+                                            await _notificationService.AddNotificationByCustomerId(addedOrder.CustomerId.Value, newNoti);
 
-                                                await _notificationService.AddNotificationByCustomerId(addedOrder.CustomerId.Value, newNoti);
-
-                                            }
-                                            else
-                                            {
-                                                var insertServiceTickets = await _serviceTicketRepository.GetServiceTicketByTicketId(ticketBuy.Id);
-                                                if (insertServiceTickets.Any())
-                                                {
-                                                    await _serviceTicketRepository.PermanentDeletedListAsync(insertServiceTickets);
-                                                }
-                                            }
-
-                                            await orderTransaction.CommitAsync();
-                                            return _mapper.Map<ResponseOrderModel>(newOrder);
                                         }
+                                        else
+                                        {
+                                            var insertServiceTickets = await _serviceTicketRepository.GetServiceTicketByTicketId(ticketBuy.Id);
+                                            if (insertServiceTickets.Any())
+                                            {
+                                                await _serviceTicketRepository.PermanentDeletedListAsync(insertServiceTickets);
+                                            }
+                                        }
+
+                                        await orderTransaction.CommitAsync();
+                                        return _mapper.Map<ResponseOrderModel>(newOrder);
                                     }
                                 }
-                                
                             }
                             else
                             {
@@ -393,7 +392,6 @@ namespace FTravel.Service.Services
                         throw;
                     }
                 }
-
             }
             throw new Exception("Vé không hợp lệ.");
         }

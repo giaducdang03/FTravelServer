@@ -19,5 +19,7 @@ namespace FTravel.Repository.Repositories.Interface
 
         public Task<Pagination<OrderDetail>> GetOrderedTicketsByCustomer(int customerId, PaginationParameter paginationParameter);
 
+        public Task<Customer> GetCustomerByTicketBoughtId(int ticketId);
+
     }
 }
