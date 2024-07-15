@@ -29,7 +29,7 @@ namespace FTravel.Service.BusinessModels.OrderModels
         public string? TicketStatus { get; set; }
         public int? TicketTypeId { get; set; }
         public string? TicketTypeName { get; set; }
-        public CustomerTicketModel CustomerTicketModel { get; set; } = new CustomerTicketModel();
+        public CustomerTicketModel Customer { get; set; } = new CustomerTicketModel();
         public virtual ICollection<ServiceTicketModel> ServiceTickets { get; set; } = new List<ServiceTicketModel>();
     }
 
