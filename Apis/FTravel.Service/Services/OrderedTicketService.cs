@@ -11,6 +11,7 @@ using FTravel.Service.Services.Interface;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.WebSockets;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -117,6 +118,17 @@ namespace FTravel.Service.Services
             var ticket = await _ticketRepository.GetTicketByIdAsync2(ticketId);
             if (ticket != null)
             {
+                // get customer
+                var customer = await _orderedTicketRepository.GetCustomerByTicketBoughtId(ticket.Id);
+                var customerModel = new CustomerTicketModel();
+                if (customer != null) 
+                { 
+                    customerModel.CustomerId = customer.Id;
+                    customerModel.CustomerEmail = customer.Email;
+                    customerModel.CustomerName = customer.FullName;
+                    customerModel.CustomerPhone = customer.PhoneNumber;
+                }
+
                 var returnModel = new OrderTicketModelDetails
                 {
                     TicketId = ticket.Id,
@@ -132,8 +144,10 @@ namespace FTravel.Service.Services
                     TicketTypeName = ticket.TicketType.Name,
                     BuscompanyName = ticket.Trip.Route.BusCompany.Name,
                     BuscompanyImg = ticket.Trip.Route.BusCompany.ImgUrl,
+                    CustomerTicketModel = customerModel,
                     ServiceTickets = _mapper.Map<List<ServiceTicketModel>>(ticket.ServiceTickets)
                 };
+
 
                 return returnModel;
             }

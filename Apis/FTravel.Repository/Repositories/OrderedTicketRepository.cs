@@ -16,9 +16,30 @@ namespace FTravel.Repository.Repositories
     public class OrderedTicketRepository : GenericRepository<Order>, IOrderedTicketRepository
     {
         private readonly FtravelContext _context;
-        public OrderedTicketRepository(FtravelContext context) : base(context)
+        private readonly ICustomerRepository _customerRepository;
+
+        public OrderedTicketRepository(FtravelContext context, ICustomerRepository customerRepository) : base(context)
         {
             _context = context;
+            _customerRepository = customerRepository;
+        }
+
+        public async Task<Customer> GetCustomerByTicketBoughtId(int ticketId)
+        {
+            var orderDetail = await _context.OrderDetails.FirstOrDefaultAsync(x => x.TicketId == ticketId);
+            if (orderDetail != null)
+            {
+                var order = await _context.Orders.FirstOrDefaultAsync(x => x.Id == orderDetail.OrderId);
+                if (order != null)
+                {
+                    var customer = await _customerRepository.GetByIdAsync(order.CustomerId.Value);
+                    if (customer != null)
+                    {
+                        return customer;
+                    }
+                }
+            }
+            return null;
         }
 
         public async Task<List<OrderDetail>> GetHistoryOfTripsTakenByCustomerId(int customer)
