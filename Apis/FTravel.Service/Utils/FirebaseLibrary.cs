@@ -15,20 +15,26 @@ namespace FTravel.Service.Utils
 
         public static async Task<string> SendMessageFireBase(string title, string body, string token)
         {
-            var message = new Message()
+            try
             {
-                Notification = new Notification()
+                var message = new Message()
                 {
-                    Title = title,
-                    Body = body,
-                    ImageUrl = "https://firebasestorage.googleapis.com/v0/b/swd392-d2c4e.appspot.com/o/FTravel%2FLogo_FTravel_3.png?alt=media&token=744b0241-f414-4139-affa-5c523c3bcbc2"
-                },
-                Token = token
-            };
+                    Notification = new Notification()
+                    {
+                        Title = title,
+                        Body = body,
+                        ImageUrl = "https://firebasestorage.googleapis.com/v0/b/swd392-d2c4e.appspot.com/o/FTravel%2FLogo_FTravel_3.png?alt=media&token=744b0241-f414-4139-affa-5c523c3bcbc2"
+                    },
+                    Token = token
+                };
 
-            var reponse = await FirebaseMessaging.DefaultInstance.SendAsync(message);
-            return reponse;
-
+                var reponse = await FirebaseMessaging.DefaultInstance.SendAsync(message);
+                return reponse;
+            }
+            catch
+            {
+                return "";
+            }
         }
 
         public static async Task<bool> SendRangeMessageFireBase(string title, string body, List<string> tokens)
