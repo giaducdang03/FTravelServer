@@ -382,7 +382,7 @@ namespace FTravel.Service.Services
                         await _notificationService.AddNotificationByUserId(user.Id, newNoti);
                         if (user.Fcmtoken != null) 
                         {
-                            await _notificationService.PushMessageFirebase(newNoti.Title, newNoti.Message, user.Id);
+                            await _notificationService.PushMessagePaymentFirebase(newNoti.Title, newNoti.Message, user.Id);
                         }
                         return true;
                     }

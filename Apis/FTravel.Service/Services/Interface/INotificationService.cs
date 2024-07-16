@@ -27,6 +27,8 @@ namespace FTravel.Service.Services.Interface
 
         public Task<bool> PushMessageFirebase(string title, string body, int userId);
 
+        public Task<bool> PushMessagePaymentFirebase(string title, string body, int userId);
+
         public Task<bool> MarkAllUserNotificationIsReadAsync(string email);
 
         public Task<bool> MarkNotificationIsReadById(int notificationId);
