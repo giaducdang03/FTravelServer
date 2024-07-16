@@ -174,6 +174,21 @@ namespace FTravel.Service.Services
             throw new Exception("Account does not exist.");
         }
 
+        public async Task<bool> PushMessagePaymentFirebase(string title, string body, int userId)
+        {
+            var user = await _userService.GetUserByIdAsync(userId);
+            if (user != null)
+            {
+                var fcmToken = user.Fcmtoken;
+                if (fcmToken != null)
+                {
+                    await FirebaseLibrary.SendMessagePaymentFireBase(title, body, fcmToken);
+                    return true;
+                }
+            }
+            throw new Exception("Account does not exist.");
+        }
+
         public async Task<bool> PushListMessageFirebase(string title, string body, List<string> fcmTokens)
         {
             if (fcmTokens.Any())
